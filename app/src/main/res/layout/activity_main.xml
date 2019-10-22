@@ -20,7 +20,7 @@
     tools:context=".AugmentedImageActivity">
 
 
-    <fragment android:name="com.google.ar.sceneform.samples.augmentedimage.AugmentedImageFragment"
+    <fragment android:name="com.berryspace.muse.AugmentedImageFragment"
         android:id="@+id/ux_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
