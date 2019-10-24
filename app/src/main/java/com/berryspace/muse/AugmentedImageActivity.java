@@ -73,6 +73,7 @@ public class AugmentedImageActivity extends AppCompatActivity {
     spotifyUriMap.put("nephilims_noose-rites_of_a_death_merchant.jpg", "spotify:album:4VAKos4MaWN3Y53ay6ahwH");
     spotifyUriMap.put("lik-carnage.jpg", "spotify:album:2kIv6SsdVx9WTANe1R2sm6");
     spotifyUriMap.put("blut_aus_nord-hallucinogen.jpg", "spotify:album:7JE1WpvUTOU06F2CoL5JgB");
+    spotifyUriMap.put("kanye_west-graduation.jpg", "spotify:album:5fPglEDz9YEwRgbLRvhCZy");
 
     arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ux_fragment);
     fitToScanView = findViewById(R.id.image_view_fit_to_scan);
