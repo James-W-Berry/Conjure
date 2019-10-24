@@ -1,4 +1,4 @@
-include ':app'
+include ':app', ':spotify-app-remote'
 
 // Uncomment to include the source version of the ux package in your project.
 //include ':sceneformux'

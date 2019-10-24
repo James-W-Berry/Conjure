@@ -32,9 +32,15 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     buildTypes {
+        debug {
+            buildConfigField 'String', "SPOTIFY_CLIENT_ID", MUSE_SPOTIFY_CLIENT_ID
+            resValue 'string', "spotify_client_id", MUSE_SPOTIFY_CLIENT_ID
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            buildConfigField 'String', "SPOTIFY_CLIENT_ID", MUSE_SPOTIFY_CLIENT_ID
+            resValue 'string', "spotify_client_id", MUSE_SPOTIFY_CLIENT_ID
         }
     }
     compileOptions {
@@ -52,6 +58,9 @@ dependencies {
 
     // Use the Sceneform UX Package built from the source files included in the sceneformux folder.
     //api project(":sceneformux")
+
+    implementation project(':spotify-app-remote')
+    implementation "com.google.code.gson:gson:2.8.5"
 }
 
 apply plugin: 'com.google.ar.sceneform.plugin'
