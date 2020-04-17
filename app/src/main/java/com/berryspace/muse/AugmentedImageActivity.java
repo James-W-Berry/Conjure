@@ -91,6 +91,7 @@ public class AugmentedImageActivity extends AppCompatActivity {
 
     museImageDatabase = new MuseImageDatabase();
     museImageDatabase.fetchImageDatabase();
+    museImageDatabase.fetchImageDatabaseUpdate();
   }
 
   @Override
