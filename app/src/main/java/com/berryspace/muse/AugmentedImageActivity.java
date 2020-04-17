@@ -17,7 +17,7 @@
 package com.berryspace.muse;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -32,24 +32,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.spotify.android.appremote.api.ConnectionParams;
-import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.Connector.ConnectionListener;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
-import com.spotify.protocol.client.Subscription;
-import com.spotify.protocol.types.PlayerState;
-import com.spotify.protocol.types.Track;
 
-/**
- * This application demonstrates using augmented images to place anchor nodes. app to include image
- * tracking functionality.
- *
- * <p>In this example, we assume all images are static or moving slowly with a large occupation of
- * the screen. If the target is actively moving, we recommend to check
- * ArAugmentedImage_getTrackingMethod() and render only when the tracking method equals to
- * AR_AUGMENTED_IMAGE_TRACKING_METHOD_FULL_TRACKING. See details in <a
- * href="https://developers.google.com/ar/develop/c/augmented-images/">Recognize and Augment
- * Images</a>.
- */
 public class AugmentedImageActivity extends AppCompatActivity {
 
   private ArFragment arFragment;
@@ -58,11 +43,10 @@ public class AugmentedImageActivity extends AppCompatActivity {
   private static final String CLIENT_ID = BuildConfig.SPOTIFY_CLIENT_ID;
   private static final String REDIRECT_URI = "com.berryspace.muse://callback/";
   private SpotifyAppRemote mSpotifyAppRemote;
+  private MuseImageDatabase museImageDatabase;
 
-  // Augmented image and its associated center pose anchor, keyed by the augmented image in
-  // the database.
+
   private final Map<AugmentedImage, AugmentedImageNode> augmentedImageMap = new HashMap<>();
-
   private final Map<String, String> spotifyUriMap = new HashMap<>();
 
   @Override
@@ -85,7 +69,6 @@ public class AugmentedImageActivity extends AppCompatActivity {
   protected void onStart() {
     super.onStart();
 
-    // Set the connection parameters
     ConnectionParams connectionParams =
             new ConnectionParams.Builder(CLIENT_ID)
               .setRedirectUri(REDIRECT_URI)
@@ -105,9 +88,10 @@ public class AugmentedImageActivity extends AppCompatActivity {
                 Log.e("AugmentedImageActivity", throwable.getMessage(), throwable);
               }
             });
+
+    museImageDatabase = new MuseImageDatabase();
+    museImageDatabase.fetchImageDatabase();
   }
-
-
 
   @Override
   protected void onResume() {
