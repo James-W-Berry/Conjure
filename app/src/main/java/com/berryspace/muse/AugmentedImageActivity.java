@@ -27,6 +27,7 @@ import com.google.ar.core.Frame;
 import com.google.ar.sceneform.FrameTime;
 import com.berryspace.common.helpers.SnackbarHelper;
 import com.google.ar.sceneform.ux.ArFragment;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +37,8 @@ import com.spotify.android.appremote.api.Connector.ConnectionListener;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 
 public class AugmentedImageActivity extends AppCompatActivity {
+
+  private static final String TAG = "AugmentedImageActivity";
 
   private ArFragment arFragment;
   private ImageView fitToScanView;
@@ -90,8 +93,7 @@ public class AugmentedImageActivity extends AppCompatActivity {
             });
 
     museImageDatabase = new MuseImageDatabase();
-    museImageDatabase.fetchImageDatabase();
-    museImageDatabase.fetchImageDatabaseUpdate();
+    museImageDatabase.fetchImageDatabaseUpdate(this);
   }
 
   @Override
