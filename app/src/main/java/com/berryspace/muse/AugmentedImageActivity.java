@@ -145,7 +145,8 @@ public class AugmentedImageActivity extends AppCompatActivity {
                     String text = "Detected Image " + augmentedImage.getName();
                     // Add newly
 
-                    SnackbarHelper.getInstance().showMessage(this, text);
+//                    SnackbarHelper.getInstance().showMessage(this, text);
+
 
                     break;
 
