@@ -16,12 +16,14 @@
 
 package com.berryspace.muse;
 
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.ar.core.AugmentedImage;
 import com.google.ar.core.Frame;
 import com.google.ar.sceneform.FrameTime;
@@ -46,7 +48,6 @@ public class AugmentedImageActivity extends AppCompatActivity {
   private static final String CLIENT_ID = BuildConfig.SPOTIFY_CLIENT_ID;
   private static final String REDIRECT_URI = "com.berryspace.muse://callback/";
   private SpotifyAppRemote mSpotifyAppRemote;
-  private MuseImageDatabase museImageDatabase;
 
 
   private final Map<AugmentedImage, AugmentedImageNode> augmentedImageMap = new HashMap<>();
@@ -55,7 +56,21 @@ public class AugmentedImageActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
+    setContentView(R.layout.activity_camera);
+
+    BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_bar);
+    bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+      switch (item.getItemId()) {
+        case R.id.navigation_home:
+          Intent intent = new Intent(this, HomeActivity.class);
+          startActivity(intent);
+          break;
+        case R.id.navigation_camera:
+          Log.d(TAG, "already on the camera screen");
+          break;
+      }
+      return true;
+    });
 
     spotifyUriMap.put("nephilims_noose-rites_of_a_death_merchant.jpg", "spotify:album:4VAKos4MaWN3Y53ay6ahwH");
     spotifyUriMap.put("lik-carnage.jpg", "spotify:album:2kIv6SsdVx9WTANe1R2sm6");
@@ -92,8 +107,7 @@ public class AugmentedImageActivity extends AppCompatActivity {
               }
             });
 
-    museImageDatabase = new MuseImageDatabase();
-    museImageDatabase.fetchImageDatabaseUpdate(this);
+
   }
 
   @Override
