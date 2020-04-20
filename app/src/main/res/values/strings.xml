@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="app_name">Muse</string>
-  <string name="fit_album_to_scan">Fit album to scan</string>
-  <string name="update_message">Update list of support albums</string>
-  <string name="update_available">Update available</string>
-  <string name="up_to_date">You have the latest image database</string>
-  <string name="update_button">Update</string>
-  <string name="bottom_navigation_camera">Camera</string>
-  <string name="bottom_navigation_home">Home</string>
+    <string name="app_name">Muse</string>
+    <string name="fit_album_to_scan">Fit album to scan</string>
+    <string name="update_message">Update list of support albums</string>
+    <string name="update_available">Update available</string>
+    <string name="up_to_date">You have the latest image database</string>
+    <string name="bottom_navigation_camera">Camera</string>
+    <string name="bottom_navigation_home">Home</string>
 </resources>

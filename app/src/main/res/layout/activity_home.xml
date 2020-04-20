@@ -18,28 +18,27 @@
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/update_available"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/heading"
-        android:orientation="horizontal">
+        android:layout_alignParentTop="false"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="100dp"
+        android:fontFamily="@font/montserrat"
+        android:gravity="center"
+        android:text="@string/update_message"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
-        <TextView
-            android:id="@+id/update_available"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/montserrat"
-            android:text="@string/update_message"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
-
-        <Button
-            android:id="@+id/update_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:fontFamily="@font/montserrat"
-            android:text="@string/update_button" />
-    </LinearLayout>
+    <Button
+        android:id="@+id/update_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/update_available"
+        android:layout_centerInParent="true"
+        android:fontFamily="@font/montserrat" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_bar"

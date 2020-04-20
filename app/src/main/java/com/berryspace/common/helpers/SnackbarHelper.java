@@ -32,9 +32,9 @@ public final class SnackbarHelper {
     HIDE,
     SHOW,
     FINISH
-  };
+  }
 
-  public static SnackbarHelper getInstance() {
+    public static SnackbarHelper getInstance() {
     return THE_INSTANCE;
   }
 
