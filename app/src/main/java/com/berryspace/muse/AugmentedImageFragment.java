@@ -28,17 +28,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 
 import com.google.ar.core.AugmentedImageDatabase;
 import com.google.ar.core.Config;
 import com.google.ar.core.Session;
 import com.berryspace.common.helpers.SnackbarHelper;
 import com.google.ar.sceneform.ux.ArFragment;
-
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -111,6 +106,7 @@ public class AugmentedImageFragment extends ArFragment {
                 Objects.requireNonNull(getActivity()).getIntent().getStringExtra(
                         "imageDatabaseVersion");
         Log.d(TAG, "initializing augmented image database using " + imageDatabaseVersion);
+
         try (InputStream is = getContext().openFileInput(imageDatabaseVersion)) {
             augmentedImageDatabase = AugmentedImageDatabase.deserialize(session, is);
         } catch (IOException e) {

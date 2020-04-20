@@ -19,26 +19,59 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
 
     <TextView
-        android:id="@+id/update_available"
+        android:id="@+id/update_available_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/heading"
+        android:layout_below="@id/currentVersion"
         android:layout_alignParentTop="false"
         android:layout_centerInParent="true"
         android:layout_marginTop="100dp"
         android:fontFamily="@font/montserrat"
         android:gravity="center"
-        android:text="@string/update_message"
+        android:text="@string/update_available_label"
         android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+    <TextView
+        android:id="@+id/available_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/update_available_label"
+        android:layout_centerInParent="true"
+        android:fontFamily="@font/montserrat"
+        android:text="@string/available_version"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+    <TextView
+        android:id="@+id/currentVersionLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/heading"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="100dp"
+        android:fontFamily="@font/montserrat"
+        android:text="@string/current_version_label"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+    <TextView
+        android:id="@+id/currentVersion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/currentVersionLabel"
+        android:layout_centerInParent="true"
+        android:layout_centerVertical="true"
+        android:fontFamily="@font/montserrat"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
     <Button
         android:id="@+id/update_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/update_available"
+        android:layout_below="@id/available_version"
         android:layout_centerInParent="true"
-        android:fontFamily="@font/montserrat" />
+        android:layout_marginTop="100dp"
+        android:fontFamily="@font/montserrat"
+        android:text="@string/update_button" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_bar"

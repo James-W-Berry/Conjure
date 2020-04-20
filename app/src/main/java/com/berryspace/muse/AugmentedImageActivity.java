@@ -79,6 +79,7 @@ public class AugmentedImageActivity extends AppCompatActivity {
         spotifyUriMap.put("lik-carnage.jpg", "spotify:album:2kIv6SsdVx9WTANe1R2sm6");
         spotifyUriMap.put("blut_aus_nord-hallucinogen.jpg", "spotify:album:7JE1WpvUTOU06F2CoL5JgB");
         spotifyUriMap.put("kanye_west-graduation.jpg", "spotify:album:5fPglEDz9YEwRgbLRvhCZy");
+        spotifyUriMap.put("bathory-hammerheart.jpg", "spotify:album:2ptBwIHjXVgM4al3YWTdlb");
 
         arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ux_fragment);
         fitToScanView = findViewById(R.id.image_view_fit_to_scan);
@@ -139,7 +140,7 @@ public class AugmentedImageActivity extends AppCompatActivity {
             switch (augmentedImage.getTrackingState()) {
                 case PAUSED:
                     // When an image is in PAUSED state, but the camera is not PAUSED, it has
-                  // been detected,
+                    // been detected,
                     // but not yet tracked.
                     String text = "Detected Image " + augmentedImage.getName();
                     // Add newly

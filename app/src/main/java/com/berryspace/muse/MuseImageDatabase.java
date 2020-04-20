@@ -15,6 +15,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 class MuseImageDatabase {
     private static final String TAG = "MuseImageDatabase";
     private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+    private String currentVersion;
 
     void fetchImageDatabaseUpdate(Context context) {
         final DocumentReference docRef = firestore.collection("status").document("update");
@@ -25,20 +26,27 @@ class MuseImageDatabase {
             }
             if (snapshot != null && snapshot.exists()) {
                 TextView updateMessage =
-                        ((HomeActivity) context).findViewById(R.id.update_available);
+                        ((HomeActivity) context).findViewById(R.id.update_available_label);
                 Button updateButton = ((HomeActivity) context).findViewById(R.id.update_button);
+                TextView currentImageDatabaseVersion =
+                        ((HomeActivity) context).findViewById(R.id.currentVersion);
+                TextView availableImageDatabaseVersion =
+                        ((HomeActivity) context).findViewById(R.id.available_version);
+
                 String masterImageDatabaseName =
                         (String) Objects.requireNonNull(snapshot.getData()).get(
                                 "masterImageDatabase");
-                if (isFilePresent(masterImageDatabaseName, context)) {
-                    updateMessage.setText(R.string.up_to_date);
-                    updateButton.setText(masterImageDatabaseName);
 
-//                    updateButton.setVisibility(View.GONE);
+                if (isFilePresent(masterImageDatabaseName, context)) {
+                    updateMessage.setText(context.getResources().getString(R.string.update_available_label, "Your image database is up to date"));
+                    availableImageDatabaseVersion.setText(context.getResources().getString(R.string.available_version, ""));
+                    currentImageDatabaseVersion.setText(masterImageDatabaseName);
+                    updateButton.setVisibility(View.GONE);
                     Log.d(TAG, "image database is up to date");
                 } else {
-                    updateMessage.setText(R.string.update_available);
-                    updateButton.setText(masterImageDatabaseName);
+                    updateMessage.setText(context.getResources().getString(R.string.update_available_label, "Updated image database is available"));
+                    availableImageDatabaseVersion.setText(context.getResources().getString(R.string.available_version, masterImageDatabaseName));
+                    currentImageDatabaseVersion.setText(context.getResources().getString(R.string.current_version, currentVersion));
                     updateButton.setVisibility(View.VISIBLE);
                     Log.d(TAG, "there is a newer image database available");
                 }
@@ -57,13 +65,11 @@ class MuseImageDatabase {
                 Log.d(TAG, "Found " + fileName + " in local files");
                 return true;
             } else if (file.getName().contains("muse_image_database")) {
-                if (file.delete()) {
-                    Log.d(TAG, "successfully removed old image database " + file.getName());
-                } else {
-                    Log.d(TAG, "could not remove old image database " + file.getName());
-                }
+                currentVersion = file.getName();
             }
         }
         return false;
     }
+
+
 }
