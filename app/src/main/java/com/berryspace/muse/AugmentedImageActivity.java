@@ -1,29 +1,12 @@
-/*
- * Copyright 2018 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.berryspace.muse;
 
 import android.content.Intent;
 import android.os.Bundle;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.ar.core.AugmentedImage;
@@ -31,11 +14,9 @@ import com.google.ar.core.Frame;
 import com.google.ar.sceneform.FrameTime;
 import com.berryspace.common.helpers.SnackbarHelper;
 import com.google.ar.sceneform.ux.ArFragment;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector.ConnectionListener;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
@@ -43,17 +24,14 @@ import com.spotify.android.appremote.api.SpotifyAppRemote;
 public class AugmentedImageActivity extends AppCompatActivity {
 
     private static final String TAG = "AugmentedImageActivity";
-
+    private String currentlyPlaying = "";
     private ArFragment arFragment;
     private ImageView fitToScanView;
+    private final Map<AugmentedImage, AugmentedImageNode> augmentedImageMap = new HashMap<>();
 
     private static final String CLIENT_ID = BuildConfig.SPOTIFY_CLIENT_ID;
     private static final String REDIRECT_URI = "com.berryspace.muse://callback/";
     private SpotifyAppRemote mSpotifyAppRemote;
-
-
-    private final Map<AugmentedImage, AugmentedImageNode> augmentedImageMap = new HashMap<>();
-    private final Map<String, String> spotifyUriMap = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,13 +51,6 @@ public class AugmentedImageActivity extends AppCompatActivity {
             }
             return true;
         });
-
-        spotifyUriMap.put("nephilims_noose-rites_of_a_death_merchant.jpg", "spotify:album" +
-                ":4VAKos4MaWN3Y53ay6ahwH");
-        spotifyUriMap.put("lik-carnage.jpg", "spotify:album:2kIv6SsdVx9WTANe1R2sm6");
-        spotifyUriMap.put("blut_aus_nord-hallucinogen.jpg", "spotify:album:7JE1WpvUTOU06F2CoL5JgB");
-        spotifyUriMap.put("kanye_west-graduation.jpg", "spotify:album:5fPglEDz9YEwRgbLRvhCZy");
-        spotifyUriMap.put("bathory-hammerheart.jpg", "spotify:album:2ptBwIHjXVgM4al3YWTdlb");
 
         arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ux_fragment);
         fitToScanView = findViewById(R.id.image_view_fit_to_scan);
@@ -140,38 +111,29 @@ public class AugmentedImageActivity extends AppCompatActivity {
             switch (augmentedImage.getTrackingState()) {
                 case PAUSED:
                     // When an image is in PAUSED state, but the camera is not PAUSED, it has
-                    // been detected,
-                    // but not yet tracked.
-                    String text = "Detected Image " + augmentedImage.getName();
-                    // Add newly
+                    // been detected,  but not yet tracked.
 
-//                    SnackbarHelper.getInstance().showMessage(this, text);
-
-
+                    // Play album from detected image
+                    if(!currentlyPlaying.equals(augmentedImage.getName())) {
+                        Log.i(TAG, "was playing: "+ currentlyPlaying);
+                        currentlyPlaying = augmentedImage.getName();
+                        Log.i(TAG, "now playing: "+ currentlyPlaying);
+                        String text = "Now Playing: " + augmentedImage.getName();
+                        TextView heading = findViewById(R.id.nowPlaying);
+                        heading.setText(text);
+                        stopMusic();
+                        String uri = augmentedImage.getName().replace(".jpg", "");
+                        playMusic(uri);
+                    }
                     break;
-
                 case TRACKING:
                     // Have to switch to UI Thread to update View.
                     fitToScanView.setVisibility(View.GONE);
 
                     // Create a new anchor for newly found images.
-                    if (!augmentedImageMap.containsKey(augmentedImage)) {
-
-                        if (spotifyUriMap.containsKey(augmentedImage.getName())) {
-                            stopMusic();
-                            Log.i("AugmentedImageActivity", augmentedImage.getName());
-                            playMusic(spotifyUriMap.get(augmentedImage.getName()));
-                        } else {
-                            Log.e("AugmentedImageActivity", "unknown image");
-                        }
-
-                        AugmentedImageNode node = new AugmentedImageNode(this);
-                        node.setImage(augmentedImage);
-                        augmentedImageMap.put(augmentedImage, node);
-                        //arFragment.getArSceneView().getScene().addChild(node);
-                    }
-
-
+                    AugmentedImageNode node = new AugmentedImageNode(this);
+                    node.setImage(augmentedImage);
+                    augmentedImageMap.put(augmentedImage, node);
                     break;
 
                 case STOPPED:
@@ -182,7 +144,7 @@ public class AugmentedImageActivity extends AppCompatActivity {
     }
 
     private void playMusic(String spotifyUri) {
-        Log.i("AugmentedImageActivity", spotifyUri);
+        Log.i(TAG + " playing Spotify URI:  ", spotifyUri);
         mSpotifyAppRemote.getPlayerApi().play(spotifyUri);
     }
 
