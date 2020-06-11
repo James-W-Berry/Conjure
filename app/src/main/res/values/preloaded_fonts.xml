@@ -2,5 +2,7 @@
 <resources>
     <array name="preloaded_fonts" translatable="false">
         <item>@font/montserrat_bold</item>
+        <item>@font/nunito</item>
+        <item>@font/nunito_sans_light</item>
     </array>
 </resources>

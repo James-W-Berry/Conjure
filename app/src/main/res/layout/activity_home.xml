@@ -4,19 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_centerInParent="false"
+    android:layout_centerHorizontal="false"
+    android:background="#FFFFFF"
     android:orientation="vertical"
     tools:context=".HomeActivity">
 
 
-    <TextView
-        android:id="@+id/heading"
+    <ImageView
+        android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/montserrat"
-        android:gravity="center"
-        android:text="@string/app_name"
-        android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+        android:layout_centerHorizontal="true"
+        android:background="#FFFFFF"
+        android:contentDescription="logo"
+        android:minHeight="300dp"
+        android:padding="30dp"
+        app:srcCompat="@drawable/full_logo" />
 
     <TextView
         android:id="@+id/update_available_label"
@@ -26,11 +30,13 @@
         android:layout_alignParentTop="false"
         android:layout_centerInParent="true"
         android:layout_marginTop="100dp"
-        android:fontFamily="@font/montserrat"
+        android:fontFamily="@font/nunito_sans_light"
         android:gravity="center"
         android:text="@string/update_available_label"
         android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/conjure_dark"
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/available_version"
@@ -38,20 +44,23 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/update_available_label"
         android:layout_centerInParent="true"
-        android:fontFamily="@font/montserrat"
+        android:fontFamily="@font/nunito_sans_light"
         android:text="@string/available_version"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/conjure_dark"
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/currentVersionLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/heading"
         android:layout_centerInParent="true"
         android:layout_marginTop="100dp"
-        android:fontFamily="@font/montserrat"
+        android:fontFamily="@font/nunito_sans_light"
         android:text="@string/current_version_label"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/conjure_dark"
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/currentVersion"
@@ -59,25 +68,30 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/currentVersionLabel"
         android:layout_centerInParent="true"
-        android:layout_centerVertical="true"
-        android:fontFamily="@font/montserrat"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:fontFamily="@font/nunito_sans_light"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/conjure_dark" />
 
     <Button
         android:id="@+id/update_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/available_version"
+        android:layout_below="@id/currentVersion"
         android:layout_centerInParent="true"
-        android:layout_marginTop="100dp"
-        android:fontFamily="@font/montserrat"
-        android:text="@string/update_button" />
+        android:layout_marginTop="161dp"
+        android:background="@color/primary"
+        android:fontFamily="@font/nunito_sans_light"
+        android:text="@string/update_button"
+        android:textColor="@color/conjure_dark" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_bar"
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:layout_alignParentBottom="true"
+        android:background="@color/secondary"
+        app:itemIconTint="@color/conjure_dark"
+        app:itemTextColor="@color/conjure_dark"
         app:menu="@menu/bottom_navigation_menu" />
 
 </RelativeLayout>

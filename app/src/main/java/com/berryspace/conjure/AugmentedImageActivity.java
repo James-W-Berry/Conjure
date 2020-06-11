@@ -1,4 +1,4 @@
-package com.berryspace.muse;
+package com.berryspace.conjure;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,7 +12,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.ar.core.AugmentedImage;
 import com.google.ar.core.Frame;
 import com.google.ar.sceneform.FrameTime;
-import com.berryspace.common.helpers.SnackbarHelper;
 import com.google.ar.sceneform.ux.ArFragment;
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,6 +19,9 @@ import java.util.Map;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector.ConnectionListener;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
+import com.spotify.android.appremote.api.error.CouldNotFindSpotifyApp;
+import com.spotify.android.appremote.api.error.NotLoggedInException;
+import com.spotify.android.appremote.api.error.UserNotAuthorizedException;
 
 public class AugmentedImageActivity extends AppCompatActivity {
 
@@ -48,6 +50,7 @@ public class AugmentedImageActivity extends AppCompatActivity {
                 case R.id.navigation_camera:
                     Log.d(TAG, "already on the camera screen");
                     break;
+
             }
             return true;
         });
@@ -67,6 +70,7 @@ public class AugmentedImageActivity extends AppCompatActivity {
                         .showAuthView(true)
                         .build();
 
+        SpotifyAppRemote.disconnect(mSpotifyAppRemote);
         SpotifyAppRemote.connect(this, connectionParams,
                 new ConnectionListener() {
                     @Override
@@ -76,8 +80,12 @@ public class AugmentedImageActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(Throwable throwable) {
-                        Log.e("AugmentedImageActivity", throwable.getMessage(), throwable);
+                    public void onFailure(Throwable error) {
+                        if (error instanceof NotLoggedInException || error instanceof UserNotAuthorizedException) {
+                            // Show login button and trigger the login flow from auth library when clicked
+                        } else if (error instanceof CouldNotFindSpotifyApp) {
+                            // Show button to download Spotify
+                        }
                     }
                 });
 

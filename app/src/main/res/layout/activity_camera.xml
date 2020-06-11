@@ -6,30 +6,36 @@
     tools:context=".AugmentedImageActivity">
 
 
-    <fragment
-        android:id="@+id/ux_fragment"
-        android:name="com.berryspace.muse.AugmentedImageFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
     <TextView
         android:id="@+id/nowPlaying"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="80dp"
         android:layout_gravity="center_horizontal"
+        android:background="@color/primary"
+        android:fontFamily="@font/nunito_sans_light"
+        android:padding="10dp"
         android:text="@string/now_playing"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp" />
+        android:textColor="@color/conjure_dark"
+        android:textSize="18sp" />
+
+    <fragment
+        android:id="@+id/ux_fragment"
+        android:name="com.berryspace.conjure.AugmentedImageFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="80dp"
+        android:layout_marginBottom="80dp" />
 
     <ImageView
         android:id="@+id/image_view_fit_to_scan"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
+        android:layout_marginTop="80dp"
+        android:layout_marginBottom="80dp"
         android:contentDescription="@string/fit_album_to_scan"
-        android:scaleType="fitCenter"
+        android:scaleType="centerCrop"
         android:src="@drawable/fit_to_scan" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -37,6 +43,9 @@
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:layout_gravity="bottom"
+        android:background="@color/secondary"
+        app:itemIconTint="@color/conjure_dark"
+        app:itemTextColor="@color/conjure_dark"
         app:menu="@menu/bottom_navigation_menu" />
 
 </FrameLayout>

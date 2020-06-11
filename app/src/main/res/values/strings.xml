@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Muse</string>
+    <string name="app_name">Conjure</string>
+    <string name="navigation_home">Home</string>
+    <string name="navigation_scan">Scan</string>
     <string name="fit_album_to_scan">Fit album to scan</string>
-    <string name="now_playing"> </string>
+    <string name="now_playing">now playing: </string>
     <string name="update_button">Update</string>
     <string name="update_available_label">%1$s</string>
     <string name="available_version">%1$s</string>
     <string name="current_version_label">Current version: </string>
     <string name="current_version">%1$s</string>
-    <string name="bottom_navigation_camera">Camera</string>
-    <string name="bottom_navigation_home">Home</string>
+
 </resources>

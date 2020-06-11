@@ -1,4 +1,4 @@
-package com.berryspace.muse;
+package com.berryspace.conjure;
 
 import android.content.Context;
 import android.util.Log;

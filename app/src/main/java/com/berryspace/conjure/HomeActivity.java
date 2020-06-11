@@ -1,4 +1,4 @@
-package com.berryspace.muse;
+package com.berryspace.conjure;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -52,10 +52,11 @@ public class HomeActivity extends AppCompatActivity {
                     Log.d(TAG, "already on the home screen");
                     break;
                 case R.id.navigation_camera:
-                    Intent intent = new Intent(this, AugmentedImageActivity.class);
-                    intent.putExtra("imageDatabaseVersion", currentImageDatabaseVersion.getText());
-                    startActivity(intent);
+                    Intent augmentedImageIntent = new Intent(this, AugmentedImageActivity.class);
+                    augmentedImageIntent.putExtra("imageDatabaseVersion", currentImageDatabaseVersion.getText());
+                    startActivity(augmentedImageIntent);
                     break;
+
             }
             return true;
         });

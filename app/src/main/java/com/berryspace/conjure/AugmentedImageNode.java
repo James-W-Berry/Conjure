@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.berryspace.muse;
+package com.berryspace.conjure;
 
 import android.content.Context;
 import android.net.Uri;

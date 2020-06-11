@@ -4,13 +4,20 @@ apply plugin: 'com.google.gms.google-services'
 android {
     compileSdkVersion 29
     defaultConfig {
-        applicationId "com.berryspace.muse"
-
+        applicationId "com.berryspace.conjure"
         // Sceneform requires minSdkVersion >= 24.
         minSdkVersion 24
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
+        resConfigs "en"
+    }
+    dataBinding {
+        enabled = true
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
     // Sceneform libraries use language constructs from Java 8.
     // Add these compile options if targeting minSdkVersion < 26.
@@ -20,14 +27,14 @@ android {
     }
     buildTypes {
         debug {
-            buildConfigField 'String', "SPOTIFY_CLIENT_ID", MUSE_SPOTIFY_CLIENT_ID
-            resValue 'string', "spotify_client_id", MUSE_SPOTIFY_CLIENT_ID
+            buildConfigField 'String', "SPOTIFY_CLIENT_ID", CONJURE_SPOTIFY_CLIENT_ID
+            resValue 'string', "spotify_client_id", CONJURE_SPOTIFY_CLIENT_ID
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            buildConfigField 'String', "SPOTIFY_CLIENT_ID", MUSE_SPOTIFY_CLIENT_ID
-            resValue 'string', "spotify_client_id", MUSE_SPOTIFY_CLIENT_ID
+            buildConfigField 'String', "SPOTIFY_CLIENT_ID", CONJURE_SPOTIFY_CLIENT_ID
+            resValue 'string', "spotify_client_id", CONJURE_SPOTIFY_CLIENT_ID
         }
     }
     compileOptions {
