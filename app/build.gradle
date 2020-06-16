@@ -44,16 +44,18 @@ android {
 }
 
 dependencies {
+    implementation 'androidx.browser:browser:1.2.0'
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'com.google.android.material:material:1.1.0'
-
     implementation "com.google.ar.sceneform.ux:sceneform-ux:1.15.0"
     implementation project(':spotify-app-remote')
+    implementation "com.spotify.android:auth:1.2.3"
     implementation "com.google.code.gson:gson:2.8.5"
-
+    implementation 'com.squareup.okhttp3:okhttp:3.12.3'
     implementation 'com.google.firebase:firebase-analytics:17.3.0'
-    implementation 'com.google.firebase:firebase-firestore:21.4.2'
+    implementation 'com.google.firebase:firebase-firestore:21.4.3'
     implementation 'com.google.firebase:firebase-storage:19.1.1'
+    implementation 'com.google.guava:guava:27.0.1-android'
 }
 
 apply plugin: 'com.google.ar.sceneform.plugin'

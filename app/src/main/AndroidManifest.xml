@@ -4,19 +4,30 @@
     package="com.berryspace.conjure">
 
     <uses-permission android:name="android.permission.CAMERA" />
-    <!-- This tag indicates that this application requires ARCore.  This results in the application
-         only being visible in the Google Play Store on devices that support ARCore. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <uses-feature
         android:name="android.hardware.camera.ar"
         android:required="true" />
 
     <application
-        android:allowBackup="false"
+        android:allowBackup="true"
+        android:supportsRtl="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="false"
         tools:ignore="GoogleAppIndexingWarning">
+
+        <activity
+            android:name="com.berryspace.conjure.LoginActivity"
+            android:configChanges="keyboardHidden|keyboard|orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name="com.berryspace.conjure.HomeActivity"
@@ -26,7 +37,6 @@
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 

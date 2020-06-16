@@ -85,6 +85,7 @@ public class AugmentedImageActivity extends AppCompatActivity {
                             // Show login button and trigger the login flow from auth library when clicked
                         } else if (error instanceof CouldNotFindSpotifyApp) {
                             // Show button to download Spotify
+
                         }
                     }
                 });
