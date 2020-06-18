@@ -24,6 +24,7 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         Button updateButton = findViewById(R.id.update_button);
+        Button setupButton = findViewById(R.id.btn_setup);
         TextView currentImageDatabaseVersion = findViewById(R.id.currentVersion);
         TextView availableImageDatabaseVersion = findViewById(R.id.available_version);
 
@@ -43,6 +44,11 @@ public class HomeActivity extends AppCompatActivity {
                     .addOnFailureListener(e -> {
                         Log.d(TAG, "failed to save Muse image database to local device: " + e);
                     });
+        });
+
+        setupButton.setOnClickListener(v->{
+            Intent setupIntent = new Intent(this, LoginActivity.class);
+            startActivity(setupIntent);
         });
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_bar);

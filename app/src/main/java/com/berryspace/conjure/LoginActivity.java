@@ -9,8 +9,13 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-
+import com.berryspace.conjure.databinding.ActivityLoginBinding;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.FirebaseFunctionsException;
+import com.google.firebase.functions.FirebaseFunctionsException.Code;
 import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
@@ -19,6 +24,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -26,10 +34,15 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+
+
 public class LoginActivity extends AppCompatActivity {
+    private static final String TAG ="LoginActivity";
     public static final String CLIENT_ID = BuildConfig.SPOTIFY_CLIENT_ID;
     public static final int AUTH_TOKEN_REQUEST_CODE = 0x10;
     public static final int AUTH_CODE_REQUEST_CODE = 0x11;
+    private FirebaseFunctions mFunctions;
+    private ActivityLoginBinding binding;
 
     private final OkHttpClient mOkHttpClient = new OkHttpClient();
     private String mAccessToken;
@@ -40,7 +53,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        Log.d("LoginActivity", CLIENT_ID);
+        mFunctions = FirebaseFunctions.getInstance();
     }
 
     @Override
@@ -100,6 +113,40 @@ public class LoginActivity extends AppCompatActivity {
                 .build();
     }
 
+    private Task<Object> setupConjure(String token) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("spotifyToken", token);
+
+        return mFunctions
+                .getHttpsCallable("setupConjure")
+                .call(data)
+                .continueWith(task -> Objects.requireNonNull(task.getResult()).getData());
+    }
+
+    public void onSetupClicked(View view) {
+        setupConjure(mAccessToken)
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Exception e = task.getException();
+                        if (e instanceof FirebaseFunctionsException) {
+                            FirebaseFunctionsException ffe = (FirebaseFunctionsException) e;
+                            Code code = ffe.getCode();
+                            Object details = ffe.getDetails();
+                        }
+                        Log.w(TAG, "setupConjure:onFailure", e);
+                        showSnackbar("An error occurred.");
+                        return;
+                    }
+                    Object result = task.getResult();
+                    assert result != null;
+                    Log.d(TAG, result.toString());
+                });
+    }
+
+    private void showSnackbar(String message) {
+        Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -109,7 +156,9 @@ public class LoginActivity extends AppCompatActivity {
         }
         if (requestCode == AUTH_TOKEN_REQUEST_CODE) {
             mAccessToken = response.getAccessToken();
+            Log.d(TAG, mAccessToken);
             updateTokenView();
+
         } else if (requestCode == AUTH_CODE_REQUEST_CODE) {
             mAccessCode = response.getCode();
             updateCodeView();

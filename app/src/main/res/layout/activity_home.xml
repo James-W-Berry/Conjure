@@ -1,97 +1,169 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_centerInParent="false"
-    android:layout_centerHorizontal="false"
-    android:background="#FFFFFF"
-    android:orientation="vertical"
-    tools:context=".HomeActivity">
-
+    android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:background="#FFFFFF"
         android:contentDescription="logo"
         android:minHeight="300dp"
         android:padding="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/full_logo" />
 
-    <TextView
-        android:id="@+id/update_available_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/currentVersion"
-        android:layout_alignParentTop="false"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="100dp"
-        android:fontFamily="@font/nunito_sans_light"
-        android:gravity="center"
-        android:text="@string/update_available_label"
-        android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@color/conjure_dark"
-        android:textSize="16sp" />
-
-    <TextView
-        android:id="@+id/available_version"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/update_available_label"
-        android:layout_centerInParent="true"
-        android:fontFamily="@font/nunito_sans_light"
-        android:text="@string/available_version"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@color/conjure_dark"
-        android:textSize="16sp" />
-
-    <TextView
-        android:id="@+id/currentVersionLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="100dp"
-        android:fontFamily="@font/nunito_sans_light"
-        android:text="@string/current_version_label"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@color/conjure_dark"
-        android:textSize="16sp" />
-
-    <TextView
-        android:id="@+id/currentVersion"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/currentVersionLabel"
-        android:layout_centerInParent="true"
-        android:fontFamily="@font/nunito_sans_light"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@color/conjure_dark" />
-
-    <Button
-        android:id="@+id/update_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/currentVersion"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="161dp"
+    <LinearLayout
+        android:id="@+id/btn_currentDatabase"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="4dp"
         android:background="@color/primary"
-        android:fontFamily="@font/nunito_sans_light"
-        android:text="@string/update_button"
-        android:textColor="@color/conjure_dark" />
+        android:orientation="vertical"
+        app:layout_constraintEnd_toStartOf="@id/btn_updateDatabase"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageView"
+        app:layout_constraintVertical_weight="1">
+
+        <TextView
+            android:id="@+id/update_available_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/nunito_sans_light"
+            android:text="@string/update_available_label"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="@color/conjure_dark"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/available_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/nunito_sans_light"
+            android:text="@string/available_version"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="@color/conjure_dark"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/currentVersionLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/nunito_sans_light"
+            android:text="@string/current_version_label"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="@color/conjure_dark"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/currentVersion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/nunito_sans_light"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textSize="16sp"
+            android:textColor="@color/conjure_dark" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/btn_updateDatabase"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@color/primary"
+        app:layout_constraintBottom_toTopOf="@+id/tile_setup"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toEndOf="@id/btn_currentDatabase"
+        app:layout_constraintTop_toBottomOf="@id/imageView"
+        app:layout_constraintVertical_weight="1">
+
+        <Button
+            android:id="@+id/update_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/secondary"
+            android:fontFamily="@font/nunito_sans_light"
+            android:text="@string/update_button"
+            android:textColor="@color/conjure_dark" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/btn_authenticate"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="4dp"
+        android:background="@color/primary"
+        app:layout_constraintEnd_toStartOf="@id/tile_setup"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_currentDatabase"
+        app:layout_constraintVertical_weight="1">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/nunito_sans_light"
+            android:text="Some other info"
+            android:textSize="16sp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="@color/conjure_dark" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/tile_setup"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@color/primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toEndOf="@id/btn_authenticate"
+        app:layout_constraintTop_toBottomOf="@id/btn_updateDatabase"
+        app:layout_constraintVertical_weight="1">
+
+        <Button
+            android:id="@+id/btn_setup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/secondary"
+            android:fontFamily="@font/nunito_sans_light"
+            android:text="create your custom database"
+            android:textColor="@color/conjure_dark" />
+    </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_bar"
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:layout_alignParentBottom="true"
         android:background="@color/secondary"
         app:itemIconTint="@color/conjure_dark"
         app:itemTextColor="@color/conjure_dark"
-        app:menu="@menu/bottom_navigation_menu" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_navigation_menu">
+    </com.google.android.material.bottomnavigation.BottomNavigationView>
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

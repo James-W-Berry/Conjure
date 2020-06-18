@@ -69,6 +69,17 @@
                 android:layout_gravity="center_vertical"
                 android:onClick="onClearCredentialsClicked"
                 android:text="@string/btn_clear_credentials" />
+
         </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_setup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:onClick="onSetupClicked"
+            android:text="Setup Conjure" />
     </LinearLayout>
+
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
