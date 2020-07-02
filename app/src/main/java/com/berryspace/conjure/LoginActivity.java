@@ -34,8 +34,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-
-
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG ="LoginActivity";
     public static final String CLIENT_ID = BuildConfig.SPOTIFY_CLIENT_ID;
@@ -48,6 +46,7 @@ public class LoginActivity extends AppCompatActivity {
     private String mAccessToken;
     private String mAccessCode;
     private Call mCall;
+    private String userId = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,14 +61,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    public void onGetUserProfileClicked(View view) {
-        if (mAccessToken == null) {
-            final Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_login), R.string.warning_need_token, Snackbar.LENGTH_SHORT);
-            snackbar.getView().setBackgroundColor(ContextCompat.getColor(this, R.color.design_default_color_primary));
-            snackbar.show();
-            return;
-        }
-
+    public void getUserId(){
         final Request request = new Request.Builder()
                 .url("https://api.spotify.com/v1/me")
                 .addHeader("Authorization", "Bearer " + mAccessToken)
@@ -81,24 +73,21 @@ public class LoginActivity extends AppCompatActivity {
         mCall.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                setResponse("Failed to fetch data: " + e);
+                Log.d(TAG, "Failed to fetch data: " + e);
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 try {
+                    assert response.body() != null;
                     final JSONObject jsonObject = new JSONObject(response.body().string());
-                    setResponse(jsonObject.toString(3));
-                } catch (JSONException e) {
-                    setResponse("Failed to parse data: " + e);
+                    userId = jsonObject.get("id").toString();
+                    Log.d(TAG, userId);
+                } catch (JSONException error) {
+                    Log.d(TAG, error.toString());
                 }
             }
         });
-    }
-
-    public void onRequestCodeClicked(View view) {
-        final AuthorizationRequest request = getAuthenticationRequest(AuthorizationResponse.Type.CODE);
-        AuthorizationClient.openLoginActivity(this, AUTH_CODE_REQUEST_CODE, request);
     }
 
     public void onRequestTokenClicked(View view) {
@@ -113,34 +102,15 @@ public class LoginActivity extends AppCompatActivity {
                 .build();
     }
 
-    private Task<Object> setupConjure(String token) {
+    private Task<Object> setupConjure(String token, String userId) {
         Map<String, Object> data = new HashMap<>();
         data.put("spotifyToken", token);
+        data.put("userId", userId);
 
         return mFunctions
                 .getHttpsCallable("setupConjure")
                 .call(data)
                 .continueWith(task -> Objects.requireNonNull(task.getResult()).getData());
-    }
-
-    public void onSetupClicked(View view) {
-        setupConjure(mAccessToken)
-                .addOnCompleteListener(task -> {
-                    if (!task.isSuccessful()) {
-                        Exception e = task.getException();
-                        if (e instanceof FirebaseFunctionsException) {
-                            FirebaseFunctionsException ffe = (FirebaseFunctionsException) e;
-                            Code code = ffe.getCode();
-                            Object details = ffe.getDetails();
-                        }
-                        Log.w(TAG, "setupConjure:onFailure", e);
-                        showSnackbar("An error occurred.");
-                        return;
-                    }
-                    Object result = task.getResult();
-                    assert result != null;
-                    Log.d(TAG, result.toString());
-                });
     }
 
     private void showSnackbar(String message) {
@@ -158,10 +128,25 @@ public class LoginActivity extends AppCompatActivity {
             mAccessToken = response.getAccessToken();
             Log.d(TAG, mAccessToken);
             updateTokenView();
-
-        } else if (requestCode == AUTH_CODE_REQUEST_CODE) {
-            mAccessCode = response.getCode();
-            updateCodeView();
+            getUserId();
+            Log.d(TAG, userId);
+             setupConjure(mAccessToken, userId)
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Exception e = task.getException();
+                        if (e instanceof FirebaseFunctionsException) {
+                            FirebaseFunctionsException ffe = (FirebaseFunctionsException) e;
+                            Code code = ffe.getCode();
+                            Object details = ffe.getDetails();
+                        }
+                        Log.w(TAG, "setupConjure:onFailure", e);
+                        showSnackbar("An error occurred.");
+                        return;
+                    }
+                    Object result = task.getResult();
+                    assert result != null;
+                    Log.d(TAG, result.toString());
+                });
         }
     }
 
@@ -175,11 +160,6 @@ public class LoginActivity extends AppCompatActivity {
     private void updateTokenView() {
         final TextView tokenView = findViewById(R.id.token_text_view);
         tokenView.setText(getString(R.string.token, mAccessToken));
-    }
-
-    private void updateCodeView() {
-        final TextView codeView = findViewById(R.id.code_text_view);
-        codeView.setText(getString(R.string.code, mAccessCode));
     }
 
     private void cancelCall() {

@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 "use strict";
 
 const functions = require("firebase-functions");
@@ -5,7 +6,9 @@ const admin = require("firebase-admin");
 const SpotifyWebApi = require("spotify-web-api-node");
 
 const spotifyApi = new SpotifyWebApi();
-admin.initializeApp();
+admin.initializeApp({
+  credential: admin.credential.cert(require("./service-account.json")),
+});
 
 let followedArtistsUris = {};
 let testFollowedArtistsUris = {
@@ -399,61 +402,92 @@ const getAllFollowedArtists = async (nextGroupOfArtists) => {
 
 exports.setupConjure = functions.https.onCall(async (data, context) => {
   const spotifyToken = data.spotifyToken;
+  const userId = data.userId;
 
   try {
     if (!(typeof spotifyToken === "string") || spotifyToken.length === 0) {
       throw new functions.https.HttpsError(
         "invalid-argument",
         "The function must be called with " +
-          'one argument "spotifyToken" containing a valid Spotify token to add.'
+          'an argument "spotifyToken" containing a valid Spotify token to add.'
+      );
+    }
+
+    if (!(typeof userId === "string") || userId.length === 0) {
+      throw new functions.https.HttpsError(
+        "invalid-argument",
+        "The function must be called with " +
+          'an argument "userId" containing a valid Spotify user id.'
       );
     }
 
     spotifyApi.setAccessToken(spotifyToken);
-
-    try {
-      console.log(
-        await spotifyApi
-          .getFollowedArtists({ limit: 50 })
-          .then(async (followedArtists) => {
-            Object.entries(followedArtists.body.artists.items).forEach(
-              (artist) => {
-                followedArtistsUris[artist[1].name] = artist[1].uri;
-              }
-            );
-
-            const more = followedArtists.body.artists.cursors.after;
-
-            if (more) {
-              await getAllFollowedArtists(more);
-            }
-            return true;
-          })
-      );
-    } catch (error) {
-      console.log(error);
-    }
-
-    let getAlbums = await Promise.all(
-      Object.entries(testFollowedArtistsUris).map(async (artist) => {
-        let artistAlbums = await spotifyApi.getArtistAlbums(
-          artist[1].split(":")[2]
-        );
-        Object.entries(artistAlbums.body.items).forEach((album) => {
-          albums[album[1].id] = album[1].images[0];
-        });
-        return true;
-      })
-    );
-
-    console.log(getAlbums);
-
-    const linkToImages = storeAlbumImages();
-    validateAlbumImages(linkToImages);
-    linkToImageDatabase = generateImageDatabase();
   } catch (error) {
     console.log(error);
   }
+
+  const writeResult = await admin
+    .firestore()
+    .collection("users")
+    .doc(userId)
+    .set({ followedArtists: testFollowedArtistsUris });
+  console.log(writeResult);
+
+  // try {
+  //   console.log(
+  //     await spotifyApi
+  //       .getFollowedArtists({ limit: 50 })
+  //       .then(async (followedArtists) => {
+  //         Object.entries(followedArtists.body.artists.items).forEach(
+  //           (artist) => {
+  //             followedArtistsUris[artist[1].name] = artist[1].uri;
+  //           }
+  //         );
+
+  //         const more = followedArtists.body.artists.cursors.after;
+
+  //         if (more) {
+  //           await getAllFollowedArtists(more);
+  //         }
+  //         return true;
+  //       })
+  //   );
+  // } catch (error) {
+  //   console.log(error);
+  // }
+
+  // let getAlbums = await Promise.all(
+  //   Object.entries(testFollowedArtistsUris).map(async (artist) => {
+  //     try {
+  //       let artistAlbums = await spotifyApi.getArtistAlbums(
+  //       artist[1].split(":")[2]
+  //     );
+  //     Object.entries(artistAlbums.body.items).forEach((album) => {
+  //       albums[album[1].id] = album[1].images[0];
+  //     });
+  //     return true;
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+
+  //   })
+  // );
+
+  // console.log(testFollowedArtistsUris.Abyssal.split(":")[2]);
+
+  // let getAlbums = await spotifyApi.getArtistAlbums(
+  //   testFollowedArtistsUris.Abyssal.split(":")[2]
+  // );
+
+  // Object.entries(getAlbums.body.items).forEach((album) => {
+  //   albums[album[1].id] = album[1].images[0].url;
+  // });
+
+  console.log(albums);
+
+  const linkToImages = storeAlbumImages();
+  validateAlbumImages(linkToImages);
+  linkToImageDatabase = generateImageDatabase();
 
   return linkToImageDatabase;
 });
