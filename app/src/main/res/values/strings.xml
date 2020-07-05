@@ -17,11 +17,22 @@
     <string name="token">Access Token: %1$s</string>
     <string name="btn_get_profile">Get User Profile</string>
     <string name="btn_req_code">Request Code</string>
-    <string name="btn_setup">Setup Conjure</string>
-    <string name="initial_setup">setup Conjure to recognize your followed artists</string>
-    <string name="update">gather your newly followed artists on Spotify</string>
+
+    <string name="instructions_spotify_setup">Download and login to Spotify to use Conjure</string>
+    <string name="btn_spotify_setup">Spotify</string>
+
+    <string name="instructions_initial_setup">setup Conjure to recognize your followed artists</string>
+    <string name="btn_setup">Setup</string>
+
+    <string name="instructions_update">gather your newly followed artists on Spotify</string>
+    <string name="btn_update">Update</string>
+
+    <string name="instructions_up_to_date">Conjure is up to date</string>
+
     <string name="looking_up">collecting all your favorite artists from Spotify</string>
     <string name="learning">learning how to recognize all your favorite albums…</string>
+    <string name="status_error">Could not retrieve your followed artists</string>
+
     <string name="ready">Ready to detect</string>
     <string name="artistStat">%1$s artists</string>
     <string name="albumStat">%1$s albums</string>

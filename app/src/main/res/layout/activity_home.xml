@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/conjure_gray">
+    android:background="@color/conjure_blue">
 
 
     <ImageView
@@ -30,51 +30,96 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
         android:fontFamily="@font/nunito_sans_light"
-        android:text="@string/initial_setup"
         android:textAlignment="center"
-        android:textColor="@color/conjure_blue"
+        android:textColor="@color/conjure_gray"
         android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/tile_setup"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/tile_setup"
-        android:layout_width="wrap_content"
+        android:id="@+id/spotify_setup"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:background="@color/conjure_red"
-        android:backgroundTint="@color/conjure_red"
-        app:cardUseCompatPadding="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="#FFFFFF"
+        android:backgroundTint="#FFFFFF"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:visibility="invisible"
         app:cardCornerRadius="10dp"
+        app:cardUseCompatPadding="true"
         app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/imageView"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/instructions">
+
+        <ImageView
+            android:id="@+id/btn_spotify"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:padding="10dp"
+            app:srcCompat="@drawable/spotify_green"
+            tools:visibility="visible" />
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/tile_setup"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@color/conjure_red"
+        android:backgroundTint="@color/conjure_red"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:visibility="invisible"
+        app:cardCornerRadius="10dp"
+        app:cardUseCompatPadding="true"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toBottomOf="@id/instructions">
 
         <TextView
             android:id="@+id/btn_setup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:fontFamily="@font/nunito_sans_light"
             android:padding="10dp"
-            android:text="@string/btn_setup"
             android:textAlignment="center"
             android:textColor="@color/conjure_gray"
             android:textSize="18sp"
             tools:layout_editor_absoluteX="469dp"
-            tools:layout_editor_absoluteY="329dp" />
+            tools:layout_editor_absoluteY="329dp"
+            tools:text="@string/btn_setup" />
 
     </androidx.cardview.widget.CardView>
 
+    <TextView
+        android:id="@+id/status"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fontFamily="@font/nunito_sans_light"
+        android:textAlignment="center"
+        android:textColor="@color/conjure_gray"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageView" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout2"
         android:layout_width="match_parent"
         android:layout_height="513dp"
         android:background="@color/conjure_red"

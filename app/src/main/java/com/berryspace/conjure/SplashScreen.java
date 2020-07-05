@@ -57,18 +57,18 @@ public class SplashScreen extends AppCompatActivity {
             }
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                Intent intent = new Intent(getBaseContext(), HomeActivity.class);
                 try {
                     assert response.body() != null;
                     final JSONObject jsonObject = new JSONObject(response.body().string());
                     userId[0] = jsonObject.get("id").toString();
 
-                    Intent intent = new Intent(getBaseContext(), HomeActivity.class);
                     intent.putExtra("userId", userId[0]);
                     intent.putExtra("token", mAccessToken);
                     startActivity(intent);
-
                 } catch (JSONException error) {
                     Log.d(TAG, error.toString());
+                    startActivity(intent);
                 }
             }
         });

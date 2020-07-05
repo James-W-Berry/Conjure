@@ -5,6 +5,7 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const SpotifyWebApi = require("spotify-web-api-node");
+const _ = require("lodash");
 
 const spotifyApi = new SpotifyWebApi();
 admin.initializeApp({
@@ -59,6 +60,20 @@ const getArtistAlbums = async () => {
     }
   });
 };
+
+function difference(object, base) {
+  function changes(object, base) {
+    return _.transform(object, (result, value, key) => {
+      if (!_.isEqual(value, base[key])) {
+        result[key] =
+          _.isObject(value) && _.isObject(base[key])
+            ? changes(value, base[key])
+            : value;
+      }
+    });
+  }
+  return changes(object, base);
+}
 
 exports.setupConjure = functions.https.onCall(async (data, context) => {
   const spotifyToken = data.spotifyToken;
@@ -170,6 +185,132 @@ exports.setupConjure = functions.https.onCall(async (data, context) => {
 
   const linkToImageDatabase = generateImageDatabase();
   return linkToImageDatabase;
+});
+
+// get list of followed artists from Firebase,
+// get currently followed artists list from Spotify,
+// return diff, in any
+exports.checkFollowedArtists = functions.https.onCall(async (data, context) => {
+  const spotifyToken = data.spotifyToken;
+  const userId = data.userId;
+
+  try {
+    if (!(typeof spotifyToken === "string") || spotifyToken.length === 0) {
+      throw new functions.https.HttpsError(
+        "invalid-argument",
+        "The function must be called with " +
+          'an argument "spotifyToken" containing a valid Spotify token to add.'
+      );
+    }
+
+    if (!(typeof userId === "string") || userId.length === 0) {
+      throw new functions.https.HttpsError(
+        "invalid-argument",
+        "The function must be called with " +
+          'an argument "userId" containing a valid Spotify user id.'
+      );
+    }
+
+    spotifyApi.setAccessToken(spotifyToken);
+  } catch (error) {
+    console.log(error);
+  }
+
+  // Spotify followed artists
+  await spotifyApi
+    .getFollowedArtists({ limit: 50 })
+    .then(async (followedArtists) => {
+      Object.entries(followedArtists.body.artists.items).forEach((artist) => {
+        followedArtistsUris[artist[1].name] = artist[1].uri;
+      });
+
+      const more = followedArtists.body.artists.cursors.after;
+
+      if (more) {
+        await getAllFollowedArtists(more);
+      }
+      return true;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+
+  console.log(
+    `retrieved ${
+      Object.keys(followedArtistsUris).length
+    } followed artists from Spotify:`
+  );
+
+  Object.entries(followedArtistsUris).map(async ([key, value], index) => {
+    if (index < 3) {
+      console.log(`${key}: ${value}`);
+    }
+  });
+
+  // Firebase followed artists
+  let firebaseArtists = await admin
+    .firestore()
+    .collection("users")
+    .doc(userId)
+    .get()
+    .then((doc) => {
+      return doc.data().followedArtists;
+    })
+    .catch((error) => {
+      console.log(error);
+      return {};
+    });
+
+  console.log(
+    `retrieved ${Object.keys(firebaseArtists).length} artists from Firebase`
+  );
+
+  Object.entries(firebaseArtists).map(async ([key, value], index) => {
+    if (index < 3) {
+      console.log(`${key}: ${value}`);
+    }
+  });
+
+  // Find any difference
+  let artistDiff = difference(followedArtistsUris, firebaseArtists);
+  console.log(`${Object.entries(artistDiff).length} untracked artists`);
+  // eslint-disable-next-line array-callback-return
+  Object.entries(artistDiff).map(async ([key, value], index) => {
+    if (index < 3) {
+      console.log(`${key}: ${value}`);
+    }
+  });
+
+  return { artistDiff: artistDiff };
+});
+
+exports.updateConjure = functions.https.onCall(async (data, context) => {
+  const spotifyToken = data.spotifyToken;
+  const userId = data.userId;
+
+  try {
+    if (!(typeof spotifyToken === "string") || spotifyToken.length === 0) {
+      throw new functions.https.HttpsError(
+        "invalid-argument",
+        "The function must be called with " +
+          'an argument "spotifyToken" containing a valid Spotify token to add.'
+      );
+    }
+
+    if (!(typeof userId === "string") || userId.length === 0) {
+      throw new functions.https.HttpsError(
+        "invalid-argument",
+        "The function must be called with " +
+          'an argument "userId" containing a valid Spotify user id.'
+      );
+    }
+
+    spotifyApi.setAccessToken(spotifyToken);
+  } catch (error) {
+    console.log(error);
+  }
+
+  return { result: "updated Conjure with newly followed artists" };
 });
 
 function generateImageDatabase() {

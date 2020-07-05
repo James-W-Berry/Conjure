@@ -1,9 +1,14 @@
 package com.berryspace.conjure;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.DocumentReference;
@@ -11,13 +16,22 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.FirebaseFunctionsException;
 import com.google.firebase.functions.FirebaseFunctionsException.Code;
+import com.google.firebase.functions.HttpsCallableResult;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.gson.Gson;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class HomeActivity extends AppCompatActivity {
     private String TAG = "HomeActivity";
@@ -26,6 +40,14 @@ public class HomeActivity extends AppCompatActivity {
     private String mUserId;
     private String mAccessToken;
     private FirebaseFunctions mFunctions;
+    private TextView instructions;
+    private CardView actionSetup;
+    private TextView actionButton;
+    private TextView status;
+    private CardView spotifySetup;
+    private ImageView spotifyButton;
+    private JSONObject newArtists = new JSONObject();
+    private String firebaseUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,11 +55,28 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         mFunctions = FirebaseFunctions.getInstance();
 
+        try{
+            mUserId = getIntent().getStringExtra("userId");
+            mAccessToken = getIntent().getStringExtra("token");
+        } catch (Error error){
+            Log.d(TAG, error.toString());
+            mUserId=null;
+            mAccessToken=null;
+        }
+
+        checkForFollowedArtists();
+        fetchStats();
+
+        instructions = findViewById(R.id.instructions);
+        actionSetup = findViewById(R.id.tile_setup);
+        actionButton = findViewById(R.id.btn_setup);
+        spotifySetup = findViewById(R.id.spotify_setup);
+        spotifyButton = findViewById(R.id.btn_spotify);
+        status = findViewById(R.id.status);
+
         TextView updateButton = findViewById(R.id.update_button);
-        TextView setupButton = findViewById(R.id.btn_setup);
         TextView currentImageDatabaseVersion = findViewById(R.id.currentVersion);
         TextView availableImageDatabaseVersion = findViewById(R.id.available_version);
-
         updateButton.setOnClickListener(v -> {
             File localImageDatabase = new File(this.getFilesDir(),
                     (String) availableImageDatabaseVersion.getText());
@@ -56,25 +95,6 @@ public class HomeActivity extends AppCompatActivity {
                     });
         });
 
-        setupButton.setOnClickListener(v->{
-            setupConjure(mAccessToken, mUserId)
-                .addOnCompleteListener(task -> {
-                    if (!task.isSuccessful()) {
-                        Exception e = task.getException();
-                        if (e instanceof FirebaseFunctionsException) {
-                            FirebaseFunctionsException ffe = (FirebaseFunctionsException) e;
-                            Code code = ffe.getCode();
-                            Object details = ffe.getDetails();
-                        }
-                        Log.w(TAG, "setupConjure:onFailure", e);
-                        return;
-                    }
-                    Object result = task.getResult();
-                    assert result != null;
-                    Log.d(TAG, result.toString());
-                });
-        });
-
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_bar);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
@@ -89,15 +109,142 @@ public class HomeActivity extends AppCompatActivity {
             }
             return true;
         });
+    }
 
-        try{
-            mUserId = Objects.requireNonNull(getIntent().getStringExtra("userId"));
-            mAccessToken = Objects.requireNonNull(getIntent().getStringExtra("token"));
-            Log.d(TAG, "Spotify userId: " + mUserId);
-            Log.d(TAG, "Spotify token: " + mAccessToken);
-        } catch (Error error){
-            Log.d(TAG, error.toString());
+    @Override
+    protected void onStart() {
+        super.onStart();
+        MuseImageDatabase museImageDatabase = new MuseImageDatabase();
+        museImageDatabase.fetchImageDatabaseUpdate(this);
+        setupView();
+    }
+
+    private void setupView(){
+        Log.d(TAG, mUserId + ", " + mAccessToken + ", " + firebaseUserId);
+        if (mUserId == null && mAccessToken == null ) {
+            Log.d(TAG, "setting view to SPOTIFY_SETUP");
+            setView("SPOTIFY_SETUP");
+        } else if (firebaseUserId == null && mUserId != null){
+            Log.d(TAG, "setting view to CONJURE_SETUP");
+            setView("CONJURE_SETUP");
         }
+        else if (newArtists.length() > 0) {
+            Log.d(TAG, "setting view to UPDATE");
+            setView("UPDATE");
+        } else {
+            Log.d(TAG, "setting view to UP_TO_DATE");
+            setView("UP_TO_DATE");
+        }
+    }
+
+    private void setView(String viewType){
+        switch (viewType){
+            case "SPOTIFY_SETUP":
+                instructions.setText(R.string.instructions_spotify_setup);
+                instructions.setVisibility(View.VISIBLE);
+                spotifySetup.setVisibility(View.VISIBLE);
+                spotifyButton.setOnClickListener(v -> {
+                    goToUrl ( "https://play.google.com/store/apps/details?id=com.spotify.music&hl=en_US");
+                });
+                break;
+            case "CONJURE_SETUP":
+                instructions.setText(R.string.instructions_initial_setup);
+                actionButton.setText(R.string.btn_setup);
+                actionSetup.setVisibility(View.VISIBLE);
+                actionButton.setOnClickListener(v->{
+                    setupConjure(mAccessToken, mUserId)
+                            .addOnCompleteListener(task -> {
+                                if (!task.isSuccessful()) {
+                                    Exception e = task.getException();
+                                    if (e instanceof FirebaseFunctionsException) {
+                                        FirebaseFunctionsException ffe = (FirebaseFunctionsException) e;
+                                        Code code = ffe.getCode();
+                                        Object details = ffe.getDetails();
+                                    }
+                                    Log.w(TAG, "setupConjure:onFailure", e);
+                                    return;
+                                }
+                                Object result = task.getResult();
+                                assert result != null;
+                                Log.d(TAG, result.toString());
+                            });
+                });
+                break;
+            case "UPDATE":
+                instructions.setText(R.string.instructions_update);
+                actionButton.setText(R.string.btn_update);
+                actionSetup.setVisibility(View.VISIBLE);
+                actionButton.setOnClickListener(v->{
+                    instructions.setVisibility(View.INVISIBLE);
+                    actionSetup.setVisibility(View.INVISIBLE);
+                    status.setText(R.string.looking_up);
+                    status.setVisibility(View.VISIBLE);
+                    updateConjure(mAccessToken, mUserId)
+                            .addOnCompleteListener(task -> {
+                                if (!task.isSuccessful()) {
+                                    Exception e = task.getException();
+                                    if (e instanceof FirebaseFunctionsException) {
+                                        FirebaseFunctionsException ffe = (FirebaseFunctionsException) e;
+                                        Code code = ffe.getCode();
+                                        Object details = ffe.getDetails();
+                                    }
+                                    Log.w(TAG, "updateConjure:onFailure", e);
+                                    instructions.setText(R.string.instructions_update);
+                                    status.setText(R.string.status_error);
+                                    actionSetup.setVisibility(View.VISIBLE);
+                                    instructions.setVisibility(View.VISIBLE);
+                                    status.setVisibility(View.VISIBLE);
+                                    return;
+                                }
+                                Object result = task.getResult();
+                                assert result != null;
+                                Log.d(TAG, result.toString());
+                                instructions.setText(R.string.instructions_up_to_date);
+                                status.setVisibility(View.INVISIBLE);
+                                instructions.setVisibility(View.VISIBLE);
+                            });
+                });
+                break;
+            case "UP_TO_DATE":
+                instructions.setText(R.string.instructions_up_to_date);
+                actionSetup.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void checkForFollowedArtists(){
+        checkFollowedArtists(mAccessToken, mUserId)
+            .addOnCompleteListener(task -> {
+                if (!task.isSuccessful()) {
+                    Exception e = task.getException();
+                    if (e instanceof FirebaseFunctionsException) {
+                        FirebaseFunctionsException ffe = (FirebaseFunctionsException) e;
+                        Code code = ffe.getCode();
+                        Object details = ffe.getDetails();
+                    }
+                    Log.w(TAG, "checkFollowedArtists:onFailure", e);
+                    return;
+                }
+                Object result = task.getResult();
+                assert result != null;
+
+                try {
+                    String data = result.toString();
+                    Log.d(TAG, data);
+
+                    data = data.replace("{artistDiff=", "");
+                    data = data.replace("}}", "}");
+                    data = data.replace("=", ":");
+                    data= data.replace("{", "{\"");
+                    data= data.replace("}", "\"}");
+                    data= data.replace(":spotify", "\":\"spotify");
+                    Log.d(TAG, data);
+
+                    newArtists = new JSONObject(data);
+                    setupView();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
     }
 
     private Task<Object> setupConjure(String token, String userId) {
@@ -106,17 +253,31 @@ public class HomeActivity extends AppCompatActivity {
         data.put("userId", userId);
 
         return mFunctions
-            .getHttpsCallable("setupConjure")
-            .call(data)
-            .continueWith(task -> Objects.requireNonNull(task.getResult()).getData());
+                .getHttpsCallable("setupConjure")
+                .call(data)
+                .continueWith(task -> Objects.requireNonNull(task.getResult()).getData());
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        MuseImageDatabase museImageDatabase = new MuseImageDatabase();
-        museImageDatabase.fetchImageDatabaseUpdate(this);
-        fetchStats();
+    private Task<Object> checkFollowedArtists(String token, String userId) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("spotifyToken", token);
+        data.put("userId", userId);
+
+        return mFunctions
+                .getHttpsCallable("checkFollowedArtists")
+                .call(data)
+                .continueWith(task -> Objects.requireNonNull(task.getResult()).getData());
+    }
+
+    private Task<Object> updateConjure(String token, String userId) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("spotifyToken", token);
+        data.put("userId", userId);
+
+        return mFunctions
+                .getHttpsCallable("updateConjure")
+                .call(data)
+                .continueWith(task -> Objects.requireNonNull(task.getResult()).getData());
     }
 
     private void deleteOldImageDatabases(String fileName) {
@@ -136,7 +297,13 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    void fetchStats() {
+    private void goToUrl (String url) {
+        Uri uriUrl = Uri.parse(url);
+        Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl);
+        startActivity(launchBrowser);
+    }
+
+    private void fetchStats() {
         if(mUserId != null) {
             final DocumentReference docRef = firestore.collection("users").document(mUserId);
             docRef.addSnapshotListener((snapshot, e) -> {
@@ -145,6 +312,8 @@ public class HomeActivity extends AppCompatActivity {
                     return;
                 }
                 if (snapshot != null && snapshot.exists()) {
+                    firebaseUserId = mUserId;
+                    setupView();
                     String artistTotal =
                             (String) Objects.requireNonNull(snapshot.getData()).get(
                                     "totalArtists");
