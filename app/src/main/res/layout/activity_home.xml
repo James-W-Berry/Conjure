@@ -1,169 +1,218 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/conjure_gray">
+
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="255dp"
+        android:layout_height="0dp"
         android:layout_centerHorizontal="true"
-        android:background="#FFFFFF"
+        android:background="@drawable/rounded_outline_red"
         android:contentDescription="logo"
         android:minHeight="300dp"
-        android:padding="30dp"
+        android:padding="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/full_logo" />
+        app:srcCompat="@drawable/musicman" />
 
-    <LinearLayout
-        android:id="@+id/btn_currentDatabase"
+
+    <TextView
+        android:id="@+id/instructions"
         android:layout_width="0dp"
-        android:layout_height="200dp"
-        android:layout_marginStart="8dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="4dp"
-        android:background="@color/primary"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toStartOf="@id/btn_updateDatabase"
-        app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imageView"
-        app:layout_constraintVertical_weight="1">
-
-        <TextView
-            android:id="@+id/update_available_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/nunito_sans_light"
-            android:text="@string/update_available_label"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/conjure_dark"
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/available_version"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/nunito_sans_light"
-            android:text="@string/available_version"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/conjure_dark"
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/currentVersionLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/nunito_sans_light"
-            android:text="@string/current_version_label"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/conjure_dark"
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/currentVersion"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/nunito_sans_light"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textSize="16sp"
-            android:textColor="@color/conjure_dark" />
-
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/btn_updateDatabase"
-        android:layout_width="0dp"
-        android:layout_height="200dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:background="@color/primary"
+        android:layout_marginBottom="8dp"
+        android:fontFamily="@font/nunito_sans_light"
+        android:text="@string/initial_setup"
+        android:textAlignment="center"
+        android:textColor="@color/conjure_blue"
+        android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/tile_setup"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintStart_toEndOf="@id/btn_currentDatabase"
-        app:layout_constraintTop_toBottomOf="@id/imageView"
-        app:layout_constraintVertical_weight="1">
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/update_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/secondary"
-            android:fontFamily="@font/nunito_sans_light"
-            android:text="@string/update_button"
-            android:textColor="@color/conjure_dark" />
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:id="@+id/btn_authenticate"
-        android:layout_width="0dp"
-        android:layout_height="200dp"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/tile_setup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="4dp"
-        android:background="@color/primary"
-        app:layout_constraintEnd_toStartOf="@id/tile_setup"
-        app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_currentDatabase"
-        app:layout_constraintVertical_weight="1">
+        android:layout_marginEnd="8dp"
+        android:background="@color/conjure_red"
+        android:backgroundTint="@color/conjure_red"
+        app:cardUseCompatPadding="true"
+        app:cardCornerRadius="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/nunito_sans_light"
-            android:text="Some other info"
-            android:textSize="16sp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/conjure_dark" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/tile_setup"
-        android:layout_width="0dp"
-        android:layout_height="200dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:background="@color/primary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintStart_toEndOf="@id/btn_authenticate"
-        app:layout_constraintTop_toBottomOf="@id/btn_updateDatabase"
-        app:layout_constraintVertical_weight="1">
-
-        <Button
             android:id="@+id/btn_setup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/secondary"
             android:fontFamily="@font/nunito_sans_light"
-            android:text="create your custom database"
-            android:textColor="@color/conjure_dark" />
-    </LinearLayout>
+            android:padding="10dp"
+            android:text="@string/btn_setup"
+            android:textAlignment="center"
+            android:textColor="@color/conjure_gray"
+            android:textSize="18sp"
+            tools:layout_editor_absoluteX="469dp"
+            tools:layout_editor_absoluteY="329dp" />
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="513dp"
+        android:background="@color/conjure_red"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView">
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="513dp"
+        android:background="@drawable/rounded_outline_blue"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView">
+
+        <TextView
+            android:id="@+id/ready"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="24dp"
+            android:fontFamily="@font/nunito_sans_light"
+            android:text="@string/ready"
+            android:textSize="36sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/artistStat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/nunito_sans_light"
+            android:text="@string/artistStat"
+            android:textSize="24sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ready" />
+
+        <TextView
+            android:id="@+id/albumStat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:fontFamily="@font/nunito_sans_light"
+            android:text="@string/albumStat"
+            android:textSize="24sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/artistStat" />
+
+        <LinearLayout
+            android:id="@+id/btn_updateDatabase"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="240dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/update_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/nunito_sans_light"
+                android:text="@string/update_button"
+                android:textColor="@color/conjure_gray" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btn_currentDatabase"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="64dp"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btn_updateDatabase">
+
+            <TextView
+                android:id="@+id/update_available_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/nunito_sans_light"
+                android:text="@string/update_available_label"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/conjure_gray"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/available_version"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/nunito_sans_light"
+                android:text="@string/available_version"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/conjure_gray"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/currentVersionLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/nunito_sans_light"
+                android:text="@string/current_version_label"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/conjure_gray"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/currentVersion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/nunito_sans_light"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/conjure_gray"
+                android:textSize="16sp" />
+
+
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_bar"
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:background="@color/secondary"
-        app:itemIconTint="@color/conjure_dark"
-        app:itemTextColor="@color/conjure_dark"
+        android:background="@color/conjure_gray"
+        app:itemIconTint="@color/conjure_blue"
+        app:itemTextColor="@color/conjure_blue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_navigation_menu">
+
     </com.google.android.material.bottomnavigation.BottomNavigationView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

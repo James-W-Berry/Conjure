@@ -27,7 +27,7 @@ class MuseImageDatabase {
             if (snapshot != null && snapshot.exists()) {
                 TextView updateMessage =
                         ((HomeActivity) context).findViewById(R.id.update_available_label);
-                Button updateButton = ((HomeActivity) context).findViewById(R.id.update_button);
+                TextView updateButton = ((HomeActivity) context).findViewById(R.id.update_button);
                 TextView currentImageDatabaseVersion =
                         ((HomeActivity) context).findViewById(R.id.currentVersion);
                 TextView availableImageDatabaseVersion =

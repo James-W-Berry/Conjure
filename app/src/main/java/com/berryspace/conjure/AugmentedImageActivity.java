@@ -82,10 +82,10 @@ public class AugmentedImageActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(Throwable error) {
                         if (error instanceof NotLoggedInException || error instanceof UserNotAuthorizedException) {
-                            // Show login button and trigger the login flow from auth library when clicked
+                            Log.d("AugmentedImageActivity", "Could not connect to Spotify");
                         } else if (error instanceof CouldNotFindSpotifyApp) {
                             // Show button to download Spotify
-
+                            Log.d("AugmentedImageActivity", "Could not find Spotify app on the device");
                         }
                     }
                 });

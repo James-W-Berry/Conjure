@@ -21,7 +21,7 @@
 
 
         <activity
-            android:name="com.berryspace.conjure.HomeActivity"
+            android:name="com.berryspace.conjure.SplashScreen"
             android:configChanges="orientation|screenSize"
             android:exported="true"
             android:screenOrientation="locked"
@@ -33,8 +33,10 @@
         </activity>
 
         <activity
-            android:name="com.berryspace.conjure.LoginActivity"
-            android:configChanges="keyboardHidden|keyboard|orientation|screenSize"
+            android:name="com.berryspace.conjure.HomeActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="true"
+            android:screenOrientation="locked"
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

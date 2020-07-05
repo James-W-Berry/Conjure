@@ -11,13 +11,13 @@
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:layout_gravity="center_horizontal"
-        android:background="@color/primary"
+        android:background="@color/conjure_red"
         android:fontFamily="@font/nunito_sans_light"
         android:padding="10dp"
         android:text="@string/now_playing"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textColor="@color/conjure_dark"
+        android:textColor="@color/conjure_gray"
         android:textSize="18sp" />
 
     <fragment
@@ -43,9 +43,9 @@
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:layout_gravity="bottom"
-        android:background="@color/secondary"
-        app:itemIconTint="@color/conjure_dark"
-        app:itemTextColor="@color/conjure_dark"
+        android:background="@color/conjure_blue"
+        app:itemIconTint="@color/conjure_gray"
+        app:itemTextColor="@color/conjure_gray"
         app:menu="@menu/bottom_navigation_menu" />
 
 </FrameLayout>

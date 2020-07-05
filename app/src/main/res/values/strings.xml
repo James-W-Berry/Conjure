@@ -12,12 +12,17 @@
     <string name="current_version">%1$s</string>
     <string name="com_spotify_sdk_redirect_scheme">com.berryspace.conjure</string>
     <string name="com_spotify_sdk_redirect_host">callback</string>
-
     <string name="warning_need_token">You need to request an access token first</string>
     <string name="code">Code: %1$s</string>
     <string name="token">Access Token: %1$s</string>
     <string name="btn_get_profile">Get User Profile</string>
     <string name="btn_req_code">Request Code</string>
-    <string name="btn_req_token">Setup Conjure</string>
-    <string name="btn_clear_credentials">Clear WebView Credentials</string>
+    <string name="btn_setup">Setup Conjure</string>
+    <string name="initial_setup">setup Conjure to recognize your followed artists</string>
+    <string name="update">gather your newly followed artists on Spotify</string>
+    <string name="looking_up">collecting all your favorite artists from Spotify</string>
+    <string name="learning">learning how to recognize all your favorite albums…</string>
+    <string name="ready">Ready to detect</string>
+    <string name="artistStat">%1$s artists</string>
+    <string name="albumStat">%1$s albums</string>
 </resources>

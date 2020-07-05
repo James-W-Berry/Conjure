@@ -2,7 +2,12 @@
 <resources>
     <color name="secondary">#FEEAE6</color>
     <color name="primary">#FEDBD0</color>
-    <color name="conjure_dark">#442C2E</color>
-    <color name="conjure_blue">#B9F2FC</color>
+
+    <color name="conjure_red">#BF2441</color>
+    <color name="conjure_gray">#EBEFF2</color>
+    <color name="conjure_blue">#012E40</color>
+    <color name="conjure_teal">#025E73</color>
+    <color name="conjure_brown">#A66A5D</color>
+
 
 </resources>
