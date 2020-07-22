@@ -17,7 +17,7 @@
     "crypto": "1.0.1",
     "firebase-admin": "^8.10.0",
     "firebase-functions": "^3.6.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "smart-request-balancer": "^2.1.1",
     "spotify-web-api-node": "^4.0.0",
     "xmlhttprequest": "^1.8.0"
