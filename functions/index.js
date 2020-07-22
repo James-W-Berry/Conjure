@@ -1,11 +1,12 @@
-/* eslint-disable no-loop-func */
 /* eslint-disable promise/always-return */
+/* eslint-disable no-loop-func */
 "use strict";
 
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const SpotifyWebApi = require("spotify-web-api-node");
 const _ = require("lodash");
+const Queue = require("smart-request-balancer");
 
 const spotifyApi = new SpotifyWebApi();
 admin.initializeApp({
@@ -14,6 +15,16 @@ admin.initializeApp({
 
 let followedArtistsUris = {};
 let albums = {};
+
+const queue = new Queue({
+  rules: {
+    spotifyAlbums: {
+      rate: 1, // one message
+      limit: 1, // per second
+      priority: 1,
+    },
+  },
+});
 
 const getAllFollowedArtists = async (nextGroupOfArtists) => {
   if (nextGroupOfArtists) {
@@ -37,27 +48,35 @@ const getAllFollowedArtists = async (nextGroupOfArtists) => {
 
 const getArtistAlbums = async () => {
   Object.entries(followedArtistsUris).map(async ([key, value], index) => {
-    if (index < 5) {
-      console.log(`getting albums for ${key}`);
+    console.log(`getting albums for ${key}`);
 
-      console.log(
-        await spotifyApi
-          .getArtistAlbums(value.split(":")[2])
-          .then((artistAlbums) => {
-            Object.entries(artistAlbums.body.items).forEach((album) => {
-              albums[album[1].id] = {
-                uri: album[1].uri,
-                image: album[1].images[0].url,
-                name: album[1].name,
-                artist: album[1].artists[0].name,
-              };
-            });
-          })
-          .catch((error) => {
-            console.log(error);
-          })
-      );
-    }
+    await queue
+      .request(
+        (retry) =>
+          spotifyApi
+            .getArtistAlbums(value.split(":")[2])
+            .then((response) => response)
+            .catch((error) => {
+              console.log(error);
+              if (error.statusCode === 429) {
+                return retry(300); // retry after 10s
+              }
+              throw error;
+            }),
+        index,
+        "spotifyAlbums"
+      )
+      .then((response) => {
+        Object.entries(response.body.items).forEach((album) => {
+          albums[album[1].id] = {
+            uri: album[1].uri,
+            image: album[1].images[0].url,
+            name: album[1].name,
+            artist: album[1].artists[0].name,
+          };
+        });
+      })
+      .catch((error) => console.error(error));
   });
 };
 
@@ -120,7 +139,9 @@ exports.setupConjure = functions.https.onCall(async (data, context) => {
     });
 
   console.log(
-    `retrieved ${Object.keys(followedArtistsUris).length} followed artists`
+    `\n\nretrieved ${
+      Object.keys(followedArtistsUris).length
+    } followed artists\n\n`
   );
 
   await admin
@@ -137,21 +158,7 @@ exports.setupConjure = functions.https.onCall(async (data, context) => {
       console.log(error);
     });
 
-  await getArtistAlbums().then(
-    console.log(`retrieved ${Object.keys(albums).length} albums`)
-  );
-
-  await admin
-    .firestore()
-    .collection("users")
-    .doc(userId)
-    .set({ albums: albums }, { merge: true })
-    .then(() => {
-      console.log(`recorded ${Object.keys(albums).length} albums`);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  await getArtistAlbums();
 
   await admin
     .firestore()
@@ -163,6 +170,18 @@ exports.setupConjure = functions.https.onCall(async (data, context) => {
     )
     .then(() => {
       console.log(`recorded total artists`);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+
+  await admin
+    .firestore()
+    .collection("users")
+    .doc(userId)
+    .set({ albums: albums }, { merge: true })
+    .then(() => {
+      console.log(`recorded ${Object.keys(albums).length} albums`);
     })
     .catch((error) => {
       console.log(error);
