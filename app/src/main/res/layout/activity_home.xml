@@ -16,7 +16,6 @@
         android:contentDescription="logo"
         android:minHeight="300dp"
         android:padding="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -54,7 +53,6 @@
         android:visibility="invisible"
         app:cardCornerRadius="10dp"
         app:cardUseCompatPadding="true"
-        app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/imageView"
@@ -84,7 +82,6 @@
         android:visibility="invisible"
         app:cardCornerRadius="10dp"
         app:cardUseCompatPadding="true"
-        app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/imageView"
@@ -109,219 +106,250 @@
         android:id="@+id/status"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginBottom="20dp"
         android:fontFamily="@font/nunito_sans_light"
         android:textAlignment="center"
         android:textColor="@color/conjure_gray"
         android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/constraintLayout2"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageView" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="513dp"
-        android:background="@color/conjure_red"
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/conjure_teal"
+        android:scrollbarStyle="insideOverlay"
         app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout"
-        android:layout_width="match_parent"
-        android:layout_height="513dp"
-        android:background="@drawable/rounded_outline_blue"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_bar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView">
+            <TextView
+                android:id="@+id/ready"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="24dp"
+                android:fontFamily="@font/nunito_sans_light"
+                android:text="@string/ready"
+                android:textSize="30sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/ready"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:layout_marginTop="24dp"
-            android:fontFamily="@font/nunito_sans_light"
-            android:text="@string/ready"
-            android:textSize="36sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <TextView
+                android:id="@+id/albumStat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:fontFamily="@font/nunito_sans_light"
+                android:text="@string/albumStat"
+                android:textSize="24sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ready" />
 
-        <TextView
-            android:id="@+id/artistStat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:layout_marginTop="16dp"
-            android:fontFamily="@font/nunito_sans_light"
-            android:text="@string/artistStat"
-            android:textSize="24sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ready" />
+            <TextView
+                android:id="@+id/artistStat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/nunito_sans_light"
+                android:text="@string/artistStat"
+                android:textSize="24sp"
+                app:layout_constraintStart_toEndOf="@+id/albumStat"
+                app:layout_constraintTop_toBottomOf="@+id/ready" />
 
-        <TextView
-            android:id="@+id/albumStat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:fontFamily="@font/nunito_sans_light"
-            android:text="@string/albumStat"
-            android:textSize="24sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/artistStat" />
+            <TextView
+                android:id="@+id/progressLabel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="40dp"
+                android:fontFamily="@font/nunito"
+                android:text="@string/progress_label"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/albumStat" />
 
-        <TextView
-            android:id="@+id/last_played_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:layout_marginTop="64dp"
-            android:fontFamily="@font/nunito_sans_light"
-            android:text="@string/last_played_label"
-            android:textSize="36sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/albumStat" />
+            <ImageView
+                android:id="@+id/progressAlbum"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_marginStart="40dp"
+                android:contentDescription="@string/progress_album"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/progressLabel"
+                app:srcCompat="@drawable/vinyl" />
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/tile_last_played_0"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:layout_marginTop="16dp"
-            android:backgroundTint="@color/conjure_red"
-            android:clickable="true"
-            android:focusable="true"
-            app:cardBackgroundColor="@color/conjure_red"
-            app:cardCornerRadius="10dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/last_played_label">
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="69dp"
+                android:layout_marginEnd="40dp"
+                android:indeterminate="false"
+                android:max="100"
+                android:progress="0"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/progressAlbum"
+                app:layout_constraintTop_toBottomOf="@+id/progressLabel" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/tile_last_played_layout_0"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="8dp">
+            <TextView
+                android:id="@+id/last_played_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="15dp"
+                android:fontFamily="@font/nunito_sans_light"
+                android:text="@string/last_played_label"
+                android:textSize="36sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/progressAlbum" />
 
-                <ImageView
-                    android:id="@+id/last_played_image_0"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:layout_margin="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/tile_last_played_layout_0"
-                    app:srcCompat="@drawable/vinyl" />
+            <LinearLayout
+                android:id="@+id/btn_currentDatabase"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="64dp"
+                android:orientation="vertical"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
-                    android:id="@+id/last_played_artist_0"
+                    android:id="@+id/update_available_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
                     android:fontFamily="@font/nunito_sans_light"
-                    android:text="@string/last_played_artist"
+                    android:text="@string/update_available_label"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     android:textColor="@color/conjure_gray"
-                    android:textSize="18sp"
-                    app:layout_constraintBottom_toTopOf="@+id/last_played_album_0"
-                    app:layout_constraintStart_toEndOf="@id/last_played_image_0"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:textSize="16sp"
+                    android:visibility="gone" />
 
                 <TextView
-                    android:id="@+id/last_played_album_0"
+                    android:id="@+id/available_version"
                     android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_height="wrap_content"
                     android:fontFamily="@font/nunito_sans_light"
-                    android:text="@string/last_played_album"
+                    android:text="@string/available_version"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     android:textColor="@color/conjure_gray"
-                    android:textSize="18sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/last_played_image_0"
-                    app:layout_constraintTop_toBottomOf="@id/last_played_artist_0" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    android:textSize="16sp"
+                    android:visibility="gone" />
 
-        </androidx.cardview.widget.CardView>
+                <TextView
+                    android:id="@+id/currentVersionLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nunito_sans_light"
+                    android:text="@string/current_version_label"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/conjure_gray"
+                    android:textSize="16sp"
+                    android:visibility="gone" />
 
-        <LinearLayout
-            android:id="@+id/btn_updateDatabase"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="240dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+                <TextView
+                    android:id="@+id/currentVersion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nunito_sans_light"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/conjure_gray"
+                    android:textSize="16sp"
+                    android:visibility="gone" />
 
-            <TextView
-                android:id="@+id/update_button"
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btn_updateDatabase"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="240dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/update_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nunito_sans_light"
+                    android:text="@string/update_button"
+                    android:textColor="@color/conjure_gray"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/tile_last_played_0"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/nunito_sans_light"
-                android:text="@string/update_button"
-                android:textColor="@color/conjure_gray"
-                android:visibility="gone" />
-        </LinearLayout>
+                android:layout_marginStart="40dp"
+                android:backgroundTint="@color/conjure_red"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardBackgroundColor="@color/conjure_red"
+                app:cardCornerRadius="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/last_played_label">
 
-        <LinearLayout
-            android:id="@+id/btn_currentDatabase"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="64dp"
-            android:orientation="vertical"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_updateDatabase">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/tile_last_played_layout_0"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="8dp">
 
-            <TextView
-                android:id="@+id/update_available_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/nunito_sans_light"
-                android:text="@string/update_available_label"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:textColor="@color/conjure_gray"
-                android:textSize="16sp"
-                android:visibility="gone" />
+                    <ImageView
+                        android:id="@+id/last_played_image_0"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_margin="8dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/tile_last_played_layout_0"
+                        app:srcCompat="@drawable/vinyl" />
 
-            <TextView
-                android:id="@+id/available_version"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/nunito_sans_light"
-                android:text="@string/available_version"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:textColor="@color/conjure_gray"
-                android:textSize="16sp"
-                android:visibility="gone" />
+                    <TextView
+                        android:id="@+id/last_played_artist_0"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/nunito_sans_light"
+                        android:text="@string/last_played_artist"
+                        android:textColor="@color/conjure_gray"
+                        android:textSize="18sp"
+                        app:layout_constraintBottom_toTopOf="@+id/last_played_album_0"
+                        app:layout_constraintStart_toEndOf="@id/last_played_image_0"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/currentVersionLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/nunito_sans_light"
-                android:text="@string/current_version_label"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:textColor="@color/conjure_gray"
-                android:textSize="16sp"
-                android:visibility="gone" />
+                    <TextView
+                        android:id="@+id/last_played_album_0"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/nunito_sans_light"
+                        android:text="@string/last_played_album"
+                        android:textColor="@color/conjure_gray"
+                        android:textSize="18sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/last_played_image_0"
+                        app:layout_constraintTop_toBottomOf="@id/last_played_artist_0" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
 
-            <TextView
-                android:id="@+id/currentVersion"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/nunito_sans_light"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:textColor="@color/conjure_gray"
-                android:textSize="16sp"
-                android:visibility="gone" />
-
-
-        </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_bar"

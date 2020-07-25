@@ -35,7 +35,10 @@
 
     <string name="ready">Ready to conjure</string>
     <string name="artistStat">%1$s artists</string>
-    <string name="albumStat">%1$s albums</string>
+    <string name="albumStat">%1$s albums from</string>
+
+    <string name="progress_label">Learning how to detect all your favorite albums</string>
+    <string name="progress_album">album</string>
 
     <string name="last_played_label">Last Played</string>
     <string name="last_played_artist">Failure</string>

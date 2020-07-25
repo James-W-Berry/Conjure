@@ -1,18 +1,28 @@
 package com.berryspace.conjure;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.FirebaseFunctionsException;
 import com.google.firebase.functions.FirebaseFunctionsException.Code;
@@ -24,10 +34,17 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -46,8 +63,12 @@ public class HomeActivity extends AppCompatActivity {
     private TextView status;
     private CardView spotifySetup;
     private ImageView spotifyButton;
+    private ImageView progressAlbum;
+    private ProgressBar progressBar;
     private JSONObject newArtists = new JSONObject();
     private String firebaseUserId;
+    private Call mCall;
+    private final OkHttpClient mOkHttpClient = new OkHttpClient();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,8 +85,9 @@ public class HomeActivity extends AppCompatActivity {
             mAccessToken=null;
         }
 
-        checkForFollowedArtists();
+        //checkForFollowedArtists();
         fetchStats();
+        fetchAlbums();
 
         instructions = findViewById(R.id.instructions);
         actionSetup = findViewById(R.id.tile_setup);
@@ -73,6 +95,8 @@ public class HomeActivity extends AppCompatActivity {
         spotifySetup = findViewById(R.id.spotify_setup);
         spotifyButton = findViewById(R.id.btn_spotify);
         status = findViewById(R.id.status);
+        progressAlbum = findViewById(R.id.progressAlbum);
+        progressBar = findViewById(R.id.progressBar);
 
         TextView updateButton = findViewById(R.id.update_button);
         TextView currentImageDatabaseVersion = findViewById(R.id.currentVersion);
@@ -152,7 +176,7 @@ public class HomeActivity extends AppCompatActivity {
                 actionButton.setText(R.string.btn_setup);
                 actionSetup.setVisibility(View.VISIBLE);
                 actionButton.setOnClickListener(v->{
-                    setupConjure(mAccessToken, mUserId)
+                    getSpotifyFollowedArtists(mAccessToken, mUserId)
                             .addOnCompleteListener(task -> {
                                 if (!task.isSuccessful()) {
                                     Exception e = task.getException();
@@ -161,7 +185,7 @@ public class HomeActivity extends AppCompatActivity {
                                         Code code = ffe.getCode();
                                         Object details = ffe.getDetails();
                                     }
-                                    Log.w(TAG, "setupConjure:onFailure", e);
+                                    Log.w(TAG, "getSpotifyFollowedArtists:onFailure", e);
                                     return;
                                 }
                                 Object result = task.getResult();
@@ -247,13 +271,13 @@ public class HomeActivity extends AppCompatActivity {
             });
     }
 
-    private Task<Object> setupConjure(String token, String userId) {
+    private Task<Object> getSpotifyFollowedArtists(String token, String userId) {
         Map<String, Object> data = new HashMap<>();
         data.put("spotifyToken", token);
         data.put("userId", userId);
 
         return mFunctions
-                .getHttpsCallable("setupConjure")
+                .getHttpsCallable("getSpotifyFollowedArtists")
                 .call(data)
                 .continueWith(task -> Objects.requireNonNull(task.getResult()).getData());
     }
@@ -314,15 +338,15 @@ public class HomeActivity extends AppCompatActivity {
                 if (snapshot != null && snapshot.exists()) {
                     firebaseUserId = mUserId;
                     setupView();
-                    String artistTotal =
-                            (String) Objects.requireNonNull(snapshot.getData()).get(
+                    Object artistTotal = Objects.requireNonNull(snapshot.getData()).get(
                                     "totalArtists");
-                    String albumTotal =
-                            (String) Objects.requireNonNull(snapshot.getData()).get(
+                    Object albumTotal = Objects.requireNonNull(snapshot.getData()).get(
                                     "totalAlbums");
 
-                    String totalArtists = getResources().getString(R.string.artistStat, artistTotal);
-                    String totalAlbums = getResources().getString(R.string.albumStat, albumTotal);
+                    assert artistTotal != null;
+                    String totalArtists = getResources().getString(R.string.artistStat, " " + artistTotal.toString());
+                    assert albumTotal != null;
+                    String totalAlbums = getResources().getString(R.string.albumStat, albumTotal.toString());
 
                     TextView artistStat = findViewById(R.id.artistStat);
                     TextView albumsStat = findViewById(R.id.albumStat);
@@ -336,4 +360,50 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+    private void fetchAlbums() {
+        if(mUserId != null) {
+            Log.d(TAG, "fetching album pictures");
+            firestore.collection("users").document(mUserId).collection("albums")
+//                .whereEqualTo("processed", null)
+                .limit(10)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())){
+                            String imageUrl = Objects.requireNonNull(document.get("image")).toString();
+                                    final Request request = new Request.Builder()
+                                            .url(imageUrl)
+                                            .build();
+
+                                    mCall = mOkHttpClient.newCall(request);
+
+                                    mCall.enqueue(new Callback() {
+                                        @Override
+                                        public void onFailure(Call call, IOException e) {
+                                            Log.d(TAG, "Failed to fetch album image: " + e);
+                                        }
+                                        @Override
+                                        public void onResponse(Call call, Response response) throws IOException {
+                                            if (response.isSuccessful()){
+                                                try{
+                                                    assert response.body() != null;
+                                                    final Bitmap bitmap = BitmapFactory.decodeStream(response.body().byteStream());
+                                                    progressBar.incrementProgressBy(1);
+                                                    new Handler(Looper.getMainLooper()).post(() -> progressAlbum.setImageBitmap(bitmap));
+                                                } catch (Exception e){
+                                                    Log.d(TAG, "Could not set progress image to album image: "
+                                                    + e.getMessage());
+                                                }
+                                            } else {
+                                                Log.d(TAG, "Failed to fetch album image");
+                                            }
+                                        }
+                                    });
+                        }
+                    } else {
+                        Log.d(TAG, "Error getting album documents: " , task.getException());
+                    }
+                });
+        }
+    }
 }
