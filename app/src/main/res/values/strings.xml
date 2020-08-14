@@ -50,7 +50,11 @@
     <string name="onboarding_welcome_message">Let\'s get you set up</string>
 
     <string name="onboarding_setup_header">Setup</string>
-    <string name="onboarding_setup_message">Login to Spotify on your device</string>
+    <string name="onboarding_setup_spotify">Connect to Spotify</string>
+    <string name="onboarding_setup_message">Conjure talks with Spotify on your device to work its magic</string>
+    <string name="onboarding_setup_status_message">%1$s</string>
+    <string name="onboarding_setup_status_error">Hmmm…could not connect. Please check that you\'re logged into your Spotify app and try again</string>
+    <string name="onboarding_setup_status_success">Congrats! Spotify and Conjure and now best buds</string>
 
     <string name="onboarding_scan_header">Scan</string>
     <string name="onboarding_scan_message">Scan your favorite album covers to Conjure the music</string>
