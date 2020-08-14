@@ -87,7 +87,7 @@ public class HomeActivity extends AppCompatActivity {
 
         //checkForFollowedArtists();
         fetchStats();
-        fetchAlbums();
+        //fetchAlbums();
 
         instructions = findViewById(R.id.instructions);
         actionSetup = findViewById(R.id.tile_setup);

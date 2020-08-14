@@ -1,6 +1,8 @@
 package com.berryspace.conjure;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,13 +31,44 @@ public class SplashScreen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        getSpotifyId();
+
+        if(isNewUser()){
+            Log.d(TAG, "new user detected, proceeding to onboarding");
+            Intent intent = new Intent(getBaseContext(), OnboardingActivity.class);
+            startActivity(intent);
+        } else {
+            Log.d(TAG, "returning user detected, proceeding to home");
+        }
+
+//        Boolean validSpotifyId = checkSpotifyId();
+//        if(!validSpotifyId) {
+//            getSpotifyId();
+//        }
+    }
+
+    @Override
+    protected void onResume() {
+        if(isNewUser()){
+            Log.d(TAG, "new user detected, proceeding to onboarding");
+            Intent intent = new Intent(getBaseContext(), OnboardingActivity.class);
+            startActivity(intent);
+        } else {
+            Log.d(TAG, "returning user detected, proceeding to home");
+            Intent intent = new Intent(getBaseContext(), HomeActivity.class);
+            startActivity(intent);
+        }
+        super.onResume();
     }
 
     @Override
     protected void onDestroy() {
         cancelCall();
         super.onDestroy();
+    }
+
+    private boolean isNewUser(){
+        SharedPreferences sharedPref = this.getSharedPreferences("NEWUSER", Context.MODE_PRIVATE);
+        return sharedPref.getBoolean("newUser", true);
     }
 
     public void getUserId(){

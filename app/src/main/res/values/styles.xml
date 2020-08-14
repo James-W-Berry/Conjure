@@ -5,6 +5,7 @@
      <style name="AppTheme" parent="Theme.AppCompat">
          <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/secondary</item>
+         <item name="android:fontFamily">nunito</item>
      </style>
 
 </resources>

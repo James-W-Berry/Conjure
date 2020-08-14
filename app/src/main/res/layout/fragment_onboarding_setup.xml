@@ -1,0 +1,91 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/conjure_purple">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/heading"
+        style="?android:textAppearanceMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:fontFamily="@font/nunito"
+        android:lineSpacingMultiplier="1.2"
+        android:padding="16dp"
+        android:text="@string/onboarding_setup_header"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/image_setup"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="118dp"
+        app:layout_constraintEnd_toStartOf="@id/image_spotify"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/heading"
+        app:srcCompat="@drawable/conjuree_setup" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/image_spotify"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/image_setup"
+        app:layout_constraintTop_toBottomOf="@+id/heading"
+        app:srcCompat="@drawable/spotify_green" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/onboarding_setup_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:fontFamily="@font/nunito"
+        android:text="@string/onboarding_setup_message"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/image_setup" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/carousel_1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="118dp"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/carousel_2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/circle_gray" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/carousel_2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/carousel_3"
+        app:layout_constraintStart_toEndOf="@id/carousel_1"
+        android:tint="#FFFFFF"
+        app:srcCompat="@drawable/circle_white" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/carousel_3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="118dp"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/carousel_2"
+        app:srcCompat="@drawable/circle_gray" />
+</androidx.constraintlayout.widget.ConstraintLayout>
