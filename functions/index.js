@@ -147,6 +147,8 @@ function difference(object, base) {
   return changes(object, base);
 }
 
+// retrieve followed artists on Spotify
+// typically called on initial setup
 exports.getSpotifyFollowedArtists = functions.https.onCall(
   async (data, context) => {
     spotifyToken = data.spotifyToken;
@@ -430,6 +432,9 @@ exports.getBatchOfAlbums = functions.https.onCall(async (data, context) => {
         console.log(error);
       });
   });
+
+  let result = { status: "success" };
+  return result;
 });
 
 function generateImageDatabase() {

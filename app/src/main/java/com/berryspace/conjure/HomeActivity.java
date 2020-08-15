@@ -1,6 +1,8 @@
 package com.berryspace.conjure;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -8,30 +10,23 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.FirebaseFunctionsException;
 import com.google.firebase.functions.FirebaseFunctionsException.Code;
-import com.google.firebase.functions.HttpsCallableResult;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.gson.Gson;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import androidx.annotation.NonNull;
@@ -45,6 +40,8 @@ import okhttp3.Response;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -69,6 +66,8 @@ public class HomeActivity extends AppCompatActivity {
     private String firebaseUserId;
     private Call mCall;
     private final OkHttpClient mOkHttpClient = new OkHttpClient();
+    Handler handler = new Handler();
+    private Integer artistProcessDelay = 10000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,48 +75,49 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         mFunctions = FirebaseFunctions.getInstance();
 
-        try{
-            mUserId = getIntent().getStringExtra("userId");
-            mAccessToken = getIntent().getStringExtra("token");
-        } catch (Error error){
-            Log.d(TAG, error.toString());
-            mUserId=null;
-            mAccessToken=null;
-        }
+        mUserId = getUser();
+        mAccessToken = getToken();
+        fetchStats();
+
+        handler.postDelayed(new Runnable(){
+            public void run(){
+                if(isTokenValid()){
+                    Log.d(TAG, "token is valid, checking for unprocessed artists");
+                    checkForUnprocessedArtists();
+                } else {
+                    Log.d(TAG, "token is invalid, checking for unprocessed artists");
+                    authenticateWithSpotify();
+                }
+                handler.postDelayed(this, artistProcessDelay);
+            }
+        }, artistProcessDelay);
 
         //checkForFollowedArtists();
-        fetchStats();
         //fetchAlbums();
 
-        instructions = findViewById(R.id.instructions);
-        actionSetup = findViewById(R.id.tile_setup);
-        actionButton = findViewById(R.id.btn_setup);
-        spotifySetup = findViewById(R.id.spotify_setup);
-        spotifyButton = findViewById(R.id.btn_spotify);
-        status = findViewById(R.id.status);
         progressAlbum = findViewById(R.id.progressAlbum);
         progressBar = findViewById(R.id.progressBar);
 
-        TextView updateButton = findViewById(R.id.update_button);
-        TextView currentImageDatabaseVersion = findViewById(R.id.currentVersion);
-        TextView availableImageDatabaseVersion = findViewById(R.id.available_version);
-        updateButton.setOnClickListener(v -> {
-            File localImageDatabase = new File(this.getFilesDir(),
-                    (String) availableImageDatabaseVersion.getText());
-            StorageReference storageReference = storage.getReference();
-
-            storageReference.child("ImageDatabase/" + availableImageDatabaseVersion.getText())
-                    .getFile(localImageDatabase)
-                    .addOnSuccessListener(taskSnapshot -> {
-                        Log.d(TAG,
-                                "saved Muse image database to local device : " + availableImageDatabaseVersion.getText());
-                        deleteOldImageDatabases((String) availableImageDatabaseVersion.getText());
-                        currentImageDatabaseVersion.setText(availableImageDatabaseVersion.getText());
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.d(TAG, "failed to save Muse image database to local device: " + e);
-                    });
-        });
+//        TextView updateButton = findViewById(R.id.update_button);
+//        TextView currentImageDatabaseVersion = findViewById(R.id.currentVersion);
+//        TextView availableImageDatabaseVersion = findViewById(R.id.available_version);
+//        updateButton.setOnClickListener(v -> {
+//            File localImageDatabase = new File(this.getFilesDir(),
+//                    (String) availableImageDatabaseVersion.getText());
+//            StorageReference storageReference = storage.getReference();
+//
+//            storageReference.child("ImageDatabase/" + availableImageDatabaseVersion.getText())
+//                    .getFile(localImageDatabase)
+//                    .addOnSuccessListener(taskSnapshot -> {
+//                        Log.d(TAG,
+//                                "saved Muse image database to local device : " + availableImageDatabaseVersion.getText());
+//                        deleteOldImageDatabases((String) availableImageDatabaseVersion.getText());
+//                        currentImageDatabaseVersion.setText(availableImageDatabaseVersion.getText());
+//                    })
+//                    .addOnFailureListener(e -> {
+//                        Log.d(TAG, "failed to save Muse image database to local device: " + e);
+//                    });
+//        });
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_bar);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
@@ -127,7 +127,8 @@ public class HomeActivity extends AppCompatActivity {
                     break;
                 case R.id.navigation_camera:
                     Intent augmentedImageIntent = new Intent(this, AugmentedImageActivity.class);
-                    augmentedImageIntent.putExtra("imageDatabaseVersion", currentImageDatabaseVersion.getText());
+                    //augmentedImageIntent.putExtra("imageDatabaseVersion", currentImageDatabaseVersion.getText());
+                    augmentedImageIntent.putExtra("imageDatabaseVersion", "1.0");
                     startActivity(augmentedImageIntent);
                     break;
             }
@@ -136,103 +137,136 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        handler.removeCallbacksAndMessages(null);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacksAndMessages(null);
+    }
+
+    private String getUser(){
+        SharedPreferences sharedPref = this.getSharedPreferences("SPOTIFYAUTH", Context.MODE_PRIVATE);
+        return sharedPref.getString("userId", null);
+    }
+
+    private String getToken(){
+        SharedPreferences sharedPref = this.getSharedPreferences("SPOTIFYAUTH", Context.MODE_PRIVATE);
+        return sharedPref.getString("spotifyToken", null);
+    }
+
+    private Boolean isTokenValid(){
+        Date currentTime = Calendar.getInstance().getTime();
+        SharedPreferences sharedPref = this.getSharedPreferences("SPOTIFYAUTH", Context.MODE_PRIVATE);
+        return (currentTime.getTime() <= sharedPref.getLong("expiresAt", currentTime.getTime()));
+    }
+
+    private void authenticateWithSpotify(){
+        Intent intent = new Intent(this, SpotifyAuth.class);
+        startActivity(intent);
+    };
+
+    @Override
     protected void onStart() {
         super.onStart();
-        MuseImageDatabase museImageDatabase = new MuseImageDatabase();
-        museImageDatabase.fetchImageDatabaseUpdate(this);
+        //MuseImageDatabase museImageDatabase = new MuseImageDatabase();
+        //museImageDatabase.fetchImageDatabaseUpdate(this);
         setupView();
     }
 
     private void setupView(){
         Log.d(TAG, mUserId + ", " + mAccessToken + ", " + firebaseUserId);
-        if (mUserId == null && mAccessToken == null ) {
-            Log.d(TAG, "setting view to SPOTIFY_SETUP");
-            setView("SPOTIFY_SETUP");
-        } else if (firebaseUserId == null && mUserId != null){
-            Log.d(TAG, "setting view to CONJURE_SETUP");
-            setView("CONJURE_SETUP");
-        }
-        else if (newArtists.length() > 0) {
-            Log.d(TAG, "setting view to UPDATE");
-            setView("UPDATE");
-        } else {
-            Log.d(TAG, "setting view to UP_TO_DATE");
-            setView("UP_TO_DATE");
-        }
+//        if (mUserId == null && mAccessToken == null ) {
+//            Log.d(TAG, "setting view to SPOTIFY_SETUP");
+//            setView("SPOTIFY_SETUP");
+//        } else if (firebaseUserId == null && mUserId != null){
+//            Log.d(TAG, "setting view to CONJURE_SETUP");
+//            setView("CONJURE_SETUP");
+//        }
+//        else if (newArtists.length() > 0) {
+//            Log.d(TAG, "setting view to UPDATE");
+//            setView("UPDATE");
+//        } else {
+//            Log.d(TAG, "setting view to UP_TO_DATE");
+//            setView("UP_TO_DATE");
+//        }
     }
 
     private void setView(String viewType){
-        switch (viewType){
-            case "SPOTIFY_SETUP":
-                instructions.setText(R.string.instructions_spotify_setup);
-                instructions.setVisibility(View.VISIBLE);
-                spotifySetup.setVisibility(View.VISIBLE);
-                spotifyButton.setOnClickListener(v -> {
-                    goToUrl ( "https://play.google.com/store/apps/details?id=com.spotify.music&hl=en_US");
-                });
-                break;
-            case "CONJURE_SETUP":
-                instructions.setText(R.string.instructions_initial_setup);
-                actionButton.setText(R.string.btn_setup);
-                actionSetup.setVisibility(View.VISIBLE);
-                actionButton.setOnClickListener(v->{
-                    getSpotifyFollowedArtists(mAccessToken, mUserId)
-                            .addOnCompleteListener(task -> {
-                                if (!task.isSuccessful()) {
-                                    Exception e = task.getException();
-                                    if (e instanceof FirebaseFunctionsException) {
-                                        FirebaseFunctionsException ffe = (FirebaseFunctionsException) e;
-                                        Code code = ffe.getCode();
-                                        Object details = ffe.getDetails();
-                                    }
-                                    Log.w(TAG, "getSpotifyFollowedArtists:onFailure", e);
-                                    return;
-                                }
-                                Object result = task.getResult();
-                                assert result != null;
-                                Log.d(TAG, result.toString());
-                            });
-                });
-                break;
-            case "UPDATE":
-                instructions.setText(R.string.instructions_update);
-                actionButton.setText(R.string.btn_update);
-                actionSetup.setVisibility(View.VISIBLE);
-                actionButton.setOnClickListener(v->{
-                    instructions.setVisibility(View.INVISIBLE);
-                    actionSetup.setVisibility(View.INVISIBLE);
-                    status.setText(R.string.looking_up);
-                    status.setVisibility(View.VISIBLE);
-                    updateConjure(mAccessToken, mUserId)
-                            .addOnCompleteListener(task -> {
-                                if (!task.isSuccessful()) {
-                                    Exception e = task.getException();
-                                    if (e instanceof FirebaseFunctionsException) {
-                                        FirebaseFunctionsException ffe = (FirebaseFunctionsException) e;
-                                        Code code = ffe.getCode();
-                                        Object details = ffe.getDetails();
-                                    }
-                                    Log.w(TAG, "updateConjure:onFailure", e);
-                                    instructions.setText(R.string.instructions_update);
-                                    status.setText(R.string.status_error);
-                                    actionSetup.setVisibility(View.VISIBLE);
-                                    instructions.setVisibility(View.VISIBLE);
-                                    status.setVisibility(View.VISIBLE);
-                                    return;
-                                }
-                                Object result = task.getResult();
-                                assert result != null;
-                                Log.d(TAG, result.toString());
-                                instructions.setText(R.string.instructions_up_to_date);
-                                status.setVisibility(View.INVISIBLE);
-                                instructions.setVisibility(View.VISIBLE);
-                            });
-                });
-                break;
-            case "UP_TO_DATE":
-                instructions.setText(R.string.instructions_up_to_date);
-                actionSetup.setVisibility(View.INVISIBLE);
-        }
+//        switch (viewType){
+//            case "SPOTIFY_SETUP":
+//                instructions.setText(R.string.instructions_spotify_setup);
+//                instructions.setVisibility(View.VISIBLE);
+//                spotifySetup.setVisibility(View.VISIBLE);
+//                spotifyButton.setOnClickListener(v -> {
+//                    goToUrl ( "https://play.google.com/store/apps/details?id=com.spotify.music&hl=en_US");
+//                });
+//                break;
+//            case "CONJURE_SETUP":
+//                instructions.setText(R.string.instructions_initial_setup);
+//                actionButton.setText(R.string.btn_setup);
+//                actionSetup.setVisibility(View.VISIBLE);
+//                actionButton.setOnClickListener(v->{
+//                    getSpotifyFollowedArtists(mAccessToken, mUserId)
+//                            .addOnCompleteListener(task -> {
+//                                if (!task.isSuccessful()) {
+//                                    Exception e = task.getException();
+//                                    if (e instanceof FirebaseFunctionsException) {
+//                                        FirebaseFunctionsException ffe = (FirebaseFunctionsException) e;
+//                                        Code code = ffe.getCode();
+//                                        Object details = ffe.getDetails();
+//                                    }
+//                                    Log.w(TAG, "getSpotifyFollowedArtists:onFailure", e);
+//                                    return;
+//                                }
+//                                Object result = task.getResult();
+//                                assert result != null;
+//                                Log.d(TAG, result.toString());
+//                            });
+//                });
+//                break;
+//            case "UPDATE":
+//                instructions.setText(R.string.instructions_update);
+//                actionButton.setText(R.string.btn_update);
+//                actionSetup.setVisibility(View.VISIBLE);
+//                actionButton.setOnClickListener(v->{
+//                    instructions.setVisibility(View.INVISIBLE);
+//                    actionSetup.setVisibility(View.INVISIBLE);
+//                    status.setText(R.string.looking_up);
+//                    status.setVisibility(View.VISIBLE);
+//                    updateConjure(mAccessToken, mUserId)
+//                            .addOnCompleteListener(task -> {
+//                                if (!task.isSuccessful()) {
+//                                    Exception e = task.getException();
+//                                    if (e instanceof FirebaseFunctionsException) {
+//                                        FirebaseFunctionsException ffe = (FirebaseFunctionsException) e;
+//                                        Code code = ffe.getCode();
+//                                        Object details = ffe.getDetails();
+//                                    }
+//                                    Log.w(TAG, "updateConjure:onFailure", e);
+//                                    instructions.setText(R.string.instructions_update);
+//                                    status.setText(R.string.status_error);
+//                                    actionSetup.setVisibility(View.VISIBLE);
+//                                    instructions.setVisibility(View.VISIBLE);
+//                                    status.setVisibility(View.VISIBLE);
+//                                    return;
+//                                }
+//                                Object result = task.getResult();
+//                                assert result != null;
+//                                Log.d(TAG, result.toString());
+//                                instructions.setText(R.string.instructions_up_to_date);
+//                                status.setVisibility(View.INVISIBLE);
+//                                instructions.setVisibility(View.VISIBLE);
+//                            });
+//                });
+//                break;
+//            case "UP_TO_DATE":
+//                instructions.setText(R.string.instructions_up_to_date);
+//                actionSetup.setVisibility(View.INVISIBLE);
+//        }
     }
 
     private void checkForFollowedArtists(){
@@ -293,13 +327,13 @@ public class HomeActivity extends AppCompatActivity {
                 .continueWith(task -> Objects.requireNonNull(task.getResult()).getData());
     }
 
-    private Task<Object> updateConjure(String token, String userId) {
+    private Task<Object> processArtistAlbumsBatch(String token, String userId) {
         Map<String, Object> data = new HashMap<>();
         data.put("spotifyToken", token);
         data.put("userId", userId);
 
         return mFunctions
-                .getHttpsCallable("updateConjure")
+                .getHttpsCallable("getBatchOfAlbums")
                 .call(data)
                 .continueWith(task -> Objects.requireNonNull(task.getResult()).getData());
     }
@@ -328,6 +362,9 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void fetchStats() {
+        final String[] totalArtists = {getResources().getString(R.string.artistStat, " " + "0")};
+        final String[] totalAlbums = {getResources().getString(R.string.albumStat, "0")};
+
         if(mUserId != null) {
             final DocumentReference docRef = firestore.collection("users").document(mUserId);
             docRef.addSnapshotListener((snapshot, e) -> {
@@ -343,20 +380,94 @@ public class HomeActivity extends AppCompatActivity {
                     Object albumTotal = Objects.requireNonNull(snapshot.getData()).get(
                                     "totalAlbums");
 
-                    assert artistTotal != null;
-                    String totalArtists = getResources().getString(R.string.artistStat, " " + artistTotal.toString());
-                    assert albumTotal != null;
-                    String totalAlbums = getResources().getString(R.string.albumStat, albumTotal.toString());
+                    if(artistTotal != null){
+                        totalArtists[0] = getResources().getString(R.string.artistStat, " " + artistTotal.toString());
+                        Log.d(TAG, totalArtists[0]);
+                    }
+
+                    if(albumTotal != null) {
+                        totalAlbums[0] = getResources().getString(R.string.albumStat, albumTotal.toString());
+                        Log.d(TAG, albumTotal.toString());
+                    }
 
                     TextView artistStat = findViewById(R.id.artistStat);
                     TextView albumsStat = findViewById(R.id.albumStat);
 
-                    artistStat.setText(totalArtists);
-                    albumsStat.setText(totalAlbums);
+                    artistStat.setText(totalArtists[0]);
+                    albumsStat.setText(totalAlbums[0]);
                 } else {
-                    Log.d(TAG, "Current data: null");
+                    Log.d(TAG, "No user information found in Firebase - performing initial setup");
+                    fetchArtists();
                 }
             });
+        }
+    }
+
+    private void fetchArtists(){
+        getSpotifyFollowedArtists(mAccessToken, mUserId).addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Exception e = task.getException();
+                if (e instanceof FirebaseFunctionsException) {
+                    FirebaseFunctionsException ffe = (FirebaseFunctionsException) e;
+                    Code code = ffe.getCode();
+                    Object details = ffe.getDetails();
+                }
+                Log.w(TAG, "could not fetch artists for Firebase user: getSpotifyFollowedArtists:onFailure", e);
+                return;
+            }
+            Object result = task.getResult();
+            assert result != null;
+            Log.d(TAG, result.toString());
+        });
+    }
+
+    private void processArtists(){
+        processArtistAlbumsBatch(mAccessToken, mUserId).addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Exception e = task.getException();
+                if (e instanceof FirebaseFunctionsException) {
+                    FirebaseFunctionsException ffe = (FirebaseFunctionsException) e;
+                    Code code = ffe.getCode();
+                    Object details = ffe.getDetails();
+                }
+                Log.w(TAG, "could not process batch of albums: getSpotifyFollowedArtists:onFailure", e);
+                return;
+            }
+            Object result = task.getResult();
+            if(result != null) {
+                Log.d(TAG, result.toString());
+            } else {
+                Log.d(TAG, "null result");
+            }
+        });
+    }
+
+    private void checkForUnprocessedArtists(){
+        if(mUserId != null) {
+            firestore.collection("users")
+                .document(mUserId)
+                .collection("unprocessedArtists")
+                .limit(1)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            if (task.getResult().isEmpty()) {
+                                Log.d(TAG, "processed all artists, stopping recurring processArtists task");
+                                handler.removeCallbacksAndMessages(null);
+                            } else {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    Log.d(TAG, "still have unprocessed artists");
+                                    Log.d(TAG, document.getId() + " => " + document.getData());
+                                    processArtists();
+                                }
+                            }
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
         }
     }
 
