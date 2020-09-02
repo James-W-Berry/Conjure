@@ -10,15 +10,39 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdLoader;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.VideoController;
+import com.google.android.gms.ads.VideoOptions;
+import com.google.android.gms.ads.formats.MediaView;
+import com.google.android.gms.ads.formats.NativeAdOptions;
+import com.google.android.gms.ads.formats.UnifiedNativeAd;
+import com.google.android.gms.ads.formats.UnifiedNativeAdView;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -27,10 +51,12 @@ import com.google.firebase.functions.FirebaseFunctionsException;
 import com.google.firebase.functions.FirebaseFunctionsException.Code;
 import com.google.firebase.storage.FirebaseStorage;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.cardview.widget.CardView;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -43,9 +69,12 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 
 public class HomeActivity extends AppCompatActivity {
     private String TAG = "HomeActivity";
@@ -54,14 +83,10 @@ public class HomeActivity extends AppCompatActivity {
     private String mUserId;
     private String mAccessToken;
     private FirebaseFunctions mFunctions;
-    private TextView instructions;
-    private CardView actionSetup;
-    private TextView actionButton;
-    private TextView status;
-    private CardView spotifySetup;
-    private ImageView spotifyButton;
+
     private ImageView progressAlbum;
     private ProgressBar progressBar;
+    private AppCompatTextView progressLabel;
     private JSONObject newArtists = new JSONObject();
     private String firebaseUserId;
     private Call mCall;
@@ -69,15 +94,39 @@ public class HomeActivity extends AppCompatActivity {
     Handler handler = new Handler();
     private Integer artistProcessDelay = 10000;
 
+    private static final String ADMOB_AD_UNIT_ID = "ca-app-pub-3940256099942544/2247696110";
+
+    private Button refresh;
+    private CheckBox startVideoAdsMuted;
+    private TextView videoStatus;
+    private UnifiedNativeAd nativeAd;
+
+    private TextView artistStat;
+    private TextView albumsStat;
+
+    private String[] artistLibrary;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        //setupAds();
+
         mFunctions = FirebaseFunctions.getInstance();
 
         mUserId = getUser();
         mAccessToken = getToken();
+        artistStat = findViewById(R.id.artistStat);
+        artistStat.setOnClickListener(v ->{
+            Intent intent = new Intent(this, LibraryActivity.class);
+            intent.putExtra("artists", artistLibrary);
+            startActivity(intent);
+        });
+        albumsStat = findViewById(R.id.albumStat);
         fetchStats();
+        fetchLibraryArtists();
+
 
         handler.postDelayed(new Runnable(){
             public void run(){
@@ -85,10 +134,10 @@ public class HomeActivity extends AppCompatActivity {
                     Log.d(TAG, "token is valid, checking for unprocessed artists");
                     checkForUnprocessedArtists();
                 } else {
-                    Log.d(TAG, "token is invalid, checking for unprocessed artists");
+                    Log.d(TAG, "token is invalid, retrieving  a new token");
                     authenticateWithSpotify();
                 }
-                handler.postDelayed(this, artistProcessDelay);
+//                handler.postDelayed(this, artistProcessDelay);
             }
         }, artistProcessDelay);
 
@@ -145,8 +194,218 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (nativeAd != null) {
+            nativeAd.destroy();
+        }
         handler.removeCallbacksAndMessages(null);
     }
+
+//    private void setupAds(){
+//        // Initialize the Mobile Ads SDK.
+//        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+//            @Override
+//            public void onInitializationComplete(InitializationStatus initializationStatus) {}
+//        });
+//
+//        refresh = findViewById(R.id.btn_refresh);
+//        startVideoAdsMuted = findViewById(R.id.cb_start_muted);
+//        videoStatus = findViewById(R.id.tv_video_status);
+//
+//        refresh.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View unusedView) {
+//                refreshAd();
+//            }
+//        });
+//
+//        refreshAd();
+//    }
+//
+//    /**
+//     * Populates a {@link UnifiedNativeAdView} object with data from a given
+//     * {@link UnifiedNativeAd}.
+//     *
+//     * @param nativeAd the object containing the ad's assets
+//     * @param adView          the view to be populated
+//     */
+//    private void populateUnifiedNativeAdView(UnifiedNativeAd nativeAd, UnifiedNativeAdView adView) {
+//        // Set the media view.
+//        adView.setMediaView((MediaView) adView.findViewById(R.id.ad_media));
+//
+//        // Set other ad assets.
+//        adView.setHeadlineView(adView.findViewById(R.id.ad_headline));
+//        adView.setBodyView(adView.findViewById(R.id.ad_body));
+//        adView.setCallToActionView(adView.findViewById(R.id.ad_call_to_action));
+//        adView.setIconView(adView.findViewById(R.id.ad_app_icon));
+//        adView.setPriceView(adView.findViewById(R.id.ad_price));
+//        adView.setStarRatingView(adView.findViewById(R.id.ad_stars));
+//        adView.setStoreView(adView.findViewById(R.id.ad_store));
+//        adView.setAdvertiserView(adView.findViewById(R.id.ad_advertiser));
+//
+//        // The headline and mediaContent are guaranteed to be in every UnifiedNativeAd.
+//        ((TextView) adView.getHeadlineView()).setText(nativeAd.getHeadline());
+//        adView.getMediaView().setMediaContent(nativeAd.getMediaContent());
+//
+//        // These assets aren't guaranteed to be in every UnifiedNativeAd, so it's important to
+//        // check before trying to display them.
+//        if (nativeAd.getBody() == null) {
+//            adView.getBodyView().setVisibility(View.INVISIBLE);
+//        } else {
+//            adView.getBodyView().setVisibility(View.VISIBLE);
+//            ((TextView) adView.getBodyView()).setText(nativeAd.getBody());
+//        }
+//
+//        if (nativeAd.getCallToAction() == null) {
+//            adView.getCallToActionView().setVisibility(View.INVISIBLE);
+//        } else {
+//            adView.getCallToActionView().setVisibility(View.VISIBLE);
+//            ((Button) adView.getCallToActionView()).setText(nativeAd.getCallToAction());
+//        }
+//
+//        if (nativeAd.getIcon() == null) {
+//            adView.getIconView().setVisibility(View.GONE);
+//        } else {
+//            ((ImageView) adView.getIconView()).setImageDrawable(
+//                    nativeAd.getIcon().getDrawable());
+//            adView.getIconView().setVisibility(View.VISIBLE);
+//        }
+//
+//        if (nativeAd.getPrice() == null) {
+//            adView.getPriceView().setVisibility(View.INVISIBLE);
+//        } else {
+//            adView.getPriceView().setVisibility(View.VISIBLE);
+//            ((TextView) adView.getPriceView()).setText(nativeAd.getPrice());
+//        }
+//
+//        if (nativeAd.getStore() == null) {
+//            adView.getStoreView().setVisibility(View.INVISIBLE);
+//        } else {
+//            adView.getStoreView().setVisibility(View.VISIBLE);
+//            ((TextView) adView.getStoreView()).setText(nativeAd.getStore());
+//        }
+//
+//        if (nativeAd.getStarRating() == null) {
+//            adView.getStarRatingView().setVisibility(View.INVISIBLE);
+//        } else {
+//            ((RatingBar) adView.getStarRatingView())
+//                    .setRating(nativeAd.getStarRating().floatValue());
+//            adView.getStarRatingView().setVisibility(View.VISIBLE);
+//        }
+//
+//        if (nativeAd.getAdvertiser() == null) {
+//            adView.getAdvertiserView().setVisibility(View.INVISIBLE);
+//        } else {
+//            ((TextView) adView.getAdvertiserView()).setText(nativeAd.getAdvertiser());
+//            adView.getAdvertiserView().setVisibility(View.VISIBLE);
+//        }
+//
+//        // This method tells the Google Mobile Ads SDK that you have finished populating your
+//        // native ad view with this native ad.
+//        adView.setNativeAd(nativeAd);
+//
+//        // Get the video controller for the ad. One will always be provided, even if the ad doesn't
+//        // have a video asset.
+//        VideoController vc = nativeAd.getVideoController();
+//
+//        // Updates the UI to say whether or not this ad has a video asset.
+//        if (vc.hasVideoContent()) {
+//            videoStatus.setText(String.format(Locale.getDefault(),
+//                    "Video status: Ad contains a %.2f:1 video asset.",
+//                    vc.getAspectRatio()));
+//
+//            // Create a new VideoLifecycleCallbacks object and pass it to the VideoController. The
+//            // VideoController will call methods on this object when events occur in the video
+//            // lifecycle.
+//            vc.setVideoLifecycleCallbacks(new VideoController.VideoLifecycleCallbacks() {
+//                @Override
+//                public void onVideoEnd() {
+//                    // Publishers should allow native ads to complete video playback before
+//                    // refreshing or replacing them with another ad in the same UI location.
+//                    refresh.setEnabled(true);
+//                    videoStatus.setText("Video status: Video playback has ended.");
+//                    super.onVideoEnd();
+//                }
+//            });
+//        } else {
+//            videoStatus.setText("Video status: Ad does not contain a video asset.");
+//            refresh.setEnabled(true);
+//        }
+//    }
+//
+//    /**
+//     * Creates a request for a new native ad based on the boolean parameters and calls the
+//     * corresponding "populate" method when one is successfully returned.
+//     *
+//     */
+//    private void refreshAd() {
+//        refresh.setEnabled(false);
+//
+//        AdLoader.Builder builder = new AdLoader.Builder(this, ADMOB_AD_UNIT_ID);
+//
+//        builder.forUnifiedNativeAd(new UnifiedNativeAd.OnUnifiedNativeAdLoadedListener() {
+//            // OnUnifiedNativeAdLoadedListener implementation.
+//            @Override
+//            public void onUnifiedNativeAdLoaded(UnifiedNativeAd unifiedNativeAd) {
+//                // If this callback occurs after the activity is destroyed, you must call
+//                // destroy and return or you may get a memory leak.
+//                if (isDestroyed()) {
+//                    unifiedNativeAd.destroy();
+//                    return;
+//                }
+//                // You must call destroy on old ads when you are done with them,
+//                // otherwise you will have a memory leak.
+//                if (nativeAd != null) {
+//                    nativeAd.destroy();
+//                }
+//                nativeAd = unifiedNativeAd;
+//                FrameLayout frameLayout =
+//                        findViewById(R.id.fl_adplaceholder);
+//                UnifiedNativeAdView adView = (UnifiedNativeAdView) getLayoutInflater()
+//                        .inflate(R.layout.advertisement, null);
+//                populateUnifiedNativeAdView(unifiedNativeAd, adView);
+//                frameLayout.removeAllViews();
+//                frameLayout.addView(adView);
+//            }
+//
+//        });
+//
+//        VideoOptions videoOptions = new VideoOptions.Builder()
+//                .setStartMuted(startVideoAdsMuted.isChecked())
+//                .build();
+//
+//        NativeAdOptions adOptions = new NativeAdOptions.Builder()
+//                .setVideoOptions(videoOptions)
+//                .build();
+//
+//        builder.withNativeAdOptions(adOptions);
+//
+//        AdLoader adLoader =
+//            builder
+//                .withAdListener(
+//                    new AdListener() {
+//                        @Override
+//                        public void onAdFailedToLoad(LoadAdError loadAdError) {
+//                            refresh.setEnabled(true);
+//                            String error =
+//                                    String.format(
+//                                            "domain: %s, code: %d, message: %s",
+//                                            loadAdError.getDomain(),
+//                                            loadAdError.getCode(),
+//                                            loadAdError.getMessage());
+//                            Toast.makeText(
+//                                    HomeActivity.this,
+//                                    "Failed to load native ad with error " + error,
+//                                    Toast.LENGTH_SHORT)
+//                                    .show();
+//                        }
+//                    })
+//                .build();
+//
+//        adLoader.loadAd(new AdRequest.Builder().build());
+//
+//        videoStatus.setText("");
+//    }
+
 
     private String getUser(){
         SharedPreferences sharedPref = this.getSharedPreferences("SPOTIFYAUTH", Context.MODE_PRIVATE);
@@ -174,25 +433,6 @@ public class HomeActivity extends AppCompatActivity {
         super.onStart();
         //MuseImageDatabase museImageDatabase = new MuseImageDatabase();
         //museImageDatabase.fetchImageDatabaseUpdate(this);
-        setupView();
-    }
-
-    private void setupView(){
-        Log.d(TAG, mUserId + ", " + mAccessToken + ", " + firebaseUserId);
-//        if (mUserId == null && mAccessToken == null ) {
-//            Log.d(TAG, "setting view to SPOTIFY_SETUP");
-//            setView("SPOTIFY_SETUP");
-//        } else if (firebaseUserId == null && mUserId != null){
-//            Log.d(TAG, "setting view to CONJURE_SETUP");
-//            setView("CONJURE_SETUP");
-//        }
-//        else if (newArtists.length() > 0) {
-//            Log.d(TAG, "setting view to UPDATE");
-//            setView("UPDATE");
-//        } else {
-//            Log.d(TAG, "setting view to UP_TO_DATE");
-//            setView("UP_TO_DATE");
-//        }
     }
 
     private void setView(String viewType){
@@ -298,7 +538,6 @@ public class HomeActivity extends AppCompatActivity {
                     Log.d(TAG, data);
 
                     newArtists = new JSONObject(data);
-                    setupView();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -374,11 +613,8 @@ public class HomeActivity extends AppCompatActivity {
                 }
                 if (snapshot != null && snapshot.exists()) {
                     firebaseUserId = mUserId;
-                    setupView();
-                    Object artistTotal = Objects.requireNonNull(snapshot.getData()).get(
-                                    "totalArtists");
-                    Object albumTotal = Objects.requireNonNull(snapshot.getData()).get(
-                                    "totalAlbums");
+                    Object artistTotal = Objects.requireNonNull(snapshot.getData()).get("totalArtists");
+                    Object albumTotal = Objects.requireNonNull(snapshot.getData()).get("totalAlbums");
 
                     if(artistTotal != null){
                         totalArtists[0] = getResources().getString(R.string.artistStat, " " + artistTotal.toString());
@@ -390,9 +626,6 @@ public class HomeActivity extends AppCompatActivity {
                         Log.d(TAG, albumTotal.toString());
                     }
 
-                    TextView artistStat = findViewById(R.id.artistStat);
-                    TextView albumsStat = findViewById(R.id.albumStat);
-
                     artistStat.setText(totalArtists[0]);
                     albumsStat.setText(totalAlbums[0]);
                 } else {
@@ -402,6 +635,48 @@ public class HomeActivity extends AppCompatActivity {
             });
         }
     }
+
+
+    private void fetchLibraryArtists() {
+        if(mUserId != null) {
+            final DocumentReference docRef = firestore.collection("users").document(mUserId).collection("library").document("artists");
+
+            docRef.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Object artists = document.getData().get("artists");
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        try {
+                            String jsonString = objectMapper.writeValueAsString(artists);
+                            JSONObject json = new JSONObject(jsonString);
+                            Iterator<String> keys = json.keys();
+                            int i = 0;
+                            String[] library = new String[json.length()];
+
+                            while(keys.hasNext()) {
+                                String key = keys.next();
+                                if (json.get(key) instanceof JSONObject) {
+                                    library[i] = ((JSONObject) json.get(key)).get("name").toString();
+                                    ++i;
+                                }
+                            }
+
+                            String[] sorted = Stream.of(library).sorted().toArray(String[]::new);
+                            artistLibrary = sorted;
+                        } catch (JsonProcessingException | JSONException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            });
+        }
+    }
+
 
     private void fetchArtists(){
         getSpotifyFollowedArtists(mAccessToken, mUserId).addOnCompleteListener(task -> {
@@ -456,6 +731,8 @@ public class HomeActivity extends AppCompatActivity {
                             if (task.getResult().isEmpty()) {
                                 Log.d(TAG, "processed all artists, stopping recurring processArtists task");
                                 handler.removeCallbacksAndMessages(null);
+                                progressLabel = findViewById(R.id.progressLabel);
+                                progressLabel.setText(R.string.progress_complete);
                             } else {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     Log.d(TAG, "still have unprocessed artists");

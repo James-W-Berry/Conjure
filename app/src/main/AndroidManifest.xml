@@ -19,7 +19,6 @@
         android:usesCleartextTraffic="false"
         tools:ignore="GoogleAppIndexingWarning">
 
-
         <activity
             android:name="com.berryspace.conjure.SplashScreen"
             android:configChanges="orientation|screenSize"
@@ -76,6 +75,17 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="com.berryspace.conjure.LibraryActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="true"
+            android:screenOrientation="locked"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+
         <!-- This tag indicates that this application requires ARCore.  This results in the Google Play
              Store downloading and installing ARCore along with the application. -->
         <meta-data
@@ -84,5 +94,8 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+                    android:value="ca-app-pub-6893534245866286~9833307237"/>
     </application>
 </manifest>

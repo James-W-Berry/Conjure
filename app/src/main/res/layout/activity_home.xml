@@ -52,7 +52,7 @@
                 app:layout_constraintStart_toEndOf="@+id/albumStat"
                 app:layout_constraintTop_toBottomOf="@+id/ready" />
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/progressLabel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -60,7 +60,7 @@
                 android:layout_marginTop="32dp"
                 android:layout_marginEnd="40dp"
                 android:fontFamily="@font/nunito"
-                android:text="@string/progress_label"
+                android:text="@string/progress_in_progress"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -102,7 +102,7 @@
                 app:layout_constraintStart_toEndOf="@+id/progressAlbum"
                 app:layout_constraintTop_toBottomOf="@+id/progressLabel" />
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/last_played_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -247,6 +247,74 @@
                         app:layout_constraintTop_toBottomOf="@id/last_played_artist_0" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
+
+<!--            <androidx.cardview.widget.CardView-->
+<!--                android:id="@+id/ad"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="40dp"-->
+<!--                android:layout_marginTop="32dp"-->
+<!--                android:layout_marginEnd="40dp"-->
+<!--                android:backgroundTint="@color/conjure_purple_pale"-->
+<!--                android:clickable="true"-->
+<!--                android:focusable="true"-->
+<!--                app:cardBackgroundColor="@color/conjure_purple_pale"-->
+<!--                app:cardCornerRadius="10dp"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/tile_last_played_0">-->
+
+<!--&lt;!&ndash;                <LinearLayout&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:layout_width="match_parent"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:layout_height="wrap_content"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:background="@color/conjure_purple_pale"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:orientation="vertical">&ndash;&gt;-->
+
+<!--                    <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="match_parent"-->
+<!--                        android:padding="8dp">-->
+
+<!--                        <FrameLayout-->
+<!--                            android:id="@+id/fl_adplaceholder"-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                            app:layout_constraintEnd_toEndOf="parent"-->
+<!--                            app:layout_constraintStart_toStartOf="parent"-->
+<!--                            app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--                        <CheckBox-->
+<!--                            android:id="@+id/cb_start_muted"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:checked="true"-->
+<!--                            android:text="Start video ads muted"-->
+<!--                            app:layout_constraintStart_toStartOf="parent"-->
+<!--                            app:layout_constraintBottom_toBottomOf="parent" />-->
+
+<!--                        <Button-->
+<!--                            android:id="@+id/btn_refresh"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_gravity="center_horizontal"-->
+<!--                            android:layout_marginBottom="16dp"-->
+<!--                            android:text="Refresh Ad"-->
+<!--                            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                            app:layout_constraintStart_toStartOf="parent" />-->
+
+<!--                        <TextView-->
+<!--                            android:id="@+id/tv_video_status"-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:text="Video status: "-->
+<!--                            android:textAppearance="@style/TextAppearance.AppCompat.Medium"-->
+<!--                            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                            app:layout_constraintStart_toStartOf="parent" />-->
+<!--&lt;!&ndash;            </LinearLayout>&ndash;&gt;-->
+<!--                    </androidx.constraintlayout.widget.ConstraintLayout>-->
+<!--            </androidx.cardview.widget.CardView>-->
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

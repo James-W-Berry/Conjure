@@ -8,6 +8,7 @@ const admin = require("firebase-admin");
 const SpotifyWebApi = require("spotify-web-api-node");
 const _ = require("lodash");
 const Queue = require("smart-request-balancer");
+const { merge } = require("lodash");
 
 const spotifyApi = new SpotifyWebApi();
 admin.initializeApp({
@@ -294,6 +295,7 @@ exports.checkFollowedArtists = functions.https.onCall(async (data, context) => {
     .firestore()
     .collection("users")
     .doc(userId)
+    // .collection("processedArtists")
     .get()
     .then((doc) => {
       return doc.data().followedArtists;
@@ -432,6 +434,20 @@ exports.getBatchOfAlbums = functions.https.onCall(async (data, context) => {
         console.log(error);
       });
   });
+
+  admin
+    .firestore()
+    .collection("users")
+    .doc(userId)
+    .collection("library")
+    .doc("artists")
+    .set({ artists: unprocessedArtists }, { merge: true })
+    .then(() => {
+      console.log("recorded processed albums to library document");
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 
   let result = { status: "success" };
   return result;
