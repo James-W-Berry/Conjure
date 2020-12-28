@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:layout_gravity="center_horizontal"
-        android:background="@color/conjure_red"
+        android:background="@color/conjure_purple_really_dark"
         android:fontFamily="@font/nunito_sans_light"
         android:padding="10dp"
         android:text="@string/now_playing"
@@ -43,7 +43,7 @@
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:layout_gravity="bottom"
-        android:background="@color/conjure_blue"
+        android:background="@color/conjure_black"
         app:itemIconTint="@color/conjure_gray"
         app:itemTextColor="@color/conjure_gray"
         app:menu="@menu/bottom_navigation_menu" />

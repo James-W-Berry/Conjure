@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/conjure_purple_dark">
+    android:background="@color/conjure_gray">
 
     <ScrollView
         android:id="@+id/scrollView"
@@ -27,6 +27,7 @@
                 android:layout_marginTop="24dp"
                 android:fontFamily="@font/nunito_sans_light"
                 android:text="@string/ready"
+                android:textColor="@color/conjure_black"
                 android:textSize="30sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -38,6 +39,7 @@
                 android:layout_marginStart="40dp"
                 android:fontFamily="@font/nunito_sans_light"
                 android:text="@string/albumStat"
+                android:textColor="@color/conjure_black"
                 android:textSize="24sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/ready" />
@@ -48,6 +50,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/nunito_sans_light"
                 android:text="@string/artistStat"
+                android:textColor="@color/conjure_black"
                 android:textSize="24sp"
                 app:layout_constraintStart_toEndOf="@+id/albumStat"
                 app:layout_constraintTop_toBottomOf="@+id/ready" />
@@ -61,6 +64,7 @@
                 android:layout_marginEnd="40dp"
                 android:fontFamily="@font/nunito"
                 android:text="@string/progress_in_progress"
+                android:textColor="@color/conjure_black"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -110,6 +114,7 @@
                 android:layout_marginTop="15dp"
                 android:fontFamily="@font/nunito_sans_light"
                 android:text="@string/last_played_label"
+                android:textColor="@color/conjure_black"
                 android:textSize="36sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/progressAlbum" />
@@ -194,10 +199,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
-                android:backgroundTint="@color/conjure_red"
+                android:backgroundTint="@color/conjure_purple_really_dark"
                 android:clickable="true"
                 android:focusable="true"
-                app:cardBackgroundColor="@color/conjure_red"
+                app:cardBackgroundColor="@color/conjure_purple_really_dark"
                 app:cardCornerRadius="10dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/last_played_label">
@@ -248,74 +253,6 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 
-<!--            <androidx.cardview.widget.CardView-->
-<!--                android:id="@+id/ad"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginStart="40dp"-->
-<!--                android:layout_marginTop="32dp"-->
-<!--                android:layout_marginEnd="40dp"-->
-<!--                android:backgroundTint="@color/conjure_purple_pale"-->
-<!--                android:clickable="true"-->
-<!--                android:focusable="true"-->
-<!--                app:cardBackgroundColor="@color/conjure_purple_pale"-->
-<!--                app:cardCornerRadius="10dp"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintTop_toBottomOf="@id/tile_last_played_0">-->
-
-<!--&lt;!&ndash;                <LinearLayout&ndash;&gt;-->
-<!--&lt;!&ndash;                    android:layout_width="match_parent"&ndash;&gt;-->
-<!--&lt;!&ndash;                    android:layout_height="wrap_content"&ndash;&gt;-->
-<!--&lt;!&ndash;                    android:background="@color/conjure_purple_pale"&ndash;&gt;-->
-<!--&lt;!&ndash;                    android:orientation="vertical">&ndash;&gt;-->
-
-<!--                    <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="match_parent"-->
-<!--                        android:padding="8dp">-->
-
-<!--                        <FrameLayout-->
-<!--                            android:id="@+id/fl_adplaceholder"-->
-<!--                            android:layout_width="match_parent"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                            app:layout_constraintEnd_toEndOf="parent"-->
-<!--                            app:layout_constraintStart_toStartOf="parent"-->
-<!--                            app:layout_constraintTop_toTopOf="parent" />-->
-
-<!--                        <CheckBox-->
-<!--                            android:id="@+id/cb_start_muted"-->
-<!--                            android:layout_width="wrap_content"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:checked="true"-->
-<!--                            android:text="Start video ads muted"-->
-<!--                            app:layout_constraintStart_toStartOf="parent"-->
-<!--                            app:layout_constraintBottom_toBottomOf="parent" />-->
-
-<!--                        <Button-->
-<!--                            android:id="@+id/btn_refresh"-->
-<!--                            android:layout_width="wrap_content"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_gravity="center_horizontal"-->
-<!--                            android:layout_marginBottom="16dp"-->
-<!--                            android:text="Refresh Ad"-->
-<!--                            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                            app:layout_constraintStart_toStartOf="parent" />-->
-
-<!--                        <TextView-->
-<!--                            android:id="@+id/tv_video_status"-->
-<!--                            android:layout_width="match_parent"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:text="Video status: "-->
-<!--                            android:textAppearance="@style/TextAppearance.AppCompat.Medium"-->
-<!--                            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                            app:layout_constraintStart_toStartOf="parent" />-->
-<!--&lt;!&ndash;            </LinearLayout>&ndash;&gt;-->
-<!--                    </androidx.constraintlayout.widget.ConstraintLayout>-->
-<!--            </androidx.cardview.widget.CardView>-->
-
-
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
@@ -324,9 +261,9 @@
         android:id="@+id/bottom_navigation_bar"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:background="@color/conjure_purple_pale"
-        app:itemIconTint="@color/conjure_blue"
-        app:itemTextColor="@color/conjure_blue"
+        android:background="@color/conjure_black"
+        app:itemIconTint="@color/conjure_gray"
+        app:itemTextColor="@color/conjure_gray"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

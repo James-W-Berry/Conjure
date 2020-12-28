@@ -4,7 +4,7 @@
     <color name="primary">#FEDBD0</color>
 
     <color name="conjure_red">#BF2441</color>
-    <color name="conjure_gray">#EBEFF2</color>
+    <color name="conjure_gray">#d7e1ec</color>
     <color name="conjure_blue">#012E40</color>
     <color name="conjure_teal">#025E73</color>
     <color name="conjure_brown">#A66A5D</color>
@@ -14,6 +14,7 @@
     <color name="conjure_purple_dark">#4F238C</color>
     <color name="conjure_purple_pale">#9475BF</color>
     <color name="conjure_purple_really_dark">#251D59</color>
+    <color name="conjure_black">#191919</color>
 
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
