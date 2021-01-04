@@ -76,7 +76,7 @@ public class HomeActivity extends AppCompatActivity {
     private TextView artistStat;
     private TextView albumsStat;
     private String[] artistLibrary;
-
+ 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,6 +100,8 @@ public class HomeActivity extends AppCompatActivity {
         fetchLibraryArtists();
 
 
+
+
         handler.postDelayed(new Runnable(){
             public void run(){
                 if(isTokenValid()){
@@ -115,9 +117,6 @@ public class HomeActivity extends AppCompatActivity {
 
         //checkForFollowedArtists();
         //fetchAlbums();
-
-        progressAlbum = findViewById(R.id.progressAlbum);
-        progressBar = findViewById(R.id.progressBar);
 
 //        TextView updateButton = findViewById(R.id.update_button);
 //        TextView currentImageDatabaseVersion = findViewById(R.id.currentVersion);
@@ -493,8 +492,6 @@ public class HomeActivity extends AppCompatActivity {
                             if (task.getResult().isEmpty()) {
                                 Log.d(TAG, "processed all artists, stopping recurring processArtists task");
                                 handler.removeCallbacksAndMessages(null);
-                                progressLabel = findViewById(R.id.progressLabel);
-                                progressLabel.setText(R.string.progress_complete);
                             } else {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     Log.d(TAG, "still have unprocessed artists");

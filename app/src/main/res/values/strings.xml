@@ -45,6 +45,9 @@
     <string name="last_played_artist">Failure</string>
     <string name="last_played_album">Fantastic Planet</string>
 
+    <string name="manage_library">Manage Conjure Library</string>
+    <string name="manage_library_help">Add or remove detectable albums</string>
+
     <string name="new_user">newUser</string>
 
     <string name="onboarding_welcome_header">Welcome</string>
@@ -61,4 +64,6 @@
     <string name="onboarding_scan_message">Scan your favorite album covers to Conjure the music</string>
 
     <string name="onboarding_button_finish">Let\'s go!</string>
+
+    <string name="recognizer_helper">Search for an artist to learn how to detect their albums</string>
 </resources>

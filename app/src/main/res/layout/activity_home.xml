@@ -19,6 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+
             <TextView
                 android:id="@+id/ready"
                 android:layout_width="wrap_content"
@@ -56,68 +57,19 @@
                 app:layout_constraintTop_toBottomOf="@+id/ready" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/progressLabel"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_marginTop="32dp"
-                android:layout_marginEnd="40dp"
-                android:fontFamily="@font/nunito"
-                android:text="@string/progress_in_progress"
-                android:textColor="@color/conjure_black"
-                android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/albumStat" />
-
-            <!--            <ImageView-->
-            <!--                android:id="@+id/progressAlbum"-->
-            <!--                android:layout_width="150dp"-->
-            <!--                android:layout_height="150dp"-->
-            <!--                android:layout_marginStart="40dp"-->
-            <!--                android:contentDescription="@string/progress_album"-->
-            <!--                app:layout_constraintStart_toStartOf="parent"-->
-            <!--                app:layout_constraintTop_toBottomOf="@+id/progressLabel"-->
-            <!--                app:srcCompat="@drawable/vinyl" />-->
-
-            <com.airbnb.lottie.LottieAnimationView
-                android:id="@+id/progressAlbum"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:scaleType="centerCrop"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/progressLabel"
-                app:lottie_autoPlay="true"
-                app:lottie_loop="true"
-                app:lottie_rawRes="@raw/record_spin" />
-
-            <ProgressBar
-                android:id="@+id/progressBar"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="69dp"
-                android:layout_marginEnd="40dp"
-                android:indeterminate="false"
-                android:max="100"
-                android:progress="0"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/progressAlbum"
-                app:layout_constraintTop_toBottomOf="@+id/progressLabel" />
-
-            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/last_played_label"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
                 android:layout_marginTop="15dp"
+                android:layout_marginEnd="40dp"
                 android:fontFamily="@font/nunito_sans_light"
                 android:text="@string/last_played_label"
                 android:textColor="@color/conjure_black"
-                android:textSize="36sp"
+                android:textSize="30sp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/progressAlbum" />
+                app:layout_constraintTop_toBottomOf="@+id/artistStat" />
 
             <LinearLayout
                 android:id="@+id/btn_currentDatabase"
@@ -252,6 +204,76 @@
                         app:layout_constraintTop_toBottomOf="@id/last_played_artist_0" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/manage_library"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="40dp"
+                android:fontFamily="@font/nunito_sans_light"
+                android:text="@string/manage_library"
+                android:textColor="@color/conjure_black"
+                android:textSize="30sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tile_last_played_0" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/tile_manage_library"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="40dp"
+                android:backgroundTint="@color/conjure_purple_really_dark"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardBackgroundColor="@color/conjure_purple_really_dark"
+                app:cardCornerRadius="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/manage_library">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/tile_manage_library_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="8dp">
+
+                    <ImageView
+                        android:id="@+id/manage_library_image"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_margin="8dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/tile_manage_library_layout"
+                        app:srcCompat="@drawable/library" />
+
+                    <TextView
+                        android:id="@+id/manage_library_label"
+                        android:layout_width="0dp"
+                        android:layout_height="57dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/nunito_sans_light"
+                        android:text="@string/manage_library_help"
+                        android:textColor="@color/conjure_gray"
+                        android:textSize="18sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/manage_library_image"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.6" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
