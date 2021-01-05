@@ -4,33 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/conjure_black">
+    android:background="@color/conjure_black" >
 
     <TextView
-        android:id="@+id/help"
+        android:id="@+id/album_selector_help"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:fontFamily="sans-serif"
-        android:text="@string/recognizer_helper"
+        android:text="@string/album_selector_helper"
         android:textColor="@color/conjure_gray"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <SearchView
-        android:id="@+id/searchbar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/help" />
 
     <ProgressBar
         android:id="@+id/indeterminateBar"
@@ -41,16 +30,16 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/searchbar" />
+        app:layout_constraintTop_toBottomOf="@id/album_selector_help" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/search_results"
+        android:id="@+id/artist_album_results"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/indeterminateBar" />
+        app:layout_constraintTop_toBottomOf="@+id/album_selector_help" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

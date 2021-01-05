@@ -57,17 +57,10 @@ import java.util.stream.Stream;
 
 public class HomeActivity extends AppCompatActivity {
     private String TAG = "HomeActivity";
-    private FirebaseStorage storage = FirebaseStorage.getInstance();
     private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
     private String mUserId;
     private String mAccessToken;
     private FirebaseFunctions mFunctions;
-
-    private ImageView progressAlbum;
-    private ProgressBar progressBar;
-    private AppCompatTextView progressLabel;
-    private JSONObject newArtists = new JSONObject();
-    private String firebaseUserId;
     private Call mCall;
     private final OkHttpClient mOkHttpClient = new OkHttpClient();
     Handler handler = new Handler();
@@ -277,40 +270,40 @@ public class HomeActivity extends AppCompatActivity {
 //        }
     }
 
-    private void checkForFollowedArtists(){
-        checkFollowedArtists(mAccessToken, mUserId)
-            .addOnCompleteListener(task -> {
-                if (!task.isSuccessful()) {
-                    Exception e = task.getException();
-                    if (e instanceof FirebaseFunctionsException) {
-                        FirebaseFunctionsException ffe = (FirebaseFunctionsException) e;
-                        Code code = ffe.getCode();
-                        Object details = ffe.getDetails();
-                    }
-                    Log.w(TAG, "checkFollowedArtists:onFailure", e);
-                    return;
-                }
-                Object result = task.getResult();
-                assert result != null;
-
-                try {
-                    String data = result.toString();
-                    Log.d(TAG, data);
-
-                    data = data.replace("{artistDiff=", "");
-                    data = data.replace("}}", "}");
-                    data = data.replace("=", ":");
-                    data= data.replace("{", "{\"");
-                    data= data.replace("}", "\"}");
-                    data= data.replace(":spotify", "\":\"spotify");
-                    Log.d(TAG, data);
-
-                    newArtists = new JSONObject(data);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
-    }
+//    private void checkForFollowedArtists(){
+//        checkFollowedArtists(mAccessToken, mUserId)
+//            .addOnCompleteListener(task -> {
+//                if (!task.isSuccessful()) {
+//                    Exception e = task.getException();
+//                    if (e instanceof FirebaseFunctionsException) {
+//                        FirebaseFunctionsException ffe = (FirebaseFunctionsException) e;
+//                        Code code = ffe.getCode();
+//                        Object details = ffe.getDetails();
+//                    }
+//                    Log.w(TAG, "checkFollowedArtists:onFailure", e);
+//                    return;
+//                }
+//                Object result = task.getResult();
+//                assert result != null;
+//
+//                try {
+//                    String data = result.toString();
+//                    Log.d(TAG, data);
+//
+//                    data = data.replace("{artistDiff=", "");
+//                    data = data.replace("}}", "}");
+//                    data = data.replace("=", ":");
+//                    data= data.replace("{", "{\"");
+//                    data= data.replace("}", "\"}");
+//                    data= data.replace(":spotify", "\":\"spotify");
+//                    Log.d(TAG, data);
+//
+//                    newArtists = new JSONObject(data);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            });
+//    }
 
     private Task<Object> getSpotifyFollowedArtists(String token, String userId) {
         Map<String, Object> data = new HashMap<>();
@@ -380,7 +373,6 @@ public class HomeActivity extends AppCompatActivity {
                     return;
                 }
                 if (snapshot != null && snapshot.exists()) {
-                    firebaseUserId = mUserId;
                     Object artistTotal = Objects.requireNonNull(snapshot.getData()).get("totalArtists");
                     Object albumTotal = Objects.requireNonNull(snapshot.getData()).get("totalAlbums");
 
@@ -514,50 +506,51 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    private void fetchAlbums() {
-        if(mUserId != null) {
-            Log.d(TAG, "fetching album pictures");
-            firestore.collection("users").document(mUserId).collection("albums")
-//                .whereEqualTo("processed", null)
-                .limit(10)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if(task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())){
-                            String imageUrl = Objects.requireNonNull(document.get("image")).toString();
-                                    final Request request = new Request.Builder()
-                                            .url(imageUrl)
-                                            .build();
+//    private void fetchAlbums() {
+//        if(mUserId != null) {
+//            Log.d(TAG, "fetching album pictures");
+//            firestore.collection("users").document(mUserId).collection("albums")
+////                .whereEqualTo("processed", null)
+//                .limit(10)
+//                .get()
+//                .addOnCompleteListener(task -> {
+//                    if(task.isSuccessful()) {
+//                        for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())){
+//                            String imageUrl = Objects.requireNonNull(document.get("image")).toString();
+//                                    final Request request = new Request.Builder()
+//                                            .url(imageUrl)
+//                                            .build();
+//
+//                                    mCall = mOkHttpClient.newCall(request);
+//
+//                                    mCall.enqueue(new Callback() {
+//                                        @Override
+//                                        public void onFailure(Call call, IOException e) {
+//                                            Log.d(TAG, "Failed to fetch album image: " + e);
+//                                        }
+//                                        @Override
+//                                        public void onResponse(Call call, Response response) throws IOException {
+//                                            if (response.isSuccessful()){
+//                                                try{
+//                                                    assert response.body() != null;
+//                                                    final Bitmap bitmap = BitmapFactory.decodeStream(response.body().byteStream());
+//                                                    progressBar.incrementProgressBy(1);
+//                                                    new Handler(Looper.getMainLooper()).post(() -> progressAlbum.setImageBitmap(bitmap));
+//                                                } catch (Exception e){
+//                                                    Log.d(TAG, "Could not set progress image to album image: "
+//                                                    + e.getMessage());
+//                                                }
+//                                            } else {
+//                                                Log.d(TAG, "Failed to fetch album image");
+//                                            }
+//                                        }
+//                                    });
+//                        }
+//                    } else {
+//                        Log.d(TAG, "Error getting album documents: " , task.getException());
+//                    }
+//                });
+//        }
+//    }
 
-                                    mCall = mOkHttpClient.newCall(request);
-
-                                    mCall.enqueue(new Callback() {
-                                        @Override
-                                        public void onFailure(Call call, IOException e) {
-                                            Log.d(TAG, "Failed to fetch album image: " + e);
-                                        }
-                                        @Override
-                                        public void onResponse(Call call, Response response) throws IOException {
-                                            if (response.isSuccessful()){
-                                                try{
-                                                    assert response.body() != null;
-                                                    final Bitmap bitmap = BitmapFactory.decodeStream(response.body().byteStream());
-                                                    progressBar.incrementProgressBy(1);
-                                                    new Handler(Looper.getMainLooper()).post(() -> progressAlbum.setImageBitmap(bitmap));
-                                                } catch (Exception e){
-                                                    Log.d(TAG, "Could not set progress image to album image: "
-                                                    + e.getMessage());
-                                                }
-                                            } else {
-                                                Log.d(TAG, "Failed to fetch album image");
-                                            }
-                                        }
-                                    });
-                        }
-                    } else {
-                        Log.d(TAG, "Error getting album documents: " , task.getException());
-                    }
-                });
-        }
-    }
 }

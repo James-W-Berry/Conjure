@@ -1,21 +1,17 @@
 package com.berryspace.Connectors;
 
-import android.content.SharedPreferences;
 import android.util.Log;
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.berryspace.conjure.Artist;
-import com.google.firebase.firestore.auth.User;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +37,6 @@ public class ArtistSearchService {
     public void getSearchResultArtists(final VolleyCallback callBack) throws JSONException {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, ENDPOINT + "?q=" + mQuery + "&type=artist", null, response -> {
-                    Gson gson = new Gson();
                      try {
                         JSONObject result = response.getJSONObject("artists");
                         JSONArray items = (JSONArray) result.get("items");
@@ -54,8 +49,17 @@ public class ArtistSearchService {
                                  artist.setName((String) object.get("name"));
                                  JSONObject image = (JSONObject) images.get(0);
                                  artist.setImageUrl(image.get("url").toString());
-                                 Log.i(TAG, artist.getName());
-                                 Log.i(TAG, artist.getImageUrl());
+                                 JSONArray genres = (JSONArray) object.get("genres");
+                                 artist.setGenres(
+                                         genres.toString().replace("[","")
+                                                 .replace("]","")
+                                                 .replace("\"", "")
+                                                 .replace(",",", "));
+                                 JSONObject followers = (JSONObject) object.get("followers");
+                                 NumberFormat numberFormat = NumberFormat.getInstance();
+                                 numberFormat.setGroupingUsed(true);
+                                 artist.setFollowers((String) numberFormat.format(followers.get("total")));
+                                 artist.setId((String) object.get("id"));
 
                                  artists.add(artist);
                              } catch (JSONException e) {

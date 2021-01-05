@@ -67,4 +67,8 @@
     <string name="onboarding_button_finish">Let\'s go!</string>
 
     <string name="recognizer_helper">Search for an artist to learn how to detect their albums</string>
+    <string name="album_selector_helper">Select the albums you want to be able to detect</string>
+    <string name="content_description_artist_image">artist image</string>
+    <string name="content_description_album_image">album image</string>
+
 </resources>
