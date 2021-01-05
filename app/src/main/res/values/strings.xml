@@ -47,6 +47,7 @@
 
     <string name="manage_library">Manage Conjure Library</string>
     <string name="manage_library_help">Add or remove detectable albums</string>
+    <string name="search_result">No results</string>
 
     <string name="new_user">newUser</string>
 

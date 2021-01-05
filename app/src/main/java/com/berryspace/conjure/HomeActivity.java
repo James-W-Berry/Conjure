@@ -76,7 +76,9 @@ public class HomeActivity extends AppCompatActivity {
     private TextView artistStat;
     private TextView albumsStat;
     private String[] artistLibrary;
- 
+
+    private CardView manageLibraryCard;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,7 +102,12 @@ public class HomeActivity extends AppCompatActivity {
         fetchLibraryArtists();
 
 
-
+        manageLibraryCard = findViewById(R.id.tile_manage_library);
+        manageLibraryCard.setOnClickListener(v -> {
+            Intent intent = new Intent(this, RecognizerActivity.class);
+            intent.putExtra("token", mAccessToken);
+            startActivity(intent);
+        });
 
         handler.postDelayed(new Runnable(){
             public void run(){

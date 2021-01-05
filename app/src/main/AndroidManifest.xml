@@ -86,6 +86,17 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="com.berryspace.conjure.RecognizerActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="true"
+            android:screenOrientation="locked"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+
         <!-- This tag indicates that this application requires ARCore.  This results in the Google Play
              Store downloading and installing ARCore along with the application. -->
         <meta-data
