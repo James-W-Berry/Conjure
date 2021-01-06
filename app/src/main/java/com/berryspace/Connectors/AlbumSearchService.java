@@ -1,5 +1,6 @@
 package com.berryspace.Connectors;
 
+import android.content.Intent;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
@@ -7,6 +8,8 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.berryspace.conjure.Album;
+import com.berryspace.conjure.SpotifyAuth;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,7 +17,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AlbumSearchService {
+import androidx.appcompat.app.AppCompatActivity;
+
+public class AlbumSearchService  extends AppCompatActivity {
     private static final String TAG = "AlbumSearchService";
     private static final String ENDPOINT = "https://api.spotify.com/v1/artists/";
     private String mToken;
@@ -36,7 +41,6 @@ public class AlbumSearchService {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, ENDPOINT + mId + "/albums/?include_groups=album&limit=50", null, response -> {
                     try {
-                        Log.d(TAG, response.toString());
                         JSONArray items = (JSONArray) response.get("items");
                         for (int n = 0; n < items.length(); n++) {
                             try {
@@ -58,8 +62,11 @@ public class AlbumSearchService {
                     }
                     callBack.onSuccess();
                 }, error -> {
-                    // TODO: Handle error
-
+                    Log.i(TAG, error.toString());
+                    if (error instanceof AuthFailureError){
+                        // get new token from local Spotify client
+                        authenticateWithSpotify();
+                    }
                 }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
@@ -71,4 +78,9 @@ public class AlbumSearchService {
         };
         mQueue.add(jsonObjectRequest);
     }
+
+    private void authenticateWithSpotify(){
+        Intent intent = new Intent(this.getParent(), SpotifyAuth.class);
+        startActivity(intent);
+    };
 }

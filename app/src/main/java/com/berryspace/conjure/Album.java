@@ -17,6 +17,7 @@ public class Album {
         this.year = year;
     }
 
+
     public String getName() {
         return name;
     }
@@ -28,4 +29,5 @@ public class Album {
     public String getYear() {
         return year;
     }
-  }
+
+   }

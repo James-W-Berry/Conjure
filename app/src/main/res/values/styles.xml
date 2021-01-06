@@ -1,8 +1,8 @@
 <resources>
 
-    <style name="AppBaseTheme" parent="android:Theme.Light"> </style>
+    <style name="AppBaseTheme" parent="Theme.MaterialComponents.DayNight"> </style>
 
-     <style name="AppTheme" parent="Theme.AppCompat">
+     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight">
          <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/secondary</item>
      </style>

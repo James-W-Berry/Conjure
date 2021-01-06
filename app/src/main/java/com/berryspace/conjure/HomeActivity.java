@@ -64,7 +64,7 @@ public class HomeActivity extends AppCompatActivity {
     private Call mCall;
     private final OkHttpClient mOkHttpClient = new OkHttpClient();
     Handler handler = new Handler();
-    private Integer artistProcessDelay = 10000;
+    private Integer artistProcessDelay = 60000;
 
     private TextView artistStat;
     private TextView albumsStat;
@@ -94,7 +94,6 @@ public class HomeActivity extends AppCompatActivity {
         fetchStats();
         fetchLibraryArtists();
 
-
         manageLibraryCard = findViewById(R.id.tile_manage_library);
         manageLibraryCard.setOnClickListener(v -> {
             Intent intent = new Intent(this, RecognizerActivity.class);
@@ -102,18 +101,22 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        handler.postDelayed(new Runnable(){
-            public void run(){
-                if(isTokenValid()){
-                    Log.d(TAG, "token is valid, checking for unprocessed artists");
-                    checkForUnprocessedArtists();
-                } else {
-                    Log.d(TAG, "token is invalid, retrieving  a new token");
-                    authenticateWithSpotify();
-                }
-//                handler.postDelayed(this, artistProcessDelay);
+        if(isTokenValid()){
+            Log.d(TAG, "token is valid");
+         } else {
+            Log.d(TAG, "token is invalid, retrieving  a new token");
+            authenticateWithSpotify();
+        }
+
+        handler.postDelayed(() -> {
+            if(isTokenValid()){
+                Log.d(TAG, "token is valid");
+                //checkForUnprocessedArtists();
+            } else {
+                Log.d(TAG, "token is invalid, retrieving  a new token");
+                authenticateWithSpotify();
             }
-        }, artistProcessDelay);
+         }, artistProcessDelay);
 
         //checkForFollowedArtists();
         //fetchAlbums();
@@ -159,7 +162,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        handler.removeCallbacksAndMessages(null);
+        //handler.removeCallbacksAndMessages(null);
     }
 
     @Override

@@ -1,11 +1,13 @@
 package com.berryspace.Connectors;
 
+import android.content.Intent;
 import android.util.Log;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.berryspace.conjure.Artist;
+import com.berryspace.conjure.SpotifyAuth;
 import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,7 +18,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ArtistSearchService {
+import androidx.appcompat.app.AppCompatActivity;
+
+public class ArtistSearchService extends AppCompatActivity {
     private static final String TAG = "ArtistSearchService";
     private static final String ENDPOINT = "https://api.spotify.com/v1/search";
     private String mToken;
@@ -70,11 +74,13 @@ public class ArtistSearchService {
                         e.printStackTrace();
                     }
 
-
                     callBack.onSuccess();
                 }, error -> {
-                    // TODO: Handle error
-
+                    Log.i(TAG, error.toString());
+                    if (error instanceof AuthFailureError){
+                        // get new token from local Spotify client
+                        authenticateWithSpotify();
+                    }
                 }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
@@ -86,4 +92,9 @@ public class ArtistSearchService {
         };
         mQueue.add(jsonObjectRequest);
     }
+
+    private void authenticateWithSpotify(){
+        Intent intent = new Intent(this.getParent(), SpotifyAuth.class);
+        startActivity(intent);
+    };
 }

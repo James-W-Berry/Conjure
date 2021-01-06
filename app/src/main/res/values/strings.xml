@@ -70,5 +70,7 @@
     <string name="album_selector_helper">Select the albums you want to be able to detect</string>
     <string name="content_description_artist_image">artist image</string>
     <string name="content_description_album_image">album image</string>
+    <string name="selected_album_count">No selected albums</string>
+    <string name="learn_to_detect">Learn to detect</string>
 
 </resources>
