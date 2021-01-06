@@ -7,19 +7,21 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
-import android.widget.SearchView;
 import android.widget.TextView;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.berryspace.Connectors.AlbumSearchService;
-import com.berryspace.Connectors.SelectedAlbumCountInterface;
+ import com.berryspace.Connectors.SelectedAlbumsInterface;
+
 import org.json.JSONException;
 import java.util.ArrayList;
+import java.util.HashMap;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class AlbumSelectorActivity extends AppCompatActivity implements SelectedAlbumCountInterface {
+public class AlbumSelectorActivity extends AppCompatActivity implements SelectedAlbumsInterface {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -30,6 +32,7 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
     private ProgressBar progressBar;
     private TextView selectedAlbumCount;
     private Button startRecognitionButton;
+    private HashMap<String, String> selectedAlbums;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +51,9 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         startRecognitionButton = findViewById(R.id.start_recognition_button);
+        startRecognitionButton.setOnClickListener(v -> {
+            Log.i(TAG, selectedAlbums.toString());
+        });
 
         try {
             search(id);
@@ -58,17 +64,21 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
 
     @Override
     public void transferSelectedAlbumCount(Integer count){
-        Log.i(TAG, String.valueOf(count));
         if(count>0){
             startRecognitionButton.setVisibility(View.VISIBLE);
             selectedAlbumCount.setText(count.toString() + " albums selected");
-        } else if(count.equals((Integer)1)){
+        } else if(count.equals(1)){
             startRecognitionButton.setVisibility(View.VISIBLE);
             selectedAlbumCount.setText(count.toString() + " album selected");
         } else {
             startRecognitionButton.setVisibility(View.INVISIBLE);
             selectedAlbumCount.setText("No albums selected");
         }
+    }
+
+    @Override
+    public void transferSelectedAlbumImages(HashMap<String, String> albums){
+         selectedAlbums = albums;
     }
 
     private void search(String id) throws JSONException {

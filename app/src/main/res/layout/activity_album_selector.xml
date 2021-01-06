@@ -53,7 +53,7 @@
         android:textAlignment="center"
         android:textColor="@color/conjure_black"
         android:textSize="18sp"
-        android:visibility="visible"
+        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/artist_album_results"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/selected_album_count"

@@ -1,20 +1,21 @@
 package com.berryspace.conjure;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.berryspace.Connectors.SelectedAlbumCountInterface;
+ import com.berryspace.Connectors.SelectedAlbumsInterface;
 import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,7 +26,8 @@ public class AlbumSearchResultsAdapter extends RecyclerView.Adapter<AlbumSearchR
     public Context context;
     private static final String TAG="AlbumSearchResultsAdapter";
     private HashMap<Integer, Boolean> selectedAlbums = new HashMap<>();
-    SelectedAlbumCountInterface selectedAlbumCountInterface;
+    private HashMap<String, String> selectedAlbumImages = new HashMap<>();
+    SelectedAlbumsInterface selectedAlbumsInterface;
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         public CardView cardView;
@@ -33,7 +35,6 @@ public class AlbumSearchResultsAdapter extends RecyclerView.Adapter<AlbumSearchR
         public ImageView imageView;
         public TextView year;
         public CheckBox selectorButton;
-        private static String TAG = "AlbumSearchResultsAdapter";
 
         public MyViewHolder(ConstraintLayout view) {
             super(view);
@@ -45,14 +46,15 @@ public class AlbumSearchResultsAdapter extends RecyclerView.Adapter<AlbumSearchR
         }
     }
 
-    public AlbumSearchResultsAdapter(ArrayList<Album> dataset, SelectedAlbumCountInterface selectedAlbumCountInterface) {
+    public AlbumSearchResultsAdapter(ArrayList<Album> dataset, SelectedAlbumsInterface selectedAlbumCountInterface) {
         mDataset = dataset;
         for (int i = 0; i < mDataset.size(); i++) {
             selectedAlbums.put(i, false);
         }
-        this.selectedAlbumCountInterface = selectedAlbumCountInterface;
+        this.selectedAlbumsInterface = selectedAlbumCountInterface;
       }
 
+    @NonNull
     @Override
     public AlbumSearchResultsAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         ConstraintLayout view = (ConstraintLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.search_item_album, parent, false);
@@ -63,39 +65,43 @@ public class AlbumSearchResultsAdapter extends RecyclerView.Adapter<AlbumSearchR
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        holder.albumName.setText((CharSequence) mDataset.get(position).getName());
-        holder.year.setText((CharSequence) (mDataset.get(position).getYear()));
+        holder.albumName.setText(mDataset.get(position).getName());
+        holder.year.setText(mDataset.get(position).getYear());
         Picasso.with(context).load(mDataset.get(position).getImageUrl()).into(holder.imageView);
         holder.selectorButton.setChecked(selectedAlbums.get(position));
 
         holder.itemView.setOnClickListener(v -> {
-            Log.i(TAG, "album selected: " + mDataset.get(position).getImageUrl());
             if (holder.selectorButton.isChecked()){
                 selectedAlbums.put(position, false);
+                selectedAlbumImages.remove(mDataset.get(position).getName());
                 holder.selectorButton.setChecked(false);
              } else {
                 selectedAlbums.put(position, true);
+                selectedAlbumImages.put(mDataset.get(position).getName(), mDataset.get(position).getImageUrl());
                 holder.selectorButton.setChecked(true);
              }
-            updateSelectedAlbumCount();
+            updateSelectedAlbums();
          });
 
         holder.selectorButton.setOnClickListener(v -> {
             if (holder.selectorButton.isChecked()){
                 selectedAlbums.put(position, true);
+                selectedAlbumImages.put(mDataset.get(position).getName(), mDataset.get(position).getImageUrl());
             } else {
                 selectedAlbums.put(position, false);
+                selectedAlbumImages.remove(mDataset.get(position).getName());
             }
-            updateSelectedAlbumCount();
+            updateSelectedAlbums();
         });
     }
 
-    void updateSelectedAlbumCount(){
+    void updateSelectedAlbums(){
         Map<Object, Object> filteredMap = selectedAlbums.entrySet().stream()
-                .filter(map -> map.getValue() == true)
-                .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+                .filter(Entry::getValue)
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 
-        selectedAlbumCountInterface.transferSelectedAlbumCount(filteredMap.size());
+        selectedAlbumsInterface.transferSelectedAlbumCount(filteredMap.size());
+        selectedAlbumsInterface.transferSelectedAlbumImages(selectedAlbumImages);
     }
 
     @Override

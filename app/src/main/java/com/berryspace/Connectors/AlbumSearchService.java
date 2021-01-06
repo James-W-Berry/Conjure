@@ -37,7 +37,7 @@ public class AlbumSearchService  extends AppCompatActivity {
         return albums;
     }
 
-    public void getSearchResultArtists(final VolleyCallback callBack) throws JSONException {
+    public void getSearchResultArtists(final VolleyCallback callBack) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, ENDPOINT + mId + "/albums/?include_groups=album&limit=50", null, response -> {
                     try {
