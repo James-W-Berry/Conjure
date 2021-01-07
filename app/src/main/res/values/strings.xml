@@ -73,4 +73,6 @@
     <string name="selected_album_count">No selected albums</string>
     <string name="learn_to_detect">Learn to detect</string>
 
+    <string name="album_download_message">Ready to conjure %1$d albums from %2$s</string>
+
 </resources>

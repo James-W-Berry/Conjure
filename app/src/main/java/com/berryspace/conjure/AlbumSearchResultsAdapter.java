@@ -1,6 +1,7 @@
 package com.berryspace.conjure;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -71,25 +72,27 @@ public class AlbumSearchResultsAdapter extends RecyclerView.Adapter<AlbumSearchR
         holder.selectorButton.setChecked(selectedAlbums.get(position));
 
         holder.itemView.setOnClickListener(v -> {
+            Log.i(TAG, mDataset.get(position).getImageUrl());
             if (holder.selectorButton.isChecked()){
                 selectedAlbums.put(position, false);
-                selectedAlbumImages.remove(mDataset.get(position).getName());
+                selectedAlbumImages.remove(mDataset.get(position).getId());
                 holder.selectorButton.setChecked(false);
              } else {
                 selectedAlbums.put(position, true);
-                selectedAlbumImages.put(mDataset.get(position).getName(), mDataset.get(position).getImageUrl());
+                selectedAlbumImages.put(mDataset.get(position).getId(), mDataset.get(position).getImageUrl());
                 holder.selectorButton.setChecked(true);
              }
             updateSelectedAlbums();
          });
 
         holder.selectorButton.setOnClickListener(v -> {
+            Log.i(TAG, mDataset.get(position).getImageUrl());
             if (holder.selectorButton.isChecked()){
                 selectedAlbums.put(position, true);
-                selectedAlbumImages.put(mDataset.get(position).getName(), mDataset.get(position).getImageUrl());
+                selectedAlbumImages.put(mDataset.get(position).getId(), mDataset.get(position).getImageUrl());
             } else {
                 selectedAlbums.put(position, false);
-                selectedAlbumImages.remove(mDataset.get(position).getName());
+                selectedAlbumImages.remove(mDataset.get(position).getId());
             }
             updateSelectedAlbums();
         });

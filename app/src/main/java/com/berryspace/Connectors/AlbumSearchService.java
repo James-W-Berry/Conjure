@@ -52,6 +52,7 @@ public class AlbumSearchService  extends AppCompatActivity {
                                 album.setImageUrl(image.get("url").toString());
                                 album.setName((String) object.get("name"));
                                 album.setYear((String) object.get("release_date"));
+                                album.setId((String) object.get("id"));
                                 albums.add(album);
                             } catch (JSONException e) {
                                 e.printStackTrace();

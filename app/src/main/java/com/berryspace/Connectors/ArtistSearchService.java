@@ -8,11 +8,9 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.berryspace.conjure.Artist;
 import com.berryspace.conjure.SpotifyAuth;
-import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,7 +36,7 @@ public class ArtistSearchService extends AppCompatActivity {
         return artists;
     }
 
-    public void getSearchResultArtists(final VolleyCallback callBack) throws JSONException {
+    public void getSearchResultArtists(final VolleyCallback callBack) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, ENDPOINT + "?q=" + mQuery + "&type=artist", null, response -> {
                      try {

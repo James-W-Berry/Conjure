@@ -50,15 +50,16 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<SearchResultsAdap
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        holder.artistName.setText((CharSequence) mDataset.get(position).getName());
-        holder.genres.setText((CharSequence) (mDataset.get(position).getGenres()));
-        holder.followers.setText((CharSequence) (mDataset.get(position).getFollowers()+" followers"));
+        holder.artistName.setText(mDataset.get(position).getName());
+        holder.genres.setText(mDataset.get(position).getGenres());
+        holder.followers.setText(mDataset.get(position).getFollowers()+" followers");
         Picasso.with(context).load(mDataset.get(position).getImageUrl()).into(holder.imageView);
 
          holder.itemView.setOnClickListener(v -> {
             Log.i(TAG, "trying to launch AlbumSelectorActivity");
             Intent intent = new Intent (v.getContext(), AlbumSelectorActivity.class);
             intent.putExtra("id", mDataset.get(position).getId());
+            intent.putExtra("name", mDataset.get(position).getName());
             v.getContext().startActivity(intent);
         });
      }

@@ -2,6 +2,7 @@ package com.berryspace.conjure;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,13 +11,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
+import com.berryspace.Connectors.AlbumDownloadService;
 import com.berryspace.Connectors.AlbumSearchService;
  import com.berryspace.Connectors.SelectedAlbumsInterface;
 
 import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,6 +34,8 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
     private TextView selectedAlbumCount;
     private Button startRecognitionButton;
     private HashMap<String, String> selectedAlbums;
+    private String artistName;
+    private TextView albumDownloadMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +47,7 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
 
         setContentView(R.layout.activity_album_selector);
         String id = getIntent().getStringExtra("id");
+        artistName = getIntent().getStringExtra("name");
 
         selectedAlbumCount = findViewById(R.id.selected_album_count);
         progressBar = findViewById(R.id.indeterminateBar);
@@ -53,7 +57,9 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
         startRecognitionButton = findViewById(R.id.start_recognition_button);
         startRecognitionButton.setOnClickListener(v -> {
             Log.i(TAG, selectedAlbums.toString());
+            downloadAlbumImages(selectedAlbums);
         });
+        albumDownloadMessage = findViewById(R.id.album_download_message);
 
         try {
             search(id);
@@ -96,10 +102,25 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
         recyclerView.setAdapter(mAdapter);
     }
 
+    private void clearSearchResults(){
+        recyclerView.setAdapter(null);
+    }
+
     private void updateSearchStatus(Integer visibility){
         progressBar.setVisibility(visibility);
     }
 
-
+    private void downloadAlbumImages(HashMap<String, String> images){
+        updateSearchStatus(View.VISIBLE);
+        AlbumDownloadService albumDownloadService = new AlbumDownloadService(images, this);
+        albumDownloadService.getAlbumImages();
+        updateSearchStatus(View.INVISIBLE);
+        startRecognitionButton.setVisibility(View.INVISIBLE);
+        clearSearchResults();
+        String text = getString(R.string.album_download_message, images.size(), artistName);
+        selectedAlbumCount.setVisibility(View.INVISIBLE);
+        albumDownloadMessage.setVisibility(View.VISIBLE);
+        albumDownloadMessage.setText(text);
+    }
 
 }

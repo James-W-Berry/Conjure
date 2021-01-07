@@ -29,6 +29,7 @@ import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.FirebaseFunctionsException;
 import com.google.firebase.functions.FirebaseFunctionsException.Code;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -127,7 +128,7 @@ public class HomeActivity extends AppCompatActivity {
 //        updateButton.setOnClickListener(v -> {
 //            File localImageDatabase = new File(this.getFilesDir(),
 //                    (String) availableImageDatabaseVersion.getText());
-//            StorageReference storageReference = storage.getReference();
+           //StorageReference storageReference = storage.getReference();
 //
 //            storageReference.child("ImageDatabase/" + availableImageDatabaseVersion.getText())
 //                    .getFile(localImageDatabase)

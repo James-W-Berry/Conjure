@@ -71,5 +71,4 @@ class MuseImageDatabase {
         return false;
     }
 
-
 }
