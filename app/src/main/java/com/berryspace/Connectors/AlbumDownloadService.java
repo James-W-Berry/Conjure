@@ -15,7 +15,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class AlbumDownloadService  extends AppCompatActivity {
     private static final String TAG = "AlbumDownloadService";
-      private HashMap<String, String> mImages;
+    private static Drawable downloadStatus;
+    private HashMap<String, String> mImages;
       private Context mContext;
 
     public AlbumDownloadService(HashMap<String, String> images, Context context) {
@@ -23,7 +24,7 @@ public class AlbumDownloadService  extends AppCompatActivity {
         mContext = context;
      }
 
-     public void getAlbumImages() {
+     public Boolean getAlbumImages() {
          mImages.forEach((k, v)->{
              String uri = getFilename(k);
               try {
@@ -32,6 +33,7 @@ public class AlbumDownloadService  extends AppCompatActivity {
                  e.printStackTrace();
              }
           });
+         return true;
      }
 
     private static Target getTarget(final String fileName) {
@@ -58,12 +60,12 @@ public class AlbumDownloadService  extends AppCompatActivity {
 
             @Override
             public void onBitmapFailed(Drawable errorDrawable) {
-
+                downloadStatus = errorDrawable;
             }
 
             @Override
             public void onPrepareLoad(Drawable placeHolderDrawable) {
-
+                downloadStatus = placeHolderDrawable;
             }
         };
         return target;

@@ -53,6 +53,7 @@ public class AlbumSearchResultsAdapter extends RecyclerView.Adapter<AlbumSearchR
             selectedAlbums.put(i, false);
         }
         this.selectedAlbumsInterface = selectedAlbumCountInterface;
+
       }
 
     @NonNull

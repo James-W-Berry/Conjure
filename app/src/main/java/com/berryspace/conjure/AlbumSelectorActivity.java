@@ -1,12 +1,16 @@
 package com.berryspace.conjure;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.Image;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.android.volley.RequestQueue;
@@ -19,6 +23,7 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -36,6 +41,10 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
     private HashMap<String, String> selectedAlbums;
     private String artistName;
     private TextView albumDownloadMessage;
+    private Handler handler = new Handler();
+    private Integer showAllAlbumsSelector = 0;
+    private ConstraintLayout selectAll;
+    private CheckBox selectAllButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +69,9 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
             downloadAlbumImages(selectedAlbums);
         });
         albumDownloadMessage = findViewById(R.id.album_download_message);
+        selectAll = findViewById(R.id.select_all_view);
+        selectAll.setVisibility(showAllAlbumsSelector);
+        selectAllButton = selectAll.findViewById(R.id.select_all_button);
 
         try {
             search(id);
@@ -92,6 +104,7 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
         AlbumSearchService albumSearchService = new AlbumSearchService(queue, token, id);
         albumSearchService.getSearchResultArtists(() -> {
             searchResults = albumSearchService.getAlbums();
+            showAllAlbumsSelector = searchResults.size() > 1 ? 0: 4;
             updateSearchResult();
             updateSearchStatus(View.INVISIBLE);
         });
@@ -112,15 +125,20 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
 
     private void downloadAlbumImages(HashMap<String, String> images){
         updateSearchStatus(View.VISIBLE);
-        AlbumDownloadService albumDownloadService = new AlbumDownloadService(images, this);
-        albumDownloadService.getAlbumImages();
-        updateSearchStatus(View.INVISIBLE);
-        startRecognitionButton.setVisibility(View.INVISIBLE);
-        clearSearchResults();
-        String text = getString(R.string.album_download_message, images.size(), artistName);
         selectedAlbumCount.setVisibility(View.INVISIBLE);
-        albumDownloadMessage.setVisibility(View.VISIBLE);
-        albumDownloadMessage.setText(text);
+        startRecognitionButton.setVisibility(View.INVISIBLE);
+
+        AlbumDownloadService albumDownloadService = new AlbumDownloadService(images, this);
+        Boolean done = albumDownloadService.getAlbumImages();
+        if(done){
+            clearSearchResults();
+            updateSearchStatus(View.INVISIBLE);
+            String text = getString(R.string.album_download_message, images.size(), artistName);
+            albumDownloadMessage.setVisibility(View.VISIBLE);
+            albumDownloadMessage.setText(text);
+
+            handler.postDelayed(this::finish, 3000);
+        }
     }
 
 }
