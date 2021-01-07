@@ -124,9 +124,9 @@ public class SpotifyAuth extends AppCompatActivity {
                 .build();
     }
 
-    @Override
-    public void onDestroy() {
-        cancelCall();
-        super.onDestroy();
-    }
+//    @Override
+//    public void onDestroy() {
+//        cancelCall();
+//        //super.onDestroy();
+//    }
 }

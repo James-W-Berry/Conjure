@@ -29,6 +29,25 @@ public class AlbumSearchResultsAdapter extends RecyclerView.Adapter<AlbumSearchR
     private HashMap<Integer, Boolean> selectedAlbums = new HashMap<>();
     private HashMap<String, String> selectedAlbumImages = new HashMap<>();
     SelectedAlbumsInterface selectedAlbumsInterface;
+    private Boolean isSelectedAll = false;
+
+    public void selectAll(Boolean status){
+        isSelectedAll=status;
+        notifyDataSetChanged();
+        if(isSelectedAll) {
+            selectedAlbums.replaceAll( (k,v)->v=true );
+            mDataset.forEach(album -> {
+                selectedAlbumImages.put(album.getId(), album.getImageUrl());
+            });
+             updateSelectedAlbums();
+        } else {
+            selectedAlbums.replaceAll( (k,v)->v=false );
+            mDataset.forEach(album -> {
+                selectedAlbumImages.remove(album.getId());
+            });
+            updateSelectedAlbums();
+        }
+     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         public CardView cardView;
@@ -47,14 +66,13 @@ public class AlbumSearchResultsAdapter extends RecyclerView.Adapter<AlbumSearchR
         }
     }
 
-    public AlbumSearchResultsAdapter(ArrayList<Album> dataset, SelectedAlbumsInterface selectedAlbumCountInterface) {
+    public AlbumSearchResultsAdapter(ArrayList<Album> dataset, SelectedAlbumsInterface selectedAlbumCountInterface ) {
         mDataset = dataset;
         for (int i = 0; i < mDataset.size(); i++) {
             selectedAlbums.put(i, false);
         }
         this.selectedAlbumsInterface = selectedAlbumCountInterface;
-
-      }
+    }
 
     @NonNull
     @Override
@@ -62,7 +80,7 @@ public class AlbumSearchResultsAdapter extends RecyclerView.Adapter<AlbumSearchR
         ConstraintLayout view = (ConstraintLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.search_item_album, parent, false);
         MyViewHolder vh = new MyViewHolder(view);
         context = view.getContext();
-         return vh;
+        return vh;
     }
 
     @Override
@@ -112,6 +130,5 @@ public class AlbumSearchResultsAdapter extends RecyclerView.Adapter<AlbumSearchR
     public int getItemCount() {
         return mDataset.size();
     }
-
 
 }

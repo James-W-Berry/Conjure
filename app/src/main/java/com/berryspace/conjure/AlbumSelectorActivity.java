@@ -26,10 +26,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.Adapter;
 
 public class AlbumSelectorActivity extends AppCompatActivity implements SelectedAlbumsInterface {
     private RecyclerView recyclerView;
-    private RecyclerView.Adapter mAdapter;
+    private AlbumSearchResultsAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private static String TAG = "AlbumSelector";
     private RequestQueue queue;
@@ -42,9 +43,8 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
     private String artistName;
     private TextView albumDownloadMessage;
     private Handler handler = new Handler();
-    private Integer showAllAlbumsSelector = 0;
-    private ConstraintLayout selectAll;
     private CheckBox selectAllButton;
+    private ConstraintLayout selectAllView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,9 +69,8 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
             downloadAlbumImages(selectedAlbums);
         });
         albumDownloadMessage = findViewById(R.id.album_download_message);
-        selectAll = findViewById(R.id.select_all_view);
-        selectAll.setVisibility(showAllAlbumsSelector);
-        selectAllButton = selectAll.findViewById(R.id.select_all_button);
+        selectAllView = findViewById(R.id.select_all_view);
+        selectAllButton = findViewById(R.id.select_all_button);
 
         try {
             search(id);
@@ -84,13 +83,15 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
     public void transferSelectedAlbumCount(Integer count){
         if(count>0){
             startRecognitionButton.setVisibility(View.VISIBLE);
+            selectedAlbumCount.setVisibility(View.VISIBLE);
             selectedAlbumCount.setText(count.toString() + " albums selected");
         } else if(count.equals(1)){
             startRecognitionButton.setVisibility(View.VISIBLE);
+            selectedAlbumCount.setVisibility(View.VISIBLE);
             selectedAlbumCount.setText(count.toString() + " album selected");
         } else {
             startRecognitionButton.setVisibility(View.INVISIBLE);
-            selectedAlbumCount.setText("No albums selected");
+            selectedAlbumCount.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -104,7 +105,6 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
         AlbumSearchService albumSearchService = new AlbumSearchService(queue, token, id);
         albumSearchService.getSearchResultArtists(() -> {
             searchResults = albumSearchService.getAlbums();
-            showAllAlbumsSelector = searchResults.size() > 1 ? 0: 4;
             updateSearchResult();
             updateSearchStatus(View.INVISIBLE);
         });
@@ -112,6 +112,14 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
 
     private void updateSearchResult() {
         mAdapter = new AlbumSearchResultsAdapter(searchResults, this);
+        if(searchResults.size()>1){
+            selectAllView.setVisibility(View.VISIBLE);
+        }else{
+            selectAllView.setVisibility(View.INVISIBLE);
+        }
+        selectAllButton.setOnClickListener(v -> {
+            mAdapter.selectAll(selectAllButton.isChecked());
+        });
         recyclerView.setAdapter(mAdapter);
     }
 
