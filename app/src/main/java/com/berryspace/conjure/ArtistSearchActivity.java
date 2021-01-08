@@ -14,13 +14,12 @@ import com.berryspace.Connectors.ArtistSearchService;
 import org.json.JSONException;
 import java.util.ArrayList;
 
-
-public class RecognizerActivity extends AppCompatActivity {
+public class ArtistSearchActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
-     private SearchView searchView;
-    private static String TAG = "RecognizerActivity";
+    private SearchView searchView;
+    private static String TAG = "ArtistSearchActivity";
     private RequestQueue queue;
     private String token;
     private ArrayList<Artist> searchResults;

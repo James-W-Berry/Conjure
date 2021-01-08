@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.ar.core.AugmentedImage;
 import com.google.ar.core.Frame;
@@ -24,19 +23,18 @@ import com.spotify.android.appremote.api.error.NotLoggedInException;
 import com.spotify.android.appremote.api.error.UserNotAuthorizedException;
 
 public class AugmentedImageActivity extends AppCompatActivity {
-
     private static final String TAG = "AugmentedImageActivity";
     private String currentlyPlaying = "";
     private ArFragment arFragment;
     private ImageView fitToScanView;
     private final Map<AugmentedImage, AugmentedImageNode> augmentedImageMap = new HashMap<>();
-    private static final String TEST = BuildConfig.SPOTIFY_CLIENT_ID;
-    private static final String REDIRECT_URI = "com.berryspace.conjure://callback";
+    private static final String CLIENT_ID = BuildConfig.SPOTIFY_CLIENT_ID;
+    private static final String SPOTIFY_REDIRECT_URI = "com.berryspace.conjure://callback";
     private SpotifyAppRemote mSpotifyAppRemote;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, TEST);
+        Log.i(TAG, CLIENT_ID);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
 
@@ -50,7 +48,6 @@ public class AugmentedImageActivity extends AppCompatActivity {
                 case R.id.navigation_camera:
                     Log.d(TAG, "already on the camera screen");
                     break;
-
             }
             return true;
         });
@@ -60,8 +57,8 @@ public class AugmentedImageActivity extends AppCompatActivity {
         arFragment.getArSceneView().getScene().addOnUpdateListener(this::onUpdateFrame);
 
         ConnectionParams connectionParams =
-                new ConnectionParams.Builder(TEST)
-                        .setRedirectUri(REDIRECT_URI)
+                new ConnectionParams.Builder(CLIENT_ID)
+                        .setRedirectUri(SPOTIFY_REDIRECT_URI)
                         .showAuthView(true)
                         .build();
 
