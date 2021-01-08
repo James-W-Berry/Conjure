@@ -34,13 +34,14 @@ public class ArtistSearchActivity extends AppCompatActivity {
         token = getIntent().getStringExtra("token");
         queue = Volley.newRequestQueue(this);
 
-        setContentView(R.layout.activity_recognizer);
+        setContentView(R.layout.activity_artist_search);
 
         recyclerView = findViewById(R.id.search_results);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
         searchView = findViewById(R.id.searchbar);
+        searchView.setOnClickListener(v -> searchView.setIconified(false));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextChange(String query) {
@@ -57,9 +58,7 @@ public class ArtistSearchActivity extends AppCompatActivity {
                 return false;
             }
          });
-        searchView.requestFocus();
-        searchView.setIconified(false);
-
+        //searchView.requestFocus();
         progressBar = findViewById(R.id.indeterminateBar);
     }
 

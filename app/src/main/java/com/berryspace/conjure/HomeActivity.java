@@ -25,6 +25,7 @@ public class HomeActivity extends AppCompatActivity {
     private String TAG = "HomeActivity";
     private String mAccessToken;
     private Handler handler = new Handler();
+    private CardView viewLibraryCard;
     private CardView manageLibraryCard;
     private ConstraintLayout libraryStats;
     private TextView artistStat;
@@ -51,6 +52,12 @@ public class HomeActivity extends AppCompatActivity {
         } else {
             libraryStats.setVisibility(View.GONE);
         }
+
+        viewLibraryCard = findViewById(R.id.tile_view_library);
+        viewLibraryCard.setOnClickListener(v -> {
+            Intent intent = new Intent(this, LibraryActivity.class);
+            startActivity(intent);
+        });
 
         manageLibraryCard = findViewById(R.id.tile_manage_library);
         manageLibraryCard.setOnClickListener(v -> {

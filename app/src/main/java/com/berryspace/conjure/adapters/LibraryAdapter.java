@@ -1,13 +1,10 @@
 package com.berryspace.conjure.adapters;
 
 import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.berryspace.conjure.AlbumSelectorActivity;
 import com.berryspace.conjure.R;
 import com.berryspace.conjure.models.Artist;
 import com.squareup.picasso.Picasso;
@@ -16,10 +13,10 @@ import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class ArtistResultsAdapter extends RecyclerView.Adapter<ArtistResultsAdapter.MyViewHolder>{
+public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.MyViewHolder> {
     private ArrayList<Artist> mDataset;
     public Context context;
-    private static final String TAG="SearchResultsAdapter";
+    private static final String TAG="LibraryAdapter";
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         public CardView cardView;
@@ -38,18 +35,17 @@ public class ArtistResultsAdapter extends RecyclerView.Adapter<ArtistResultsAdap
         }
     }
 
-    public ArtistResultsAdapter(ArrayList<Artist> dataset) {
+    public LibraryAdapter(ArrayList<Artist> dataset) {
         mDataset = dataset;
     }
 
     @Override
-    public ArtistResultsAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
-                                                                int viewType) {
+    public LibraryAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         ConstraintLayout view = (ConstraintLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.search_item_artist, parent, false);
         MyViewHolder vh = new MyViewHolder(view);
         context = view.getContext();
         return vh;
-    }
+     }
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
@@ -57,18 +53,10 @@ public class ArtistResultsAdapter extends RecyclerView.Adapter<ArtistResultsAdap
         holder.genres.setText(mDataset.get(position).getGenres());
         holder.followers.setText(mDataset.get(position).getFollowers()+" followers");
         Picasso.with(context).load(mDataset.get(position).getImageUrl()).into(holder.imageView);
-
-         holder.itemView.setOnClickListener(v -> {
-            Log.i(TAG, "trying to launch AlbumSelectorActivity");
-            Intent intent = new Intent (v.getContext(), AlbumSelectorActivity.class);
-            intent.putExtra("id", mDataset.get(position).getId());
-            intent.putExtra("name", mDataset.get(position).getName());
-            v.getContext().startActivity(intent);
-        });
-     }
+    }
 
     @Override
     public int getItemCount() {
-         return mDataset.size();
+        return mDataset.size();
     }
 }

@@ -76,5 +76,6 @@
     <string name="album_download_message">Ready to conjure %1$d albums from %2$s</string>
     <string name="select_all">Select all</string>
     <string name="view_library_help">View your library</string>
+    <string name="library_search_help">Search your library for artists and albums</string>
 
 </resources>
