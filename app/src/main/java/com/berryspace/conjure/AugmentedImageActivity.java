@@ -30,13 +30,13 @@ public class AugmentedImageActivity extends AppCompatActivity {
     private ArFragment arFragment;
     private ImageView fitToScanView;
     private final Map<AugmentedImage, AugmentedImageNode> augmentedImageMap = new HashMap<>();
-
-    private static final String CLIENT_ID = BuildConfig.SPOTIFY_CLIENT_ID;
-    private static final String REDIRECT_URI = "com.berryspace.muse://callback/";
+    private static final String TEST = BuildConfig.SPOTIFY_CLIENT_ID;
+    private static final String REDIRECT_URI = "com.berryspace.conjure://callback";
     private SpotifyAppRemote mSpotifyAppRemote;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG, TEST);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
 
@@ -58,17 +58,14 @@ public class AugmentedImageActivity extends AppCompatActivity {
         arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ux_fragment);
         fitToScanView = findViewById(R.id.image_view_fit_to_scan);
         arFragment.getArSceneView().getScene().addOnUpdateListener(this::onUpdateFrame);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
 
         ConnectionParams connectionParams =
-                new ConnectionParams.Builder(CLIENT_ID)
+                new ConnectionParams.Builder(TEST)
                         .setRedirectUri(REDIRECT_URI)
                         .showAuthView(true)
                         .build();
+
+        Log.d("AugmentedImageActivity", "Connecting to Spotify");
 
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
         SpotifyAppRemote.connect(this, connectionParams,
@@ -89,6 +86,11 @@ public class AugmentedImageActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
     }
 
     @Override
@@ -129,7 +131,7 @@ public class AugmentedImageActivity extends AppCompatActivity {
                         TextView heading = findViewById(R.id.nowPlaying);
                         heading.setText(text);
                         stopMusic();
-                        String uri = augmentedImage.getName().replace(".jpg", "");
+                        String uri = "spotify:album:" + augmentedImage.getName().replace(".png", "");
                         playMusic(uri);
                     }
                     break;
@@ -151,7 +153,7 @@ public class AugmentedImageActivity extends AppCompatActivity {
     }
 
     private void playMusic(String spotifyUri) {
-        Log.i(TAG + " playing Spotify URI:  ", spotifyUri);
+        Log.i(TAG + " playing: ", spotifyUri);
         mSpotifyAppRemote.getPlayerApi().play(spotifyUri);
     }
 

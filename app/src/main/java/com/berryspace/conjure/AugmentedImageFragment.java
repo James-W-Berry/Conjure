@@ -19,10 +19,14 @@ package com.berryspace.conjure;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,10 +37,19 @@ import com.google.ar.core.AugmentedImageDatabase;
 import com.google.ar.core.Config;
 import com.google.ar.core.Session;
 import com.berryspace.common.helpers.SnackbarHelper;
+import com.google.ar.core.exceptions.ImageInsufficientQualityException;
 import com.google.ar.sceneform.ux.ArFragment;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Objects;
 
 public class AugmentedImageFragment extends ArFragment {
@@ -86,16 +99,36 @@ public class AugmentedImageFragment extends ArFragment {
     @Override
     protected Config getSessionConfiguration(Session session) {
         Config config = super.getSessionConfiguration(session);
-        if (!setupAugmentedImageDatabase(config, session)) {
-            SnackbarHelper.getInstance()
-                    .showError(getActivity(), "Could not setup augmented image database");
+        try {
+            if (!setupAugmentedImageDatabase(config, session)) {
+                SnackbarHelper.getInstance()
+                        .showError(getActivity(), "Could not setup augmented image database");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return config;
     }
 
-    private boolean setupAugmentedImageDatabase(Config config, Session session) {
-        AugmentedImageDatabase augmentedImageDatabase;
+    public class ImageDatabaseFileFilter implements FileFilter
+    {
+        private final String[] validFiles = new String[] {"database_0.imgdb"};
 
+        public boolean accept(File file)
+        {
+            for (String extension : validFiles)
+            {
+                if (file.getName().toLowerCase().endsWith(extension))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    private boolean setupAugmentedImageDatabase(Config config, Session session) throws IOException {
+        AugmentedImageDatabase augmentedImageDatabase;
 
         AssetManager assetManager = getContext() != null ? getContext().getAssets() : null;
         if (assetManager == null) {
@@ -103,19 +136,88 @@ public class AugmentedImageFragment extends ArFragment {
             return false;
         }
 
-        String imageDatabaseVersion =
-                Objects.requireNonNull(getActivity()).getIntent().getStringExtra(
-                        "imageDatabaseVersion");
-        Log.d(TAG, "initializing augmented image database using " + imageDatabaseVersion);
+        if(imageDatabaseExists()){
+            String path =  Objects.requireNonNull(getActivity()).getBaseContext().getFilesDir().toString()+ "/image_databases/database_0.imgdb";
+            try (InputStream is = new FileInputStream(path)) {
+                augmentedImageDatabase = AugmentedImageDatabase.deserialize(session, is);
+            } catch (IOException e) {
+                Log.e(TAG, "IO exception loading augmented image database.", e);
+                return false;
+            }
+        } else {
+              //createEmptyImageDatabase(session);
+            String path =  Objects.requireNonNull(getActivity()).getBaseContext().getFilesDir().toString()+ "/image_databases/database_0.imgdb";
+            try (InputStream is = new FileInputStream(path)) {
+                augmentedImageDatabase = AugmentedImageDatabase.deserialize(session, is);
+            } catch (IOException e) {
+                Log.e(TAG, "IO exception loading augmented image database.", e);
+                return false;
+            }
+         }
 
-        try (InputStream is = getContext().openFileInput(imageDatabaseVersion)) {
-            augmentedImageDatabase = AugmentedImageDatabase.deserialize(session, is);
-        } catch (IOException e) {
-            Log.e(TAG, "IO exception loading augmented image database.", e);
-            return false;
+        File[] newImages = checkForNewImages();
+        boolean deleted;
+        for (File image : newImages) {
+            Log.i(TAG, "adding " + image.getName() + " to image database");
+            Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath());
+            try{
+                int index = augmentedImageDatabase.addImage(image.getName(), bitmap, (float) 0.3);
+                deleted = image.delete();
+                Log.i(TAG, "deleted " + image.getName() + " from local storage: " + deleted);
+            } catch (ImageInsufficientQualityException e){
+                Log.i(TAG, image.getName() + " cannot be added to the image database due insufficient quality (too few features)");
+            }
         }
+
+        Log.i(TAG, String.valueOf(augmentedImageDatabase.getNumImages()));
+        saveImageDatabase(augmentedImageDatabase);
 
         config.setAugmentedImageDatabase(augmentedImageDatabase);
         return true;
     }
+
+    private File[] checkForNewImages(){
+        String path = Objects.requireNonNull(getActivity()).getBaseContext().getFilesDir().toString()+"/images";
+        File directory = new File(path);
+        return directory.listFiles();
+    }
+
+     private Boolean imageDatabaseExists()   {
+         File dir = new File(Objects.requireNonNull(getActivity()).getBaseContext().getFilesDir(), "image_databases");
+         if(!dir.exists()){
+            dir.mkdir();
+            return false;
+         }
+         File[] files = dir.listFiles(new ImageDatabaseFileFilter());
+          if(files.length >0){
+             Log.i(TAG, "using existing database_0");
+             return true;
+         } else {
+              Log.i(TAG, "existing database not found");
+              return false;
+         }
+    }
+
+    private void createEmptyImageDatabase(Session session) throws IOException {
+        AugmentedImageDatabase imageDatabase = new AugmentedImageDatabase(session);
+        String path =  Objects.requireNonNull(getActivity()).getBaseContext().getFilesDir().toString()+ "/image_databases/database_0.imgdb";
+        File file = new File(path);
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        imageDatabase.serialize(fileOutputStream);
+        fileOutputStream.close();
+    }
+
+    private void saveImageDatabase(AugmentedImageDatabase imageDatabase) throws IOException {
+         String path =  Objects.requireNonNull(getActivity()).getBaseContext().getFilesDir().toString()+ "/image_databases/database_0.imgdb";
+        File file = new File(path);
+
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        imageDatabase.serialize(fileOutputStream);
+        fileOutputStream.close();
+    }
+
+
 }

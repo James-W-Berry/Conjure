@@ -274,9 +274,23 @@
             </androidx.cardview.widget.CardView>
 
 
+            <Button
+                android:id="@+id/update_library_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@color/conjure_purple_really_dark"
+                android:fontFamily="@font/nunito"
+                android:text="Update Library with new images"
+                android:textColor="@color/conjure_gray"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tile_manage_library" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
+
+
 
 
     <com.google.android.material.bottomnavigation.BottomNavigationView

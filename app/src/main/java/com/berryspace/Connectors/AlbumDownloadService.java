@@ -76,6 +76,6 @@ public class AlbumDownloadService  extends AppCompatActivity {
         if (!file.exists()) {
             file.mkdirs();
         }
-        return (file.getAbsolutePath() + "/" + fileName);
+        return (file.getAbsolutePath() + "/" + fileName + ".png");
     }
 }
