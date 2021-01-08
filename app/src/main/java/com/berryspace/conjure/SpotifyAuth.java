@@ -6,18 +6,14 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-
 import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
-
 import androidx.appcompat.app.AppCompatActivity;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -124,9 +120,4 @@ public class SpotifyAuth extends AppCompatActivity {
                 .build();
     }
 
-//    @Override
-//    public void onDestroy() {
-//        cancelCall();
-//        //super.onDestroy();
-//    }
 }

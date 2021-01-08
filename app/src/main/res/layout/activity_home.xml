@@ -19,143 +19,85 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-
-            <TextView
-                android:id="@+id/ready"
-                android:layout_width="wrap_content"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/library_stats_layout"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_marginTop="24dp"
-                android:fontFamily="@font/nunito_sans_light"
-                android:text="@string/ready"
-                android:textColor="@color/conjure_black"
-                android:textSize="30sp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/albumStat"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
-                android:fontFamily="@font/nunito_sans_light"
-                android:text="@string/albumStat"
-                android:textColor="@color/conjure_black"
-                android:textSize="24sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ready" />
+                <TextView
+                    android:id="@+id/ready"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nunito_sans_light"
+                    android:text="@string/ready"
+                    android:textColor="@color/conjure_black"
+                    android:textSize="30sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/artistStat"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/nunito_sans_light"
-                android:text="@string/artistStat"
-                android:textColor="@color/conjure_black"
-                android:textSize="24sp"
-                app:layout_constraintStart_toEndOf="@+id/albumStat"
-                app:layout_constraintTop_toBottomOf="@+id/ready" />
+                <TextView
+                    android:id="@+id/album_stat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:fontFamily="@font/nunito_sans_light"
+                    android:text="@string/album_stat"
+                    android:textColor="@color/conjure_black"
+                    android:textSize="24sp"
+                    app:layout_constraintEnd_toStartOf="@+id/artist_stat"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/ready" />
+
+                <TextView
+                    android:id="@+id/artist_stat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nunito_sans_light"
+                    android:text="@string/artist_stat"
+                    android:textColor="@color/conjure_black"
+                    android:textSize="24sp"
+                    app:layout_constraintStart_toEndOf="@+id/album_stat"
+                    app:layout_constraintTop_toBottomOf="@+id/ready" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/last_played_label"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="15dp"
-                android:layout_marginEnd="40dp"
+                android:layout_marginEnd="16dp"
                 android:fontFamily="@font/nunito_sans_light"
                 android:text="@string/last_played_label"
                 android:textColor="@color/conjure_black"
                 android:textSize="30sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/artistStat" />
-
-            <LinearLayout
-                android:id="@+id/btn_currentDatabase"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
-                android:layout_marginTop="64dp"
-                android:orientation="vertical"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <TextView
-                    android:id="@+id/update_available_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/nunito_sans_light"
-                    android:text="@string/update_available_label"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:textColor="@color/conjure_gray"
-                    android:textSize="16sp"
-                    android:visibility="gone" />
-
-                <TextView
-                    android:id="@+id/available_version"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/nunito_sans_light"
-                    android:text="@string/available_version"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:textColor="@color/conjure_gray"
-                    android:textSize="16sp"
-                    android:visibility="gone" />
-
-                <TextView
-                    android:id="@+id/currentVersionLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/nunito_sans_light"
-                    android:text="@string/current_version_label"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:textColor="@color/conjure_gray"
-                    android:textSize="16sp"
-                    android:visibility="gone" />
-
-                <TextView
-                    android:id="@+id/currentVersion"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/nunito_sans_light"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:textColor="@color/conjure_gray"
-                    android:textSize="16sp"
-                    android:visibility="gone" />
-
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/btn_updateDatabase"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
-                android:layout_marginTop="240dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <TextView
-                    android:id="@+id/update_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/nunito_sans_light"
-                    android:text="@string/update_button"
-                    android:textColor="@color/conjure_gray"
-                    android:visibility="gone" />
-            </LinearLayout>
+                app:layout_constraintTop_toBottomOf="@+id/library_stats_layout" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/tile_last_played_0"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="40dp"
                 android:backgroundTint="@color/conjure_purple_really_dark"
                 android:clickable="true"
                 android:focusable="true"
                 app:cardBackgroundColor="@color/conjure_purple_really_dark"
                 app:cardCornerRadius="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/last_played_label">
 
@@ -177,29 +119,33 @@
 
                     <TextView
                         android:id="@+id/last_played_artist_0"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
+                        android:layout_marginStart="16dp"
                         android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
                         android:fontFamily="@font/nunito_sans_light"
                         android:text="@string/last_played_artist"
                         android:textColor="@color/conjure_gray"
                         android:textSize="18sp"
                         app:layout_constraintBottom_toTopOf="@+id/last_played_album_0"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@id/last_played_image_0"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
                         android:id="@+id/last_played_album_0"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="0dp"
-                        android:layout_marginStart="8dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="8dp"
                         android:layout_marginBottom="8dp"
                         android:fontFamily="@font/nunito_sans_light"
                         android:text="@string/last_played_album"
                         android:textColor="@color/conjure_gray"
                         android:textSize="18sp"
                         app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@id/last_played_image_0"
                         app:layout_constraintTop_toBottomOf="@id/last_played_artist_0" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
@@ -209,9 +155,9 @@
                 android:id="@+id/manage_library"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="15dp"
-                android:layout_marginEnd="40dp"
+                android:layout_marginEnd="16dp"
                 android:fontFamily="@font/nunito_sans_light"
                 android:text="@string/manage_library"
                 android:textColor="@color/conjure_black"
@@ -221,10 +167,11 @@
                 app:layout_constraintTop_toBottomOf="@+id/tile_last_played_0" />
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/tile_manage_library"
+                android:id="@+id/tile_view_library"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="40dp"
                 android:backgroundTint="@color/conjure_purple_really_dark"
                 android:clickable="true"
@@ -234,6 +181,61 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/manage_library">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/tile_view_library_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="8dp">
+
+                    <ImageView
+                        android:id="@+id/view_library_image"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_margin="8dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/tile_view_library_layout"
+                        app:srcCompat="@drawable/library" />
+
+                    <TextView
+                        android:id="@+id/view_library_label"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/nunito_sans_light"
+                        android:gravity="center_vertical"
+                        android:text="@string/view_library_help"
+                        android:textColor="@color/conjure_gray"
+                        android:textSize="18sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/view_library_image"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.6" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/tile_manage_library"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="40dp"
+                android:backgroundTint="@color/conjure_purple_really_dark"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardBackgroundColor="@color/conjure_purple_really_dark"
+                app:cardCornerRadius="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tile_view_library">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/tile_manage_library_layout"
@@ -249,22 +251,25 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/tile_manage_library_layout"
-                        app:srcCompat="@drawable/library" />
+                        app:srcCompat="@drawable/add_album" />
 
                     <TextView
                         android:id="@+id/manage_library_label"
                         android:layout_width="0dp"
-                        android:layout_height="57dp"
-                        android:layout_marginStart="8dp"
+                        android:layout_height="0dp"
+                        android:layout_marginStart="16dp"
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="8dp"
                         android:layout_marginBottom="8dp"
+                        android:gravity="center_vertical"
                         android:fontFamily="@font/nunito_sans_light"
                         android:text="@string/manage_library_help"
+                        android:textAlignment="inherit"
                         android:textColor="@color/conjure_gray"
                         android:textSize="18sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.6"
                         app:layout_constraintStart_toEndOf="@id/manage_library_image"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintVertical_bias="0.6" />
@@ -272,7 +277,6 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.cardview.widget.CardView>
-
 
             <Button
                 android:id="@+id/update_library_button"
@@ -289,9 +293,6 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
-
-
-
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_bar"

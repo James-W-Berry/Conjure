@@ -5,15 +5,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 public class SplashScreen extends AppCompatActivity {
-
     private final static String TAG = "SplashScreen";
 
     @Override
@@ -53,6 +47,5 @@ public class SplashScreen extends AppCompatActivity {
         SharedPreferences sharedPref = this.getSharedPreferences("NEWUSER", Context.MODE_PRIVATE);
         return sharedPref.getBoolean("newUser", true);
     }
-
 
 }

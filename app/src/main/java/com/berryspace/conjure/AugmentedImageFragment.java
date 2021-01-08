@@ -2,6 +2,7 @@ package com.berryspace.conjure;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -143,7 +144,8 @@ public class AugmentedImageFragment extends ArFragment {
             }
         }
 
-        Log.i(TAG, String.valueOf(augmentedImageDatabase.getNumImages()));
+        Log.i(TAG, "images in database: " + augmentedImageDatabase.getNumImages());
+        saveLibraryStats(augmentedImageDatabase.getNumImages());
         saveImageDatabase(augmentedImageDatabase);
 
         config.setAugmentedImageDatabase(augmentedImageDatabase);
@@ -185,12 +187,20 @@ public class AugmentedImageFragment extends ArFragment {
     }
 
     private void saveImageDatabase(AugmentedImageDatabase imageDatabase) throws IOException {
-         String path =  Objects.requireNonNull(getActivity()).getBaseContext().getFilesDir().toString()+ "/image_databases/database_0.imgdb";
+        String path =  Objects.requireNonNull(getActivity()).getBaseContext().getFilesDir().toString()+ "/image_databases/database_0.imgdb";
         File file = new File(path);
 
         FileOutputStream fileOutputStream = new FileOutputStream(file);
         imageDatabase.serialize(fileOutputStream);
         fileOutputStream.close();
+    }
+
+    private void saveLibraryStats(Integer albumCount){
+        SharedPreferences sharedPref = Objects.requireNonNull(getActivity()).getBaseContext().getSharedPreferences("LIBRARYSTATS", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt("artistCount", 1000);
+        editor.putInt("albumCount", albumCount);
+        editor.apply();
     }
 
 

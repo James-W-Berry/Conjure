@@ -34,8 +34,8 @@
     <string name="status_error">Could not retrieve your followed artists</string>
 
     <string name="ready">Ready to conjure</string>
-    <string name="artistStat">%1$s artists</string>
-    <string name="albumStat">%1$s albums from</string>
+    <string name="artist_stat"><b>%1$s</b> artists</string>
+    <string name="album_stat"><b>%1$s</b> albums from </string>
 
     <string name="progress_in_progress">Learning how to detect all your favorite albums</string>
     <string name="progress_album">album</string>
@@ -62,7 +62,7 @@
     <string name="onboarding_setup_status_success">Congrats! Spotify and Conjure and now best buds</string>
 
     <string name="onboarding_scan_header">Scan</string>
-    <string name="onboarding_scan_message">Scan your favorite album covers to Conjure the music</string>
+    <string name="onboarding_scan_message">Add your favorite albums to the Conjure library and scan them to start the music</string>
 
     <string name="onboarding_button_finish">Let\'s go!</string>
 
@@ -75,5 +75,6 @@
 
     <string name="album_download_message">Ready to conjure %1$d albums from %2$s</string>
     <string name="select_all">Select all</string>
+    <string name="view_library_help">View your library</string>
 
 </resources>
