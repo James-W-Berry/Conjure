@@ -1,4 +1,4 @@
-package com.berryspace.conjure;
+package com.berryspace.conjure.adapters;
 
 import android.content.Context;
 import android.util.Log;
@@ -7,7 +7,10 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.berryspace.Connectors.SelectedAlbumsInterface;
+
+import com.berryspace.conjure.R;
+import com.berryspace.conjure.connectors.SelectedAlbumsInterface;
+import com.berryspace.conjure.models.Album;
 import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +23,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 
-public class AlbumSearchResultsAdapter extends RecyclerView.Adapter<AlbumSearchResultsAdapter.MyViewHolder>{
+public class AlbumResultsAdapter extends RecyclerView.Adapter<AlbumResultsAdapter.MyViewHolder>{
     private ArrayList<Album> mDataset;
     public Context context;
     private static final String TAG="AlbumSearchResultsAdapter";
@@ -64,7 +67,7 @@ public class AlbumSearchResultsAdapter extends RecyclerView.Adapter<AlbumSearchR
         }
     }
 
-    public AlbumSearchResultsAdapter(ArrayList<Album> dataset, SelectedAlbumsInterface selectedAlbumCountInterface ) {
+    public AlbumResultsAdapter(ArrayList<Album> dataset, SelectedAlbumsInterface selectedAlbumCountInterface ) {
         mDataset = dataset;
         for (int i = 0; i < mDataset.size(); i++) {
             selectedAlbums.put(i, false);
@@ -74,7 +77,7 @@ public class AlbumSearchResultsAdapter extends RecyclerView.Adapter<AlbumSearchR
 
     @NonNull
     @Override
-    public AlbumSearchResultsAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public AlbumResultsAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         ConstraintLayout view = (ConstraintLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.search_item_album, parent, false);
         MyViewHolder vh = new MyViewHolder(view);
         context = view.getContext();

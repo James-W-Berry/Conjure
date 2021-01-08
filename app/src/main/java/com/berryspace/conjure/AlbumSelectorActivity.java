@@ -1,12 +1,9 @@
 package com.berryspace.conjure;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -15,9 +12,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
-import com.berryspace.Connectors.AlbumDownloadService;
-import com.berryspace.Connectors.AlbumSearchService;
- import com.berryspace.Connectors.SelectedAlbumsInterface;
+import com.berryspace.conjure.adapters.AlbumResultsAdapter;
+import com.berryspace.conjure.connectors.AlbumDownloadService;
+import com.berryspace.conjure.connectors.AlbumSearchService;
+ import com.berryspace.conjure.connectors.SelectedAlbumsInterface;
+import com.berryspace.conjure.models.Album;
 
 import org.json.JSONException;
 import java.util.ArrayList;
@@ -26,11 +25,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.RecyclerView.Adapter;
 
 public class AlbumSelectorActivity extends AppCompatActivity implements SelectedAlbumsInterface {
     private RecyclerView recyclerView;
-    private AlbumSearchResultsAdapter mAdapter;
+    private AlbumResultsAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private static String TAG = "AlbumSelector";
     private RequestQueue queue;
@@ -111,7 +109,7 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
     }
 
     private void updateSearchResult() {
-        mAdapter = new AlbumSearchResultsAdapter(searchResults, this);
+        mAdapter = new AlbumResultsAdapter(searchResults, this);
         if(searchResults.size()>1){
             selectAllView.setVisibility(View.VISIBLE);
         }else{

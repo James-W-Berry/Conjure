@@ -8,17 +8,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.google.android.material.button.MaterialButton;
-
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
-
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.fragment.app.Fragment;
 
 public class OnboardingFragment extends Fragment {
     private final static String TAG = "OnboardingFragment";
     private int pageNumber = 0;
-    private Boolean validToken = false;
 
     public OnboardingFragment(int page){
         this.pageNumber = page;

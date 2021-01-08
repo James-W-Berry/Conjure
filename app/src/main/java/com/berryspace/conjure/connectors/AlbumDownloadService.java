@@ -1,4 +1,4 @@
-package com.berryspace.Connectors;
+package com.berryspace.conjure.connectors;
 
 import android.content.Context;
 import android.graphics.Bitmap;

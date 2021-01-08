@@ -1,4 +1,4 @@
-package com.berryspace.Connectors;
+package com.berryspace.conjure.connectors;
 
 import android.content.Intent;
 import android.util.Log;
@@ -6,7 +6,7 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.berryspace.conjure.Artist;
+import com.berryspace.conjure.models.Artist;
 import com.berryspace.conjure.SpotifyAuth;
 import org.json.JSONArray;
 import org.json.JSONException;

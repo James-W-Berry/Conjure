@@ -1,4 +1,4 @@
-package com.berryspace.conjure;
+package com.berryspace.conjure.models;
 
 public class Album {
     private String name;

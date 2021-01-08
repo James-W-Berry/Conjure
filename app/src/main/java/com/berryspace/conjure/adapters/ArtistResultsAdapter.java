@@ -1,4 +1,4 @@
-package com.berryspace.conjure;
+package com.berryspace.conjure.adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,13 +7,17 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.berryspace.conjure.AlbumSelectorActivity;
+import com.berryspace.conjure.R;
+import com.berryspace.conjure.models.Artist;
 import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class SearchResultsAdapter extends RecyclerView.Adapter<SearchResultsAdapter.MyViewHolder>{
+public class ArtistResultsAdapter extends RecyclerView.Adapter<ArtistResultsAdapter.MyViewHolder>{
     private ArrayList<Artist> mDataset;
     public Context context;
     private static final String TAG="SearchResultsAdapter";
@@ -35,13 +39,13 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<SearchResultsAdap
         }
     }
 
-    public SearchResultsAdapter(ArrayList<Artist> dataset) {
+    public ArtistResultsAdapter(ArrayList<Artist> dataset) {
         mDataset = dataset;
     }
 
     @Override
-    public SearchResultsAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
-                                                          int viewType) {
+    public ArtistResultsAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
+                                                                int viewType) {
         ConstraintLayout view = (ConstraintLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.search_item_artist, parent, false);
         MyViewHolder vh = new MyViewHolder(view);
         context = view.getContext();

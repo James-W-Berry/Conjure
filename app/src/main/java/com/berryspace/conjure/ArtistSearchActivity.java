@@ -10,7 +10,10 @@ import android.widget.ProgressBar;
 import android.widget.SearchView;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
-import com.berryspace.Connectors.ArtistSearchService;
+import com.berryspace.conjure.adapters.ArtistResultsAdapter;
+import com.berryspace.conjure.connectors.ArtistSearchService;
+import com.berryspace.conjure.models.Artist;
+
 import org.json.JSONException;
 import java.util.ArrayList;
 
@@ -72,7 +75,7 @@ public class ArtistSearchActivity extends AppCompatActivity {
     }
 
     private void updateSearchResult() {
-        mAdapter = new SearchResultsAdapter(searchResults);
+        mAdapter = new ArtistResultsAdapter(searchResults);
         recyclerView.setAdapter(mAdapter);
     }
 
