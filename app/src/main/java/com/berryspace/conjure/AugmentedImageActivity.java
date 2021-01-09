@@ -48,6 +48,16 @@ public class AugmentedImageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
 
+        ImageView previousTrack = findViewById(R.id.previous_track);
+        previousTrack.setOnClickListener(v -> {
+            playPreviousTrack();
+        });
+
+        ImageView nextTrack = findViewById(R.id.next_track);
+        nextTrack.setOnClickListener(v -> {
+            playNextTrack();
+        });
+
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_bar);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
@@ -187,6 +197,14 @@ public class AugmentedImageActivity extends AppCompatActivity {
 
     private void stopMusic() {
         mSpotifyAppRemote.getPlayerApi().pause();
+    }
+
+    private void playPreviousTrack(){
+        mSpotifyAppRemote.getPlayerApi().skipPrevious();
+    }
+
+    private void playNextTrack(){
+        mSpotifyAppRemote.getPlayerApi().skipNext();
     }
 
     @Override

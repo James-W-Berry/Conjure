@@ -5,47 +5,95 @@
     android:layout_height="match_parent"
     tools:context=".AugmentedImageActivity">
 
-
-    <TextView
-        android:id="@+id/nowPlaying"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_gravity="center_horizontal"
-        android:background="@color/conjure_purple_really_dark"
-        android:fontFamily="@font/nunito_sans_light"
-        android:padding="10dp"
-        android:text="@string/now_playing"
-        android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textColor="@color/conjure_gray"
-        android:textSize="18sp" />
-
-    <fragment
-        android:id="@+id/ux_fragment"
-        android:name="com.berryspace.conjure.AugmentedImageFragment"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="80dp"
-        android:layout_marginBottom="80dp" />
+        android:background="@color/conjure_purple_really_dark">
 
-    <ImageView
-        android:id="@+id/image_view_fit_to_scan"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="80dp"
-        android:layout_marginBottom="80dp"
-        android:contentDescription="@string/fit_album_to_scan"
-        android:scaleType="centerCrop"
-        android:src="@drawable/fit_to_scan" />
+        <TextView
+            android:id="@+id/nowPlaying"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/conjure_purple_really_dark"
+            android:fontFamily="@font/nunito_sans_light"
+            android:padding="10dp"
+            android:text="@string/now_playing"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textColor="@color/conjure_gray"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toTopOf="@+id/ux_fragment"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation_bar"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_gravity="bottom"
-        android:background="@color/conjure_black"
-        app:itemIconTint="@color/conjure_gray"
-        app:itemTextColor="@color/conjure_gray"
-        app:menu="@menu/bottom_navigation_menu" />
+        <fragment
+            android:id="@+id/ux_fragment"
+            android:name="com.berryspace.conjure.AugmentedImageFragment"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="160dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/nowPlaying" />
+
+        <ImageView
+            android:id="@+id/image_view_fit_to_scan"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:contentDescription="@string/fit_album_to_scan"
+            android:scaleType="centerCrop"
+            android:src="@drawable/fit_to_scan"
+            app:layout_constraintBottom_toBottomOf="@+id/ux_fragment"
+            app:layout_constraintEnd_toEndOf="@+id/ux_fragment"
+            app:layout_constraintStart_toStartOf="@+id/ux_fragment"
+            app:layout_constraintTop_toBottomOf="@id/nowPlaying" />
+
+        <ImageView
+            android:id="@+id/previous_track"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center_horizontal"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_bar"
+            app:layout_constraintEnd_toStartOf="@+id/next_track"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/image_view_fit_to_scan"
+            app:srcCompat="@drawable/previous" />
+
+        <ImageView
+            android:id="@+id/next_track"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center_horizontal"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_bar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/previous_track"
+            app:layout_constraintTop_toBottomOf="@+id/image_view_fit_to_scan"
+            app:srcCompat="@drawable/next" />
+
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_navigation_bar"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_gravity="bottom"
+            android:background="@color/conjure_black"
+            app:itemIconTint="@color/conjure_gray"
+            app:itemTextColor="@color/conjure_gray"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:menu="@menu/bottom_navigation_menu">
+
+        </com.google.android.material.bottomnavigation.BottomNavigationView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+
+
 
 </FrameLayout>
