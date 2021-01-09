@@ -1,5 +1,7 @@
 package com.berryspace.conjure;
 
+import android.app.Activity;
+import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -29,12 +31,13 @@ public class SpotifyAuth extends AppCompatActivity {
     private Call mCall;
     private final OkHttpClient mOkHttpClient = new OkHttpClient();
 
-    public SpotifyAuth(){}
+    public SpotifyAuth( ){
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_spotify_auth);
         getCredentials();
     }
 
@@ -85,7 +88,9 @@ public class SpotifyAuth extends AppCompatActivity {
 
     public void getCredentials(){
         final AuthorizationRequest request = getAuthenticationRequest(AuthorizationResponse.Type.TOKEN);
+        Log.d(TAG, "opening login activity");
         AuthorizationClient.openLoginActivity(this, AUTH_TOKEN_REQUEST_CODE, request);
+        Log.d(TAG, "closing login activity");
     };
 
     private AuthorizationRequest getAuthenticationRequest(AuthorizationResponse.Type type) {
@@ -115,8 +120,8 @@ public class SpotifyAuth extends AppCompatActivity {
 
     private Uri getRedirectUri() {
         return new Uri.Builder()
-                .scheme(getString(R.string.com_spotify_sdk_redirect_scheme))
-                .authority(getString(R.string.com_spotify_sdk_redirect_host))
+                .scheme(getResources().getString(R.string.com_spotify_sdk_redirect_scheme))
+                .authority(getResources().getString(R.string.com_spotify_sdk_redirect_host))
                 .build();
     }
 

@@ -9,6 +9,8 @@ import com.berryspace.conjure.R;
 import com.berryspace.conjure.models.Artist;
 import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
+
+import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
@@ -39,9 +41,10 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.MyViewHo
         mDataset = dataset;
     }
 
+    @NonNull
     @Override
     public LibraryAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        ConstraintLayout view = (ConstraintLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.search_item_artist, parent, false);
+        ConstraintLayout view = (ConstraintLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.search_item_library, parent, false);
         MyViewHolder vh = new MyViewHolder(view);
         context = view.getContext();
         return vh;

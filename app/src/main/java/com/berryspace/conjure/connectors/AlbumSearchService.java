@@ -24,11 +24,13 @@ public class AlbumSearchService  extends AppCompatActivity {
     private RequestQueue mQueue;
     private String mId;
     private ArrayList<Album> albums = new ArrayList<>();
+    private String mArtist;
 
-    public AlbumSearchService(RequestQueue queue, String token, String id) {
+    public AlbumSearchService(RequestQueue queue, String token, String id, String artist) {
         mQueue = queue;
         mToken = token;
         mId = id;
+        mArtist = artist;
     }
 
     public ArrayList<Album> getAlbums() {
@@ -47,6 +49,7 @@ public class AlbumSearchService  extends AppCompatActivity {
                                 JSONArray images = (JSONArray) object.get("images");
                                 JSONObject image = (JSONObject) images.get(0);
 
+                                album.setArtist(mArtist);
                                 album.setImageUrl(image.get("url").toString());
                                 album.setName((String) object.get("name"));
                                 album.setYear((String) object.get("release_date"));

@@ -1,14 +1,10 @@
 package com.berryspace.conjure;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.SearchView;
-
 import com.berryspace.conjure.adapters.LibraryAdapter;
 import com.berryspace.conjure.models.Artist;
-
 import java.util.ArrayList;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;

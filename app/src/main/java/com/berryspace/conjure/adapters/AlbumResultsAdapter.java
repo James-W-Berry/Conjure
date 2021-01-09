@@ -12,6 +12,9 @@ import com.berryspace.conjure.R;
 import com.berryspace.conjure.connectors.SelectedAlbumsInterface;
 import com.berryspace.conjure.models.Album;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;

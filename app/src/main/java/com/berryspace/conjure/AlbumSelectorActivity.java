@@ -19,6 +19,8 @@ import com.berryspace.conjure.connectors.AlbumSearchService;
 import com.berryspace.conjure.models.Album;
 
 import org.json.JSONException;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import androidx.appcompat.app.AppCompatActivity;
@@ -64,7 +66,13 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
         startRecognitionButton = findViewById(R.id.start_recognition_button);
         startRecognitionButton.setOnClickListener(v -> {
             Log.i(TAG, selectedAlbums.toString());
-            downloadAlbumImages(selectedAlbums);
+            try {
+                downloadAlbumImages(selectedAlbums);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         });
         albumDownloadMessage = findViewById(R.id.album_download_message);
         selectAllView = findViewById(R.id.select_all_view);
@@ -100,7 +108,7 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
 
     private void search(String id) throws JSONException {
         updateSearchStatus(View.VISIBLE);
-        AlbumSearchService albumSearchService = new AlbumSearchService(queue, token, id);
+        AlbumSearchService albumSearchService = new AlbumSearchService(queue, token, id, artistName);
         albumSearchService.getSearchResultArtists(() -> {
             searchResults = albumSearchService.getAlbums();
             updateSearchResult();
@@ -129,12 +137,12 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
         progressBar.setVisibility(visibility);
     }
 
-    private void downloadAlbumImages(HashMap<String, String> images){
+    private void downloadAlbumImages(HashMap<String, String> images) throws IOException, JSONException {
         updateSearchStatus(View.VISIBLE);
         selectedAlbumCount.setVisibility(View.INVISIBLE);
         startRecognitionButton.setVisibility(View.INVISIBLE);
 
-        AlbumDownloadService albumDownloadService = new AlbumDownloadService(images, this);
+        AlbumDownloadService albumDownloadService = new AlbumDownloadService(images, searchResults, this);
         Boolean done = albumDownloadService.getAlbumImages();
         if(done){
             clearSearchResults();
