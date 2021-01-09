@@ -235,10 +235,14 @@ public class AugmentedImageFragment extends ArFragment {
             libraryObject = readLibraryFile(libraryFile);
         }
 
+        JSONObject unprocessedObject = new JSONObject();
         String unprocessedPath = getActivity().getBaseContext().getFilesDir().toString() + "/library/unprocessed.json";
         File unprocessedFile = new File(unprocessedPath);
-        JSONObject unprocessedObject = new JSONObject();
-        unprocessedObject = readLibraryFile(unprocessedFile);
+        if (!unprocessedFile.exists()){
+            unprocessedFile.createNewFile();
+        } else {
+            unprocessedObject = readLibraryFile(unprocessedFile);
+        }
 
         try {
             JSONObject album = (JSONObject) unprocessedObject.get(image.getName().replace(".png",""));

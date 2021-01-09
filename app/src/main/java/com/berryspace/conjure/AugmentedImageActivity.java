@@ -7,11 +7,18 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.airbnb.lottie.L;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.ar.core.AugmentedImage;
 import com.google.ar.core.Frame;
 import com.google.ar.sceneform.FrameTime;
 import com.google.ar.sceneform.ux.ArFragment;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +28,9 @@ import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.android.appremote.api.error.CouldNotFindSpotifyApp;
 import com.spotify.android.appremote.api.error.NotLoggedInException;
 import com.spotify.android.appremote.api.error.UserNotAuthorizedException;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class AugmentedImageActivity extends AppCompatActivity {
     private static final String TAG = "AugmentedImageActivity";
@@ -55,6 +65,7 @@ public class AugmentedImageActivity extends AppCompatActivity {
         arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ux_fragment);
         fitToScanView = findViewById(R.id.image_view_fit_to_scan);
         arFragment.getArSceneView().getScene().addOnUpdateListener(this::onUpdateFrame);
+
 
         ConnectionParams connectionParams =
                 new ConnectionParams.Builder(CLIENT_ID)
@@ -103,7 +114,7 @@ public class AugmentedImageActivity extends AppCompatActivity {
      *
      * @param frameTime - time since last frame.
      */
-    private void onUpdateFrame(FrameTime frameTime) {
+    private void onUpdateFrame(FrameTime frameTime)   {
         Frame frame = arFragment.getArSceneView().getArFrame();
 
         // If there is no frame, just return.
@@ -113,40 +124,60 @@ public class AugmentedImageActivity extends AppCompatActivity {
 
         Collection<AugmentedImage> updatedAugmentedImages =
                 frame.getUpdatedTrackables(AugmentedImage.class);
-        for (AugmentedImage augmentedImage : updatedAugmentedImages) {
-            switch (augmentedImage.getTrackingState()) {
-                case PAUSED:
-                    // When an image is in PAUSED state, but the camera is not PAUSED, it has
-                    // been detected,  but not yet tracked.
+//        try {
+            for (AugmentedImage augmentedImage : updatedAugmentedImages) {
+                switch (augmentedImage.getTrackingState()) {
+                    case PAUSED:
+                        // When an image is in PAUSED state, but the camera is not PAUSED, it has
+                        // been detected,  but not yet tracked.
 
-                    // Play album from detected image
-                    if(!currentlyPlaying.equals(augmentedImage.getName())) {
-                        Log.i(TAG, "was playing: "+ currentlyPlaying);
-                        currentlyPlaying = augmentedImage.getName();
-                        Log.i(TAG, "now playing: "+ currentlyPlaying);
-                        String text = "Now Playing: " + augmentedImage.getName();
-                        TextView heading = findViewById(R.id.nowPlaying);
-                        heading.setText(text);
-                        stopMusic();
-                        String uri = "spotify:album:" + augmentedImage.getName().replace(".png", "");
-                        playMusic(uri);
-                    }
-                    break;
-                case TRACKING:
-                    // Have to switch to UI Thread to update View.
-                    fitToScanView.setVisibility(View.GONE);
+                        // Play album from detected image
+                        if(!currentlyPlaying.equals(augmentedImage.getName())) {
+                            Log.i(TAG, "was playing: "+ currentlyPlaying);
+                            currentlyPlaying = augmentedImage.getName();
+                            Log.i(TAG, "now playing: "+ currentlyPlaying);
+                            String text = "No album detected yet";
+                            String path = getBaseContext().getFilesDir().toString()+ "/library/detectable.json";
+                            File file = new File(path);
+                            JSONObject libraryObject = new JSONObject();
+                            if (!file.exists()){
+                                text = "Now Playing: unknown";
+                            } else {
+                                try{
+                                    libraryObject = readLibraryFile(file);
+                                    JSONObject detectedAlbum = (JSONObject) libraryObject.get(augmentedImage.getName());
+                                    text = "Now Playing: " + detectedAlbum.get("name") + " by " + detectedAlbum.get("artist");
+                                } catch (IOException | JSONException exception){
+                                    Log.i(TAG, exception.getMessage());
+                                }
 
-                    // Create a new anchor for newly found images.
-                    AugmentedImageNode node = new AugmentedImageNode(this);
-                    node.setImage(augmentedImage);
-                    augmentedImageMap.put(augmentedImage, node);
-                    break;
+                            }
+                            TextView heading = findViewById(R.id.nowPlaying);
+                            heading.setText(text);
+                            stopMusic();
+                            String uri = "spotify:album:" + augmentedImage.getName().replace(".png", "");
+                            playMusic(uri);
+                        }
+                        break;
+                    case TRACKING:
+                        // Have to switch to UI Thread to update View.
+                        //fitToScanView.setVisibility(View.GONE);
 
-                case STOPPED:
-                    augmentedImageMap.remove(augmentedImage);
-                    break;
+                        // Create a new anchor for newly found images.
+//                        AugmentedImageNode node = new AugmentedImageNode(this);
+//                        node.setImage(augmentedImage);
+//                        augmentedImageMap.put(augmentedImage, node);
+//                        break;
+
+                    case STOPPED:
+                        augmentedImageMap.remove(augmentedImage);
+                        break;
+                }
             }
-        }
+
+//        } catch (IOException | JSONException exception){
+//            Log.i(TAG, exception.getMessage());
+//        }
     }
 
     private void playMusic(String spotifyUri) {
@@ -162,5 +193,20 @@ public class AugmentedImageActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
+    }
+
+    private JSONObject readLibraryFile(File file) throws IOException, JSONException {
+        FileReader fileReader = new FileReader(file);
+        BufferedReader bufferedReader = new BufferedReader(fileReader);
+        StringBuilder stringBuilder = new StringBuilder();
+        String line = bufferedReader.readLine();
+        while (line != null){
+            stringBuilder.append(line).append("\n");
+            line = bufferedReader.readLine();
+        }
+        bufferedReader.close();
+        String response = stringBuilder.toString();
+
+        return new JSONObject(response);
     }
 }
