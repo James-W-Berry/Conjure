@@ -39,7 +39,7 @@ public class AlbumSearchService  extends AppCompatActivity {
 
     public void getSearchResultArtists(final VolleyCallback callBack) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.GET, ENDPOINT + mId + "/albums/?include_groups=album&limit=50", null, response -> {
+                (Request.Method.GET, ENDPOINT + mId + "/albums/?include_groups=album,single,compilation,appears_on&limit=50", null, response -> {
                     try {
                         JSONArray items = (JSONArray) response.get("items");
                         for (int n = 0; n < items.length(); n++) {
