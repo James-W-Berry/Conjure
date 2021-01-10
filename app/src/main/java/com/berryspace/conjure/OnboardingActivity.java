@@ -1,6 +1,5 @@
 package com.berryspace.conjure;
 
-import android.content.Intent;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -24,8 +23,6 @@ public class OnboardingActivity extends FragmentActivity {
         pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(pagerAdapter);
         mPager.setPageTransformer(true, new DepthPageTransformer());
-
-        authenticateWithSpotify();
     }
 
     @Override
@@ -36,7 +33,6 @@ public class OnboardingActivity extends FragmentActivity {
             mPager.setCurrentItem(mPager.getCurrentItem() - 1);
         }
     }
-
 
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
         public ScreenSlidePagerAdapter(FragmentManager fm) {
@@ -59,8 +55,4 @@ public class OnboardingActivity extends FragmentActivity {
         }
     }
 
-    private void authenticateWithSpotify(){
-        Intent intent = new Intent(this, SpotifyAuth.class);
-        startActivity(intent);
-    };
 }

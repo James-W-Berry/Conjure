@@ -7,7 +7,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.berryspace.conjure.models.Album;
-import com.berryspace.conjure.SpotifyAuth;
+import com.berryspace.conjure.SpotifyAuthActivity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -82,7 +82,7 @@ public class AlbumSearchService  extends AppCompatActivity {
     }
 
     private void authenticateWithSpotify(){
-        Intent intent = new Intent(this.getParent(), SpotifyAuth.class);
+        Intent intent = new Intent(this.getParent(), SpotifyAuthActivity.class);
         startActivity(intent);
     };
 }

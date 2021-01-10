@@ -7,7 +7,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.berryspace.conjure.models.Artist;
-import com.berryspace.conjure.SpotifyAuth;
+import com.berryspace.conjure.SpotifyAuthActivity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -76,12 +76,11 @@ public class ArtistSearchService extends AppCompatActivity {
                 }, error -> {
                     Log.i(TAG, error.toString());
                     if (error instanceof AuthFailureError){
-                        // get new token from local Spotify client
                         authenticateWithSpotify();
                     }
                 }) {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders() {
                 Map<String, String> headers = new HashMap<>();
                 String auth = "Bearer " + mToken;
                 headers.put("Authorization", auth);
@@ -92,7 +91,7 @@ public class ArtistSearchService extends AppCompatActivity {
     }
 
     private void authenticateWithSpotify(){
-        Intent intent = new Intent(this.getParent(), SpotifyAuth.class);
+        Intent intent = new Intent(this.getParent(), SpotifyAuthActivity.class);
         startActivity(intent);
     };
 }

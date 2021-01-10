@@ -1,7 +1,5 @@
 package com.berryspace.conjure;
 
-import android.app.Activity;
-import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,23 +21,27 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class SpotifyAuth extends AppCompatActivity {
-    private final static String TAG = "SpotifyAuth";
+public class SpotifyAuthActivity extends AppCompatActivity {
+    private final static String TAG = "SpotifyAuthActivity";
     private static final int AUTH_TOKEN_REQUEST_CODE = 0x10;
     private static final String CLIENT_ID = BuildConfig.SPOTIFY_CLIENT_ID;
     private String mAccessToken;
     private Call mCall;
     private final OkHttpClient mOkHttpClient = new OkHttpClient();
 
-    public SpotifyAuth( ){
-
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_spotify_auth);
         getCredentials();
     }
+
+    public void getCredentials(){
+        final AuthorizationRequest request = getAuthenticationRequest(AuthorizationResponse.Type.TOKEN);
+        Log.d(TAG, "opening login activity");
+        AuthorizationClient.openLoginActivity(this, AUTH_TOKEN_REQUEST_CODE, request);
+        Log.d(TAG, "closing login activity");
+    };
 
     private void getUserId(){
         SharedPreferences sharedPref = getBaseContext().getSharedPreferences("SPOTIFYAUTH", Context.MODE_PRIVATE);
@@ -86,13 +88,6 @@ public class SpotifyAuth extends AppCompatActivity {
         finish();
     };
 
-    public void getCredentials(){
-        final AuthorizationRequest request = getAuthenticationRequest(AuthorizationResponse.Type.TOKEN);
-        Log.d(TAG, "opening login activity");
-        AuthorizationClient.openLoginActivity(this, AUTH_TOKEN_REQUEST_CODE, request);
-        Log.d(TAG, "closing login activity");
-    };
-
     private AuthorizationRequest getAuthenticationRequest(AuthorizationResponse.Type type) {
         return new AuthorizationRequest.Builder(CLIENT_ID, type, getRedirectUri().toString())
                 .setShowDialog(true)
@@ -102,15 +97,25 @@ public class SpotifyAuth extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+         super.onActivityResult(requestCode, resultCode, data);
         final AuthorizationResponse response = AuthorizationClient.getResponse(resultCode, data);
 
         if (requestCode == AUTH_TOKEN_REQUEST_CODE) {
             mAccessToken = response.getAccessToken();
-            Log.d(TAG, mAccessToken);
+            Log.d(TAG, "Retrieved access token: "+ mAccessToken);
             getUserId();
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+     }
 
     private void cancelCall() {
         if (mCall != null) {

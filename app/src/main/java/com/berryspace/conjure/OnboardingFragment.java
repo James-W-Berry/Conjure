@@ -4,26 +4,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import com.google.android.material.button.MaterialButton;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
-import androidx.appcompat.widget.AppCompatTextView;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 public class OnboardingFragment extends Fragment {
     private final static String TAG = "OnboardingFragment";
     private int pageNumber = 0;
+    private TextView statusMessage;
+    private MaterialButton setup;
 
     public OnboardingFragment(int page){
         this.pageNumber = page;
-    }
-
-    private Boolean isTokenValid(){
-        SharedPreferences sharedPref = getActivity().getSharedPreferences("SPOTIFYAUTH", Context.MODE_PRIVATE);
-        return sharedPref.getBoolean("valid", false);
     }
 
     @Override
@@ -38,20 +36,11 @@ public class OnboardingFragment extends Fragment {
         case 1:
             view = (ViewGroup) inflater.inflate(
                     R.layout.fragment_onboarding_setup, container, false);
-            MaterialButton setup = view.findViewById(R.id.button_setup_spotify);
-            AtomicReference<AppCompatTextView> statusMessage =
-                    new AtomicReference<>(view.findViewById(R.id.onboarding_setup_status_message));
+            setup = view.findViewById(R.id.button_setup_spotify);
+            statusMessage = view.findViewById(R.id.onboarding_setup_status_message) ;
             setup.setOnClickListener(v->{
-                statusMessage.set(view.findViewById(R.id.onboarding_setup_status_message));
-                if(isTokenValid()){
-                    statusMessage.get().setText(getText(R.string.onboarding_setup_status_success).toString());
-                    setup.setVisibility(View.INVISIBLE);
-                } else {
-                    statusMessage.get().setText(getText(R.string.onboarding_setup_status_error).toString());
-                    statusMessage.get().setTextColor(getResources().getColor(R.color.conjure_purple_really_dark));
-                }
+                authenticateWithSpotify();
             });
-
             break;
         case 2:
              view = (ViewGroup) inflater.inflate(
@@ -73,6 +62,30 @@ public class OnboardingFragment extends Fragment {
                     R.layout.fragment_onboarding_welcome, container, false);
     }
         return view;
+    }
+
+    private void authenticateWithSpotify(){
+        Intent intent = new Intent(getActivity(), SpotifyAuthActivity.class);
+        startActivityForResult(intent, 0);
+    };
+
+    private Boolean isTokenValid(){
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("SPOTIFYAUTH", Context.MODE_PRIVATE);
+        return sharedPref.getBoolean("valid", false);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.i(TAG, "spotify auth process complete");
+
+        if(isTokenValid()){
+            statusMessage.setText(getText(R.string.onboarding_setup_status_success).toString());
+            setup.setVisibility(View.INVISIBLE);
+        } else {
+            statusMessage.setText(getText(R.string.onboarding_setup_status_error).toString());
+            setup.setVisibility(View.INVISIBLE);
+        }
     }
 
 }

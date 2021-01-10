@@ -68,6 +68,10 @@ public class AugmentedImageActivity extends AppCompatActivity {
                 case R.id.navigation_camera:
                     Log.d(TAG, "already on the camera screen");
                     break;
+                case R.id.navigation_library:
+                    Intent libraryIntent = new Intent(this, LibraryActivity.class);
+                    startActivity(libraryIntent);
+                    break;
             }
             return true;
         });
