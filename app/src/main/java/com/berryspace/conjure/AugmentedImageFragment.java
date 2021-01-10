@@ -3,7 +3,6 @@ package com.berryspace.conjure;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
@@ -19,10 +18,8 @@ import com.google.ar.core.Session;
 import com.berryspace.common.helpers.SnackbarHelper;
 import com.google.ar.core.exceptions.ImageInsufficientQualityException;
 import com.google.ar.sceneform.ux.ArFragment;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -33,10 +30,21 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Objects;
 
 public class AugmentedImageFragment extends ArFragment {
     private static final String TAG = "AugmentedImageFragment";
+    private AugmentedImageDatabase database;
+    private final String imageDatabaseName = "database_0.imgdb";
+    private File dbDirectory;
+    private String dbFilePath;
+    private File imageDirectory;
+    private File libraryDirectory;
+    private String unprocessedListPath;
+    private String detectableListPath;
+    private String undetectableListPath;
 
     // Do a runtime check for the OpenGL level available at runtime to avoid Sceneform crashing the
     // application.
@@ -64,6 +72,13 @@ public class AugmentedImageFragment extends ArFragment {
                     .showError(getActivity(), "Sceneform requires OpenGL ES 3.0 or later");
         }
 
+        dbDirectory = new File(Objects.requireNonNull(getActivity()).getBaseContext().getFilesDir(), "image_databases");
+        dbFilePath = Objects.requireNonNull(getActivity()).getBaseContext().getFilesDir().toString() + "/image_databases/database_0.imgdb";
+        imageDirectory = new File( Objects.requireNonNull(getActivity()).getBaseContext().getFilesDir(), "images");
+        libraryDirectory = new File(Objects.requireNonNull(getActivity()).getBaseContext().getFilesDir(), "library");
+        unprocessedListPath = getActivity().getBaseContext().getFilesDir().toString() + "/library/unprocessed.json";
+        detectableListPath = getActivity().getBaseContext().getFilesDir().toString() + "/library/detectable.json";
+        undetectableListPath = getActivity().getBaseContext().getFilesDir().toString() + "/library/undetectable.json";
     }
 
     @Override
@@ -82,26 +97,30 @@ public class AugmentedImageFragment extends ArFragment {
     @Override
     protected Config getSessionConfiguration(Session session) {
         Config config = super.getSessionConfiguration(session);
-        try {
-            if (!setupAugmentedImageDatabase(config, session)) {
-                SnackbarHelper.getInstance()
-                        .showError(getActivity(), "Could not setup augmented image database");
-            }
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
+        if (!loadDatabase(session)) {
+            SnackbarHelper.getInstance()
+                    .showError(getActivity(), "Could not setup augmented image database");
+        } else {
+            Log.i(TAG, "Augmented image database loaded successfully");
         }
+        if(!updateDatabase()){
+            SnackbarHelper.getInstance()
+                    .showError(getActivity(), "Could not update augmented image database");
+        } else {
+            Log.i(TAG, "Augmented image database updated successfully");
+        }
+
+        config.setAugmentedImageDatabase(database);
         return config;
     }
 
-    public class ImageDatabaseFileFilter implements FileFilter
-    {
-        private final String[] validFiles = new String[] {"database_0.imgdb"};
+    private class ConjureFileFilter implements FileFilter {
+        private final String[] validFiles = new String[] {imageDatabaseName};
 
-        public boolean accept(File file)
-        {
-            for (String extension : validFiles)
+        public boolean accept(File file) {
+            for (String target : validFiles)
             {
-                if (file.getName().toLowerCase().endsWith(extension))
+                if (file.getName().equals(target))
                 {
                     return true;
                 }
@@ -110,173 +129,220 @@ public class AugmentedImageFragment extends ArFragment {
         }
     }
 
-    private boolean setupAugmentedImageDatabase(Config config, Session session) throws IOException, JSONException {
-        AugmentedImageDatabase augmentedImageDatabase;
+    public boolean loadDatabase(Session session)   {
+        if(imageDatabaseExists()){
+            Log.i(TAG, "Located existing augmented image database");
+        } else {
+            Log.i(TAG, "Existing augmented image database not found. Creating empty database.");
+            try {
+                createEmptyImageDatabase(session);
+            } catch (IOException e){
+                Log.e(TAG, "IO exception creating new augmented image database.", e);
+            }
+        }
 
-        AssetManager assetManager = getContext() != null ? getContext().getAssets() : null;
-        if (assetManager == null) {
-            Log.e(TAG, "Context is null, cannot intitialize image database.");
+        try (InputStream is = new FileInputStream(dbFilePath)) {
+            database = AugmentedImageDatabase.deserialize(session, is);
+        } catch (IOException e) {
+            Log.e(TAG, "IO exception loading augmented image database.", e);
             return false;
         }
 
-        if(imageDatabaseExists()){
-            String path =  Objects.requireNonNull(getActivity()).getBaseContext().getFilesDir().toString()+ "/image_databases/database_0.imgdb";
-            try (InputStream is = new FileInputStream(path)) {
-                augmentedImageDatabase = AugmentedImageDatabase.deserialize(session, is);
-            } catch (IOException e) {
-                Log.e(TAG, "IO exception loading augmented image database.", e);
-                return false;
-            }
-        } else {
-              //createEmptyImageDatabase(session);
-            String path =  Objects.requireNonNull(getActivity()).getBaseContext().getFilesDir().toString()+ "/image_databases/database_0.imgdb";
-            try (InputStream is = new FileInputStream(path)) {
-                augmentedImageDatabase = AugmentedImageDatabase.deserialize(session, is);
-            } catch (IOException e) {
-                Log.e(TAG, "IO exception loading augmented image database.", e);
-                return false;
-            }
-        }
-
-        File[] newImages = checkForNewImages();
-        boolean deleted;
-        for (File image : newImages) {
-            Log.i(TAG, "adding " + image.getName() + " to image database");
-            Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath());
-            try{
-                int index = augmentedImageDatabase.addImage(image.getName(), bitmap, (float) 0.3);
-                deleted = image.delete();
-                Log.i(TAG, "deleted " + image.getName() + " from local storage: " + deleted);
-                saveToLibrary(image, true);
-            } catch (ImageInsufficientQualityException | JSONException e){
-                Log.i(TAG, image.getName() + " cannot be added to the image database due insufficient quality (too few features)");
-                saveToLibrary(image, false);
-            }
-        }
-
-        Log.i(TAG, "images in database: " + augmentedImageDatabase.getNumImages());
-        saveLibraryStats(augmentedImageDatabase.getNumImages());
-        saveImageDatabase(augmentedImageDatabase);
-
-        config.setAugmentedImageDatabase(augmentedImageDatabase);
         return true;
     }
 
-    private File[] checkForNewImages(){
-        String path = Objects.requireNonNull(getActivity()).getBaseContext().getFilesDir().toString()+"/images";
-        File directory = new File(path);
-        return directory.listFiles();
+    private Boolean updateDatabase(){
+        File[] images = checkForNewImages();
+        boolean deleted;
+        boolean imagesSaved = false;
+        boolean databaseSaved;
+
+        for (File image : images) {
+            Log.i(TAG, "Attempting to add " + image.getName() + " to image database");
+            Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath());
+            try {
+                int index = database.addImage(image.getName(), bitmap, (float) 0.3);
+                Log.i(TAG, "Successfully added " + image.getName() + " to image database");
+                imagesSaved = saveToLibrary(image, true);
+                Log.i(TAG, "Successfully added " + image.getName() + " to library");
+                deleted = image.delete();
+                Log.i(TAG, image.getName() + " deleted - " + deleted);
+            } catch (ImageInsufficientQualityException e){
+                Log.i(TAG, image.getName() + " cannot be added to the image database due " +
+                        "insufficient quality (too few features). " +
+                        "Deleting image file from local storage.");
+                imagesSaved = saveToLibrary(image, false);
+                Log.i(TAG, "Successfully added " + image.getName() + " to undetectable list");
+                deleted = image.delete();
+                Log.i(TAG, image.getName() + " deleted - " + deleted);
+            }
+        }
+
+        Log.i(TAG, "Images in database: " + database.getNumImages());
+        saveLibraryStats(database.getNumImages());
+
+        databaseSaved = saveImageDatabase(database);
+        //TODO: decide what message to return to show the user, if any
+        return true;
     }
 
-     private Boolean imageDatabaseExists()   {
-         File dir = new File(Objects.requireNonNull(getActivity()).getBaseContext().getFilesDir(), "image_databases");
-         if(!dir.exists()){
-            dir.mkdir();
+    private boolean imageDatabaseExists() {
+        ensureDirectoryExists(dbDirectory);
+        ConjureFileFilter fileFilter = new ConjureFileFilter();
+        File[] validDatabases = dbDirectory.listFiles(fileFilter);
+        if(validDatabases.length >0){
+            return true;
+        } else {
             return false;
-         }
-         File[] files = dir.listFiles(new ImageDatabaseFileFilter());
-          if(files.length >0){
-             Log.i(TAG, "using existing database_0");
-             return true;
-         } else {
-              Log.i(TAG, "existing database not found");
-              return false;
-         }
+        }
     }
 
     private void createEmptyImageDatabase(Session session) throws IOException {
         AugmentedImageDatabase imageDatabase = new AugmentedImageDatabase(session);
-        String path =  Objects.requireNonNull(getActivity()).getBaseContext().getFilesDir().toString()+ "/image_databases/database_0.imgdb";
-        File file = new File(path);
-        if (!file.exists()) {
+        ensureDirectoryExists(dbDirectory);
+        try{
+            File file = new File(dbFilePath);
             file.createNewFile();
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            imageDatabase.serialize(fileOutputStream);
+            fileOutputStream.close();
+        } catch (IOException exception){
+            Log.e(TAG, "Failed to create new image database file");
         }
-        FileOutputStream fileOutputStream = new FileOutputStream(file);
-        imageDatabase.serialize(fileOutputStream);
-        fileOutputStream.close();
     }
 
-    private void saveImageDatabase(AugmentedImageDatabase imageDatabase) throws IOException {
-        String path =  Objects.requireNonNull(getActivity()).getBaseContext().getFilesDir().toString()+ "/image_databases/database_0.imgdb";
-        File file = new File(path);
+    private File[] checkForNewImages(){
+        ensureDirectoryExists(imageDirectory);
+        return imageDirectory.listFiles();
+    }
 
-        FileOutputStream fileOutputStream = new FileOutputStream(file);
-        imageDatabase.serialize(fileOutputStream);
-        fileOutputStream.close();
+    private boolean saveToLibrary(File image, Boolean detectable) {
+        ensureDirectoryExists(libraryDirectory);
+
+        File listFile;
+        listFile = detectable ? new File(detectableListPath) : new File(undetectableListPath);
+        ensureFileExists(listFile, detectable ? "detectable images"
+                : "undetectable images");
+        JSONObject listObject = convertFileToJson(listFile);
+
+        File unprocessedFile = new File(unprocessedListPath);
+        ensureFileExists(unprocessedFile, "images that have not been added to the database or sorted yet");
+        JSONObject unprocessedObject = convertFileToJson(unprocessedFile);
+
+        try {
+            JSONObject album = (JSONObject) unprocessedObject.get(image.getName().replace(".png", ""));
+            Log.i(TAG, "Transferring album " + image.getName() + " from unprocessed list to library list");
+            listObject.put(image.getName(), album);
+            writeJsonToFile(listObject, listFile);
+            unprocessedObject.remove(image.getName().replace(".png", ""));
+            writeJsonToFile(unprocessedObject, unprocessedFile);
+            return true;
+        } catch (JSONException | NullPointerException exception) {
+            Log.i(TAG, Objects.requireNonNull(exception.getMessage()));
+            return false;
+        }
+    }
+
+    private void ensureDirectoryExists(File directory){
+        if(!directory.exists()){
+            directory.mkdir();
+        }
+    }
+
+    private void ensureFileExists(File file, String description) {
+        if(!file.exists()){
+            try{
+                file.createNewFile();
+                JSONObject empty = new JSONObject();
+                empty.put("file_description", description);
+                writeJsonToFile(empty, file);
+            } catch (IOException | JSONException exception){
+                Log.e(TAG, "Failed to created file: " + file.getAbsolutePath());
+            }
+        } else{
+            Log.i(TAG, "Found existing file: " + file.getAbsolutePath());
+        }
+    }
+
+    private JSONObject convertFileToJson(File file) {
+        Log.i(TAG, "Converting " + file.getName() + " to JSON");
+        try {
+            FileReader fileReader = new FileReader(file);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            StringBuilder stringBuilder = new StringBuilder();
+            String line = bufferedReader.readLine();
+            while (line != null) {
+                stringBuilder.append(line).append("\n");
+                line = bufferedReader.readLine();
+            }
+            bufferedReader.close();
+            String response = stringBuilder.toString();
+            Log.i(TAG, "Success converting "+file.getName()+" to JSON");
+            return new JSONObject(response);
+        } catch (JSONException | IOException exception) {
+            Log.e(TAG, "Failure converting "+file.getName()+" to JSON: " +  exception.getMessage());
+            return null;
+        }
+    }
+
+    private void writeJsonToFile(JSONObject object, File file) {
+        try {
+            String objectString = object.toString();
+            FileWriter fileWriter = new FileWriter(file);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter.write(objectString);
+            bufferedWriter.close();
+        } catch (IOException exception){
+            Log.e(TAG, "Failed to write JSON to file");
+        }
+
     }
 
     private void saveLibraryStats(Integer albumCount){
         SharedPreferences sharedPref = Objects.requireNonNull(getActivity()).getBaseContext().getSharedPreferences("LIBRARYSTATS", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putInt("artistCount", 1000);
+        Integer artistCount = fetchTotalArtistsInDatabase();
+        editor.putInt("artistCount", artistCount);
         editor.putInt("albumCount", albumCount);
         editor.apply();
     }
 
-    private void saveToLibrary(File image, Boolean detectable) throws IOException, JSONException {
-        Log.i(TAG, "moving image from unprocessed to the detectable or undetectable library");
-        File dir = new File(Objects.requireNonNull(getActivity()).getBaseContext().getFilesDir(), "library");
-        if(!dir.exists()){
-            dir.mkdirs();
+    private boolean saveImageDatabase(AugmentedImageDatabase imageDatabase) {
+        try{
+            File file = new File(dbFilePath);
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            imageDatabase.serialize(fileOutputStream);
+            fileOutputStream.close();
+            return true;
+        } catch (IOException exception){
+            Log.e(TAG, "Failed to save augmented image database");
+            return false;
         }
+    }
 
-        JSONObject libraryObject = new JSONObject();
-        String libraryPath;
-        if(detectable){
-            libraryPath = getActivity().getBaseContext().getFilesDir().toString()+ "/library/detectable.json";
-        } else {
-            libraryPath = getActivity().getBaseContext().getFilesDir().toString()+ "/library/undetectable.json";
-        }
-
-        File libraryFile = new File(libraryPath);
-        if (!libraryFile.exists()){
-            libraryFile.createNewFile();
-        } else {
-            libraryObject = readLibraryFile(libraryFile);
-        }
-
-        JSONObject unprocessedObject = new JSONObject();
-        String unprocessedPath = getActivity().getBaseContext().getFilesDir().toString() + "/library/unprocessed.json";
-        File unprocessedFile = new File(unprocessedPath);
-        if (!unprocessedFile.exists()){
-            unprocessedFile.createNewFile();
-        } else {
-            unprocessedObject = readLibraryFile(unprocessedFile);
-        }
+    private Integer fetchTotalArtistsInDatabase(){
+        File file = new File(detectableListPath);
+        JSONObject detectables = convertFileToJson(file);
+        HashMap<String, Integer> artists = new HashMap<>();
 
         try {
-            JSONObject album = (JSONObject) unprocessedObject.get(image.getName().replace(".png",""));
-            Log.i(TAG, album.toString());
-            libraryObject.put(image.getName(), album);
-            writeNewLibraryFile(libraryObject, libraryFile);
-            unprocessedObject.remove(image.getName().replace(".png", ""));
-            writeNewLibraryFile(unprocessedObject, unprocessedFile);
-        } catch (JSONException exception){
-            Log.i(TAG, Objects.requireNonNull(exception.getMessage()));
+            assert detectables != null;
+            Iterator<String> keys = detectables.keys();
+
+            while(keys.hasNext()) {
+                String key = keys.next();
+                if (detectables.get(key) instanceof JSONObject) {
+                    String name = (String) ((JSONObject) detectables.get(key)).get("artist");
+                    if(artists.containsKey(name)){
+                        artists.put(name, artists.get(name) + 1);
+                    } else {
+                        artists.put(name, 1);
+                    }
+                }
+            }
+        } catch (NullPointerException | JSONException exception){
+            Log.e(TAG, "Failed to fetch number of unique artists: " + exception.getMessage());
         }
-    }
-
-    private JSONObject readLibraryFile(File file) throws IOException, JSONException {
-        FileReader fileReader = new FileReader(file);
-        BufferedReader bufferedReader = new BufferedReader(fileReader);
-        StringBuilder stringBuilder = new StringBuilder();
-        String line = bufferedReader.readLine();
-        while (line != null){
-            stringBuilder.append(line).append("\n");
-            line = bufferedReader.readLine();
-        }
-        bufferedReader.close();
-        String response = stringBuilder.toString();
-
-        return new JSONObject(response);
-    }
-
-
-    private void writeNewLibraryFile(JSONObject library, File file) throws IOException {
-        String libraryString = library.toString();
-        FileWriter fileWriter = new FileWriter(file);
-        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-        bufferedWriter.write(libraryString);
-        bufferedWriter.close();
+        return artists.size();
     }
 }

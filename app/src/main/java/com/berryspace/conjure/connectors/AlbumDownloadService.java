@@ -5,8 +5,11 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
+import com.berryspace.common.helpers.SnackbarHelper;
 import com.berryspace.conjure.models.Album;
- import com.squareup.picasso.Picasso;
+import com.google.ar.core.AugmentedImageDatabase;
+import com.google.ar.core.Config;
+import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import org.json.JSONException;

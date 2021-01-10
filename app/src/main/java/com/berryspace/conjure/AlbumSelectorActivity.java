@@ -15,7 +15,7 @@ import com.android.volley.toolbox.Volley;
 import com.berryspace.conjure.adapters.AlbumResultsAdapter;
 import com.berryspace.conjure.connectors.AlbumDownloadService;
 import com.berryspace.conjure.connectors.AlbumSearchService;
- import com.berryspace.conjure.connectors.SelectedAlbumsInterface;
+import com.berryspace.conjure.connectors.SelectedAlbumsInterface;
 import com.berryspace.conjure.models.Album;
 
 import org.json.JSONException;
@@ -144,6 +144,7 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
 
         AlbumDownloadService albumDownloadService = new AlbumDownloadService(images, searchResults, this);
         Boolean done = albumDownloadService.getAlbumImages();
+                
         if(done){
             clearSearchResults();
             updateSearchStatus(View.INVISIBLE);
