@@ -11,11 +11,7 @@ import android.view.View;
 import android.widget.TextView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
-
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -25,6 +21,8 @@ public class HomeActivity extends AppCompatActivity {
     private ConstraintLayout libraryStats;
     private TextView artistStat;
     private TextView albumStat;
+    private TextView lastScannedAlbum;
+    private TextView lastScannedArtist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +32,10 @@ public class HomeActivity extends AppCompatActivity {
         libraryStats = findViewById(R.id.library_stats_layout);
         artistStat = findViewById(R.id.artist_stat);
         albumStat = findViewById(R.id.album_stat);
+        lastScannedAlbum = findViewById(R.id.last_played_album_0);
+        lastScannedArtist = findViewById(R.id.last_played_artist_0);
+        lastScannedAlbum.setSelected(true);
+        lastScannedArtist.setSelected(true);
 
         HashMap<String, Integer> stats = fetchStats();
         if (stats.get("artistCount") > 0 && stats.get("albumCount") > 0){
@@ -45,6 +47,10 @@ public class HomeActivity extends AppCompatActivity {
         } else {
             libraryStats.setVisibility(View.GONE);
         }
+
+        HashMap<String, String> lastScanned = fetchLastScanned();
+        lastScannedArtist.setText(lastScanned.get("artist"));
+        lastScannedAlbum.setText(lastScanned.get("album"));
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_bar);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
@@ -93,6 +99,14 @@ public class HomeActivity extends AppCompatActivity {
         retrievedStats.put("artistCount", sharedPref.getInt("artistCount", 0));
         retrievedStats.put("albumCount", sharedPref.getInt("albumCount", 0));
         return retrievedStats;
+    }
+
+    private HashMap<String, String> fetchLastScanned(){
+        HashMap<String, String> lastScanned = new HashMap<>();
+        SharedPreferences sharedPref = this.getSharedPreferences("LASTSCANNED", Context.MODE_PRIVATE);
+        lastScanned.put("album", sharedPref.getString("album", "No albums scanned yet"));
+        lastScanned.put("artist", sharedPref.getString("artist", ""));
+        return lastScanned;
     }
 
 }

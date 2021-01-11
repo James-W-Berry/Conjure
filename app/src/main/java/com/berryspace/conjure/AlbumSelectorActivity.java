@@ -148,11 +148,12 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
         if(done){
             clearSearchResults();
             updateSearchStatus(View.INVISIBLE);
+            selectAllView.setVisibility(View.GONE);
             String text = getString(R.string.album_download_message, images.size(), artistName);
             albumDownloadMessage.setVisibility(View.VISIBLE);
             albumDownloadMessage.setText(text);
 
-            handler.postDelayed(this::finish, 3000);
+            handler.postDelayed(this::finish, 1000);
         }
     }
 

@@ -33,7 +33,7 @@
     <string name="learning">learning how to recognize all your favorite albums…</string>
     <string name="status_error">Could not retrieve your followed artists</string>
 
-    <string name="ready">Ready to conjure</string>
+    <string name="ready">Ready to Conjure</string>
     <string name="artist_stat"><b>%1$s</b> artists</string>
     <string name="album_stat"><b>%1$s</b> albums from </string>
 

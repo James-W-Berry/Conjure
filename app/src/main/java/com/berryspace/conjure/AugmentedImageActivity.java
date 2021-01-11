@@ -1,6 +1,8 @@
 package com.berryspace.conjure;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
@@ -22,6 +24,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector.ConnectionListener;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
@@ -161,6 +165,7 @@ public class AugmentedImageActivity extends AppCompatActivity {
                                     libraryObject = readLibraryFile(file);
                                     JSONObject detectedAlbum = (JSONObject) libraryObject.get(augmentedImage.getName());
                                     text = "Now Playing: " + detectedAlbum.get("name") + " by " + detectedAlbum.get("artist");
+                                    saveLastScanned(detectedAlbum.get("name").toString(), detectedAlbum.get("artist").toString());
                                 } catch (IOException | JSONException exception){
                                     Log.i(TAG, exception.getMessage());
                                 }
@@ -209,6 +214,14 @@ public class AugmentedImageActivity extends AppCompatActivity {
 
     private void playNextTrack(){
         mSpotifyAppRemote.getPlayerApi().skipNext();
+    }
+
+    private void saveLastScanned(String album, String artist){
+        SharedPreferences sharedPref = getBaseContext().getSharedPreferences("LASTSCANNED", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("album", album);
+        editor.putString("artist", artist);
+        editor.apply();
     }
 
     @Override
