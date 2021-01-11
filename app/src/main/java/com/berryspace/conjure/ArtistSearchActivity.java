@@ -59,6 +59,7 @@ public class ArtistSearchActivity extends AppCompatActivity {
             }
          });
         searchView.requestFocus();
+
         progressBar = findViewById(R.id.indeterminateBar);
     }
 
