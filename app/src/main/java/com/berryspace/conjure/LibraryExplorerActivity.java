@@ -1,46 +1,114 @@
 package com.berryspace.conjure;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.SearchView;
-
 import com.berryspace.conjure.adapters.LibraryAdapter;
-import com.berryspace.conjure.models.Artist;
-
+import com.berryspace.conjure.models.Album;
+import org.json.JSONException;
+import org.json.JSONObject;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
-
+import java.util.Iterator;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class LibraryExplorerActivity extends AppCompatActivity {
+    private static final String TAG = "LibraryExplorerActivity";
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private SearchView searchView;
+    private File libraryDirectory;
+    private String detectableListPath;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_library_explorer);
 
-        Artist tester = new Artist();
-        tester.setName("Artist 1");
-        tester.setFollowers("1000");
-        tester.setGenres("black metal");
-        tester.setId("12345");
-        tester.setImageUrl("https://i.scdn.co/image/ab67616d0000b27307e244f9c29b4341f17d0378");
-        ArrayList<Artist> artists = new ArrayList<>();
-        artists.add(tester);
+        libraryDirectory = new File(this.getFilesDir(), "library");
+        detectableListPath = this.getFilesDir().toString() + "/library/detectable.json";
 
         searchView = findViewById(R.id.searchbar);
         searchView.setOnClickListener(v -> searchView.setIconified(false));
         recyclerView = findViewById(R.id.library);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        mAdapter = new LibraryAdapter(artists);
         recyclerView.setAdapter(mAdapter);
-
+        retrieveLibrary();
     }
+
+    private void retrieveLibrary(){
+        ArrayList<Album> results = new ArrayList<>();
+        ensureDirectoryExists(libraryDirectory);
+        File file = new File(detectableListPath);
+        if(!file.exists()){
+            return;
+        }
+        JSONObject library = convertFileToJson(file);
+        try {
+            assert library != null;
+            Iterator<String> keys = library.keys();
+
+            while(keys.hasNext()) {
+                String key = keys.next();
+                if (library.get(key) instanceof JSONObject) {
+                    Album album = new Album();
+                    JSONObject detectable = (JSONObject) library.get(key);
+                    String artist = (String) detectable.get("artist");
+
+                    album.setArtist(artist);
+                    album.setId((String) detectable.get("id"));
+                    album.setName((String) detectable.get("name"));
+                    album.setYear((String) detectable.get("year"));
+                    album.setImageUrl((String) detectable.get("imageUrl"));
+
+                    results.add(album);
+                }
+            }
+        } catch (NullPointerException | JSONException exception){
+            Log.e(TAG, "Failed to fetch number of unique artists: " + exception.getMessage());
+        }
+
+        updateLibraryResults(results);
+    }
+
+    private void updateLibraryResults(ArrayList<Album> libraryResults) {
+        mAdapter = new LibraryAdapter(libraryResults);
+        recyclerView.setAdapter(mAdapter);
+    }
+
+    private void ensureDirectoryExists(File directory){
+        if(!directory.exists()){
+            directory.mkdir();
+        }
+    }
+
+    private JSONObject convertFileToJson(File file) {
+        Log.i(TAG, "Converting " + file.getName() + " to JSON");
+        try {
+            FileReader fileReader = new FileReader(file);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            StringBuilder stringBuilder = new StringBuilder();
+            String line = bufferedReader.readLine();
+            while (line != null) {
+                stringBuilder.append(line).append("\n");
+                line = bufferedReader.readLine();
+            }
+            bufferedReader.close();
+            String response = stringBuilder.toString();
+            Log.i(TAG, "Success converting "+file.getName()+" to JSON");
+            return new JSONObject(response);
+        } catch (JSONException | IOException exception) {
+            Log.e(TAG, "Failure converting "+file.getName()+" to JSON: " +  exception.getMessage());
+            return null;
+        }
+    }
+
 }
