@@ -100,6 +100,8 @@ public class SpotifyAuthActivity extends AppCompatActivity {
          super.onActivityResult(requestCode, resultCode, data);
         final AuthorizationResponse response = AuthorizationClient.getResponse(resultCode, data);
 
+        Log.i(TAG, "authorization attempt result code:"+response.getCode());
+
         if (requestCode == AUTH_TOKEN_REQUEST_CODE) {
             mAccessToken = response.getAccessToken();
             Log.d(TAG, "Retrieved access token: "+ mAccessToken);

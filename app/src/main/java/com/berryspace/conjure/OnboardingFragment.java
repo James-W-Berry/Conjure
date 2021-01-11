@@ -1,5 +1,7 @@
 package com.berryspace.conjure;
 
+import android.animation.AnimatorInflater;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.google.android.material.button.MaterialButton;
 import java.util.Objects;
@@ -45,6 +48,15 @@ public class OnboardingFragment extends Fragment {
         case 2:
              view = (ViewGroup) inflater.inflate(
                     R.layout.fragment_onboarding_scan, container, false);
+
+            ImageView phone = view.findViewById(R.id.image_phone);
+
+
+            ObjectAnimator animator = (ObjectAnimator) AnimatorInflater.loadAnimator(this.getActivity(),
+                    R.animator.album_scan);
+            animator.setTarget(phone);
+            animator.start();
+
             MaterialButton finish = view.findViewById(R.id.button_finish);
             finish.setOnClickListener(v -> {
                 System.out.println("recording user finished onboarding");

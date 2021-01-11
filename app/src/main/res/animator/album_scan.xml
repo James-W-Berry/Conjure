@@ -1,0 +1,10 @@
+
+<objectAnimator
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="3000"
+    android:valueTo="350"
+    android:valueType="floatType"
+    android:propertyName="x"
+    android:repeatCount="infinite"
+    android:repeatMode="reverse"
+      />

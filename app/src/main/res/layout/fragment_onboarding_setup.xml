@@ -23,23 +23,14 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/image_setup"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="86dp"
-        app:layout_constraintEnd_toStartOf="@id/image_spotify"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/heading"
-        app:srcCompat="@drawable/conjuree_setup" />
-
-    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/image_spotify"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_height="150dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="100dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/image_setup"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/heading"
         app:srcCompat="@drawable/spotify_green" />
 
@@ -48,7 +39,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="64dp"
-        android:layout_marginTop="32dp"
         android:layout_marginEnd="64dp"
         android:fontFamily="@font/nunito"
         android:text="@string/onboarding_setup_message"
@@ -57,7 +47,7 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image_setup" />
+        app:layout_constraintTop_toBottomOf="@+id/image_spotify"  />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_setup_spotify"
