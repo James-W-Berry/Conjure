@@ -25,13 +25,15 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.MyViewHo
         public TextView albumName;
         public ImageView imageView;
         public TextView year;
+        public TextView artistName;
 
         public MyViewHolder(ConstraintLayout view) {
             super(view);
-            cardView = (CardView) view.getViewById(R.id.search_album_view);
+            cardView = (CardView) view.getViewById(R.id.library_album_view);
             imageView = (ImageView) cardView.getChildAt(0);
-            albumName = (TextView) view.getViewById(R.id.search_album_name);
-            year = (TextView) view.getViewById(R.id.search_album_year);
+            albumName = (TextView) view.getViewById(R.id.album_name);
+            artistName = (TextView) view.getViewById(R.id.artist_name);
+            year = (TextView) view.getViewById(R.id.album_year);
         }
     }
 
@@ -42,7 +44,7 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.MyViewHo
     @NonNull
     @Override
     public LibraryAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        ConstraintLayout view = (ConstraintLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.search_item_album, parent, false);
+        ConstraintLayout view = (ConstraintLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.library_item_album, parent, false);
         MyViewHolder vh = new MyViewHolder(view);
         context = view.getContext();
         return vh;
@@ -51,6 +53,7 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.MyViewHo
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         holder.albumName.setText(mDataset.get(position).getName());
+        holder.artistName.setText(mDataset.get(position).getArtist());
         holder.year.setText(mDataset.get(position).getYear());
         Picasso.with(context).load(mDataset.get(position).getImageUrl()).into(holder.imageView);
      }
