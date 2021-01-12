@@ -6,9 +6,10 @@
     tools:context=".AugmentedImageActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/camera_activity"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/conjure_purple_vibrant">
+        android:background="@color/conjure_black">
 
         <TextView
             android:id="@+id/nowPlaying"

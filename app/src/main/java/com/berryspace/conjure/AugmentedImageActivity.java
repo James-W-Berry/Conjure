@@ -1,22 +1,26 @@
 package com.berryspace.conjure;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.airbnb.lottie.L;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.ar.core.AugmentedImage;
 import com.google.ar.core.Frame;
 import com.google.ar.sceneform.FrameTime;
 import com.google.ar.sceneform.ux.ArFragment;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -24,19 +28,16 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector.ConnectionListener;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.android.appremote.api.error.CouldNotFindSpotifyApp;
 import com.spotify.android.appremote.api.error.NotLoggedInException;
 import com.spotify.android.appremote.api.error.UserNotAuthorizedException;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class AugmentedImageActivity extends AppCompatActivity {
+public class AugmentedImageActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
     private static final String TAG = "AugmentedImageActivity";
     private String currentlyPlaying = "";
     private ArFragment arFragment;
@@ -51,6 +52,7 @@ public class AugmentedImageActivity extends AppCompatActivity {
         Log.i(TAG, CLIENT_ID);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
+
 
         ImageView previousTrack = findViewById(R.id.previous_track);
         previousTrack.setOnClickListener(v -> {
@@ -122,6 +124,7 @@ public class AugmentedImageActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
         if (augmentedImageMap.isEmpty()) {
             fitToScanView.setVisibility(View.VISIBLE);
         }
@@ -142,7 +145,7 @@ public class AugmentedImageActivity extends AppCompatActivity {
 
         Collection<AugmentedImage> updatedAugmentedImages =
                 frame.getUpdatedTrackables(AugmentedImage.class);
-//        try {
+
             for (AugmentedImage augmentedImage : updatedAugmentedImages) {
                 switch (augmentedImage.getTrackingState()) {
                     case PAUSED:
@@ -194,9 +197,6 @@ public class AugmentedImageActivity extends AppCompatActivity {
                 }
             }
 
-//        } catch (IOException | JSONException exception){
-//            Log.i(TAG, exception.getMessage());
-//        }
     }
 
     private void playMusic(String spotifyUri) {
