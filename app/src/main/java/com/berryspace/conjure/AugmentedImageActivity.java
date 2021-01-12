@@ -1,12 +1,12 @@
 package com.berryspace.conjure;
 
+import android.Manifest.permission;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -16,7 +16,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.ar.core.AugmentedImage;
 import com.google.ar.core.Frame;
 import com.google.ar.sceneform.FrameTime;
@@ -46,12 +45,20 @@ public class AugmentedImageActivity extends AppCompatActivity implements Activit
     private static final String CLIENT_ID = BuildConfig.SPOTIFY_CLIENT_ID;
     private static final String SPOTIFY_REDIRECT_URI = "com.berryspace.conjure://callback";
     private SpotifyAppRemote mSpotifyAppRemote;
+    private static final int PERMISSION_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, CLIENT_ID);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
+
+        if (hasPermissions()) {
+            Log.i(TAG, "User already granted permissions for camera access");
+
+        } else {
+            requestConjurePermissions();
+        }
 
 
         ImageView previousTrack = findViewById(R.id.previous_track);
@@ -243,5 +250,51 @@ public class AugmentedImageActivity extends AppCompatActivity implements Activit
         String response = stringBuilder.toString();
 
         return new JSONObject(response);
+    }
+
+    private boolean hasPermissions() {
+        int result = ContextCompat.checkSelfPermission(getApplicationContext(), CAMERA_SERVICE);
+        return result == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestConjurePermissions() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                permission.CAMERA)) {
+            showExplanation("Permission Needed", "The camera is used to scan albums. Conjure does not access your images.", permission.CAMERA, PERMISSION_REQUEST_CODE);
+        } else {
+            requestPermission(permission.CAMERA, PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode,
+            String permissions[],
+            int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_REQUEST_CODE:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.i(TAG, "Permissions granted");
+                } else {
+                    Log.i(TAG, "Permissions denied");
+                }
+        }
+    }
+
+    private void showExplanation(String title,
+                                 String message,
+                                 final String permission,
+                                 final int permissionRequestCode) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, (dialog, id) -> requestPermission(permission, permissionRequestCode));
+        builder.create().show();
+    }
+
+    private void requestPermission(String permissionName, int permissionRequestCode) {
+        ActivityCompat.requestPermissions(this,
+                new String[]{permissionName}, permissionRequestCode);
     }
 }
