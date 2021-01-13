@@ -2,6 +2,11 @@ package com.berryspace.conjure;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.SearchView;
 import com.berryspace.conjure.adapters.LibraryAdapter;
 import com.berryspace.conjure.models.Album;
@@ -20,12 +25,13 @@ import androidx.recyclerview.widget.RecyclerView;
 public class LibraryExplorerActivity extends AppCompatActivity {
     private static final String TAG = "LibraryExplorerActivity";
     private RecyclerView recyclerView;
-    private RecyclerView.Adapter mAdapter;
+    private LibraryAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private SearchView searchView;
     private File libraryDirectory;
     private String detectableListPath;
-
+    private Button artistButton;
+    private Button albumButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,10 +45,12 @@ public class LibraryExplorerActivity extends AppCompatActivity {
         searchView.setOnClickListener(v -> searchView.setIconified(false));
         recyclerView = findViewById(R.id.library);
         layoutManager = new LinearLayoutManager(this);
+        artistButton = findViewById(R.id.artist_tab);
+        albumButton = findViewById(R.id.album_tab);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(mAdapter);
         retrieveLibrary();
     }
+
 
     private void retrieveLibrary(){
         ArrayList<Album> results = new ArrayList<>();
@@ -76,12 +84,25 @@ public class LibraryExplorerActivity extends AppCompatActivity {
             Log.e(TAG, "Failed to fetch number of unique artists: " + exception.getMessage());
         }
 
+        mAdapter = new LibraryAdapter(results);
+        mAdapter.storeAllResults(results);
         updateLibraryResults(results);
     }
 
     private void updateLibraryResults(ArrayList<Album> libraryResults) {
-        mAdapter = new LibraryAdapter(libraryResults);
         recyclerView.setAdapter(mAdapter);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                mAdapter.getFilter().filter(newText);
+                return false;
+            }
+        });
     }
 
     private void ensureDirectoryExists(File directory){

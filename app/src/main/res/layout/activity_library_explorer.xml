@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/conjure_black">
+    android:background="@color/conjure_black"
+    android:backgroundTint="@color/conjure_black">
 
     <TextView
         android:id="@+id/help"
@@ -33,6 +34,41 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/help" />
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/tab_selector_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/indeterminateBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/searchbar">
+
+        <Button
+            android:id="@+id/artist_tab"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/conjure_black"
+            android:text="Artists"
+            android:textColor="@color/conjure_gray"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/album_tab"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/album_tab"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/conjure_black"
+            android:text="Albums"
+            android:textColor="@color/conjure_gray"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/artist_tab"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <ProgressBar
         android:id="@+id/indeterminateBar"
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
@@ -42,7 +78,7 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/searchbar" />
+        app:layout_constraintTop_toBottomOf="@id/tab_selector_layout" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/library"
