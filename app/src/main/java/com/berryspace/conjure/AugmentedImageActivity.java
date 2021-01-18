@@ -33,6 +33,8 @@ import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.android.appremote.api.error.CouldNotFindSpotifyApp;
 import com.spotify.android.appremote.api.error.NotLoggedInException;
 import com.spotify.android.appremote.api.error.UserNotAuthorizedException;
+import com.spotify.protocol.types.Track;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -46,6 +48,8 @@ public class AugmentedImageActivity extends AppCompatActivity implements Activit
     private static final String SPOTIFY_REDIRECT_URI = "com.berryspace.conjure://callback";
     private SpotifyAppRemote mSpotifyAppRemote;
     private static final int PERMISSION_REQUEST_CODE = 1;
+    private ImageView pauseTrack;
+    private ImageView resumeTrack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +73,16 @@ public class AugmentedImageActivity extends AppCompatActivity implements Activit
         ImageView nextTrack = findViewById(R.id.next_track);
         nextTrack.setOnClickListener(v -> {
             playNextTrack();
+        });
+
+        pauseTrack = findViewById(R.id.pause);
+        pauseTrack.setOnClickListener(v->{
+            pauseTrack();
+        });
+
+        resumeTrack = findViewById(R.id.play);
+        resumeTrack.setOnClickListener(v->{
+            resumeTrack();
         });
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_bar);
@@ -179,7 +193,6 @@ public class AugmentedImageActivity extends AppCompatActivity implements Activit
                                 } catch (IOException | JSONException exception){
                                     Log.i(TAG, exception.getMessage());
                                 }
-
                             }
                             TextView heading = findViewById(R.id.nowPlaying);
                             heading.setText(text);
@@ -209,6 +222,8 @@ public class AugmentedImageActivity extends AppCompatActivity implements Activit
     private void playMusic(String spotifyUri) {
         Log.i(TAG + " playing: ", spotifyUri);
         mSpotifyAppRemote.getPlayerApi().play(spotifyUri);
+        pauseTrack.setVisibility(View.VISIBLE);
+        resumeTrack.setVisibility(View.GONE);
     }
 
     private void stopMusic() {
@@ -221,6 +236,18 @@ public class AugmentedImageActivity extends AppCompatActivity implements Activit
 
     private void playNextTrack(){
         mSpotifyAppRemote.getPlayerApi().skipNext();
+    }
+
+    private void pauseTrack(){
+        mSpotifyAppRemote.getPlayerApi().pause();
+        pauseTrack.setVisibility(View.GONE);
+        resumeTrack.setVisibility(View.VISIBLE);
+    }
+
+    private void resumeTrack(){
+        mSpotifyAppRemote.getPlayerApi().resume();
+        pauseTrack.setVisibility(View.VISIBLE);
+        resumeTrack.setVisibility(View.GONE);
     }
 
     private void saveLastScanned(String album, String artist){

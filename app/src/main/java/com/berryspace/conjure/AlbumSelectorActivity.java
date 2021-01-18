@@ -10,6 +10,10 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.airbnb.lottie.Lottie;
+import com.airbnb.lottie.LottieAnimationView;
+import com.airbnb.lottie.LottieDrawable;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.berryspace.conjure.adapters.AlbumResultsAdapter;
@@ -42,6 +46,7 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
     private HashMap<String, String> selectedAlbums;
     private String artistName;
     private TextView albumDownloadMessage;
+    private LottieAnimationView lottieAnimation;
     private Handler handler = new Handler();
     private CheckBox selectAllButton;
     private ConstraintLayout selectAllView;
@@ -75,6 +80,8 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
             }
         });
         albumDownloadMessage = findViewById(R.id.album_download_message);
+        lottieAnimation = findViewById(R.id.animation_view);
+        lottieAnimation.setRepeatCount(0);
         selectAllView = findViewById(R.id.select_all_view);
         selectAllButton = findViewById(R.id.select_all_button);
 
@@ -150,10 +157,11 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
             updateSearchStatus(View.INVISIBLE);
             selectAllView.setVisibility(View.GONE);
             String text = getString(R.string.album_download_message, images.size(), artistName);
+            lottieAnimation.setVisibility(View.VISIBLE);
             albumDownloadMessage.setVisibility(View.VISIBLE);
             albumDownloadMessage.setText(text);
 
-            handler.postDelayed(this::finish, 1000);
+            handler.postDelayed(this::finish, 2000);
         }
     }
 

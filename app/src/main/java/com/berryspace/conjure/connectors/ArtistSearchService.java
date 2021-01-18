@@ -76,7 +76,8 @@ public class ArtistSearchService extends AppCompatActivity {
                 }, error -> {
                     Log.i(TAG, error.toString());
                     if (error instanceof AuthFailureError){
-                        authenticateWithSpotify();
+                        //authenticateWithSpotify();
+                        Log.i(TAG, error.getMessage() + "; current token: " + mToken);
                     }
                 }) {
             @Override
