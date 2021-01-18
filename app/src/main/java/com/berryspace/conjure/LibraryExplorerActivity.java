@@ -30,8 +30,6 @@ public class LibraryExplorerActivity extends AppCompatActivity {
     private SearchView searchView;
     private File libraryDirectory;
     private String detectableListPath;
-    private Button artistButton;
-    private Button albumButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,8 +43,6 @@ public class LibraryExplorerActivity extends AppCompatActivity {
         searchView.setOnClickListener(v -> searchView.setIconified(false));
         recyclerView = findViewById(R.id.library);
         layoutManager = new LinearLayoutManager(this);
-        artistButton = findViewById(R.id.artist_tab);
-        albumButton = findViewById(R.id.album_tab);
         recyclerView.setLayoutManager(layoutManager);
         retrieveLibrary();
     }

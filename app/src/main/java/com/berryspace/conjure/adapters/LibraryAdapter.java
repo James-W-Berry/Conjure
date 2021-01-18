@@ -89,7 +89,7 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.MyViewHo
             } else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
                 for (Album item : mDataset) {
-                    if (item.getName().toLowerCase().contains(filterPattern)) {
+                    if (item.getName().toLowerCase().contains(filterPattern) || item.getArtist().toLowerCase().contains(filterPattern)) {
                         filteredList.add(item);
                     }
                 }

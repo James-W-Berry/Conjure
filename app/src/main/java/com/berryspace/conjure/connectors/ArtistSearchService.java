@@ -91,7 +91,7 @@ public class ArtistSearchService extends AppCompatActivity {
     }
 
     private void authenticateWithSpotify(){
-        Intent intent = new Intent(this.getParent(), SpotifyAuthActivity.class);
+        Intent intent = new Intent(getBaseContext(), SpotifyAuthActivity.class);
         startActivity(intent);
     };
 }
