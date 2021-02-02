@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/conjure_black" >
+    android:background="@color/conjure_black"
+    tools:context=".AlbumSelectorActivity">
 
 
     <TextView
@@ -147,6 +148,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/animation_view"
         tools:text="@string/album_download_message" />
+
+    <fragment
+        android:id="@+id/ux_fragment"
+        android:name="com.berryspace.conjure.AugmentedImageFragment"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+          app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/album_download_message" />
 
 
 

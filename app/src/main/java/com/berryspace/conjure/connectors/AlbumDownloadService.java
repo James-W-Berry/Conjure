@@ -5,26 +5,23 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
-import com.berryspace.common.helpers.SnackbarHelper;
+import com.berryspace.conjure.AugmentedImageFragment;
+import com.berryspace.conjure.R;
 import com.berryspace.conjure.models.Album;
-import com.google.ar.core.AugmentedImageDatabase;
-import com.google.ar.core.Config;
+import com.google.ar.sceneform.ux.ArFragment;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
-
-import org.json.JSONException;
+ import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.BufferedReader;
+ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
+ import java.util.ArrayList;
 import java.util.HashMap;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,6 +32,11 @@ public class AlbumDownloadService  extends AppCompatActivity {
     private HashMap<String, String> mImages;
     private Context mContext;
     private ArrayList<Album> mAlbumData;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
 
     public AlbumDownloadService(HashMap<String, String> images, ArrayList<Album> albumData, Context context) {
         mImages = images;
@@ -49,11 +51,13 @@ public class AlbumDownloadService  extends AppCompatActivity {
                   Picasso.with(this).load(v).into(getTarget(uri));
               } catch (Exception e) {
                  e.printStackTrace();
-             }
+              }
           });
          saveDownloadedAlbumData();
          return true;
      }
+
+
 
 
     private static Target getTarget(final String fileName) {

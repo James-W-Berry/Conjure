@@ -50,6 +50,7 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
     private Handler handler = new Handler();
     private CheckBox selectAllButton;
     private ConstraintLayout selectAllView;
+    private AugmentedImageFragment arFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +91,9 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        arFragment = (AugmentedImageFragment) getSupportFragmentManager().findFragmentById(R.id.ux_fragment);
+
     }
 
     @Override
@@ -112,6 +116,8 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
     public void transferSelectedAlbumImages(HashMap<String, String> albums){
          selectedAlbums = albums;
     }
+
+
 
     private void search(String id) throws JSONException {
         updateSearchStatus(View.VISIBLE);
@@ -153,6 +159,8 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
         Boolean done = albumDownloadService.getAlbumImages();
                 
         if(done){
+            addAlbumsToImageDatabase();
+
             clearSearchResults();
             updateSearchStatus(View.INVISIBLE);
             selectAllView.setVisibility(View.GONE);
@@ -160,9 +168,13 @@ public class AlbumSelectorActivity extends AppCompatActivity implements Selected
             lottieAnimation.setVisibility(View.VISIBLE);
             albumDownloadMessage.setVisibility(View.VISIBLE);
             albumDownloadMessage.setText(text);
+            addAlbumsToImageDatabase();
 
             handler.postDelayed(this::finish, 2000);
         }
     }
 
+    private void addAlbumsToImageDatabase(){
+        arFragment.updateDatabase();
+    }
 }

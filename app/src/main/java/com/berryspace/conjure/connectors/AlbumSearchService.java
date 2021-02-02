@@ -65,10 +65,11 @@ public class AlbumSearchService  extends AppCompatActivity {
                     callBack.onSuccess();
                 }, error -> {
                     Log.i(TAG, error.toString());
-                    if (error instanceof AuthFailureError){
-                        // get new token from local Spotify client
-                        authenticateWithSpotify();
-                    }
+                    authenticateWithSpotify();
+
+//                    if (error instanceof AuthFailureError){
+//                        authenticateWithSpotify();
+//                    }
                 }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {

@@ -45,6 +45,7 @@ public class AugmentedImageFragment extends ArFragment {
     private String unprocessedListPath;
     private String detectableListPath;
     private String undetectableListPath;
+    public Session mSession;
 
     // Do a runtime check for the OpenGL level available at runtime to avoid Sceneform crashing the
     // application.
@@ -96,6 +97,7 @@ public class AugmentedImageFragment extends ArFragment {
 
     @Override
     protected Config getSessionConfiguration(Session session) {
+        mSession = session;
         Config config = super.getSessionConfiguration(session);
         if (!loadDatabase(session)) {
             SnackbarHelper.getInstance()
@@ -151,7 +153,7 @@ public class AugmentedImageFragment extends ArFragment {
         return true;
     }
 
-    private Boolean updateDatabase(){
+    public Boolean updateDatabase(){
         File[] images = checkForNewImages();
         boolean deleted;
         boolean imagesSaved = false;
