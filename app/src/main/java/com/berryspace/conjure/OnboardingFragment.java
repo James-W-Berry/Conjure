@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ public class OnboardingFragment extends Fragment {
     private int pageNumber = 0;
     private TextView statusMessage;
     private MaterialButton setup;
+    private Handler handler = new Handler();
 
     public OnboardingFragment(int page){
         this.pageNumber = page;
@@ -91,13 +93,18 @@ public class OnboardingFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         Log.i(TAG, "spotify auth process complete");
 
+        handler.postDelayed(r, 2000);
+    }
+
+    final Runnable r = () -> showResult();
+
+    private void showResult(){
         if(isTokenValid()){
             statusMessage.setText(getText(R.string.onboarding_setup_status_success).toString());
-            setup.setVisibility(View.INVISIBLE);
         } else {
             statusMessage.setText(getText(R.string.onboarding_setup_status_error).toString());
-            setup.setVisibility(View.INVISIBLE);
         }
+        setup.setVisibility(View.INVISIBLE);
     }
 
 }
